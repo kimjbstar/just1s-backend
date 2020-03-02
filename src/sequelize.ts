@@ -10,10 +10,11 @@ export const sequelize = new Sequelize({
   host: "localhost",
   models: [__dirname + "/models"],
   modelMatch: (filename, member) => {
-    return filename === member.toLowerCase();
+    return (
+      filename.substring(0, filename.indexOf(".model")) === member.toLowerCase()
+    );
   },
   timezone: "+09:00"
-  // logging: console.log
 });
-
+// return filename === member.toLowerCase();
 console.log("sUCCESS");
