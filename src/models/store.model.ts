@@ -1,3 +1,4 @@
+import { StoreImage } from "./store_image.model";
 import { Keyword } from "./keyword.model";
 import { User } from "./user.model";
 import { Company } from "./company.model";
@@ -11,7 +12,8 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
-  BelongsToMany
+  BelongsToMany,
+  HasMany
 } from "sequelize-typescript";
 
 type StoreLevel = "NORMAL" | "AFFILIATE" | "EXCELLENT";
@@ -92,6 +94,13 @@ export class Store extends Model<Store> {
 
   @BelongsTo(() => Company)
   company: Company;
+
+  @HasMany(() => StoreImage, {
+    as: "images",
+    foreignKey: "storeId",
+    constraints: false
+  })
+  images: StoreImage[];
 
   // @BelongsToMany(
   //   () => Keyword,

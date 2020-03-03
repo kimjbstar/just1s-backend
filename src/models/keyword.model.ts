@@ -39,6 +39,8 @@ export class Keyword extends Model<Keyword> {
     foreignKey: "parentId",
     constraints: false
   })
+  children: Keyword[];
+
   @ForeignKey(() => Category)
   @Column
   categoryId: number;

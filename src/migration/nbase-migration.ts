@@ -120,6 +120,7 @@ export class NbaseMigration<T extends Model> {
         // NOTHING TO DO
       } else if (
         column.type == "DATETIME" ||
+        column.type == "DATE" ||
         column.type.toString().indexOf("function Date") >= 0
       ) {
         transformPolicy[key] = value =>
@@ -182,12 +183,11 @@ export class NbaseMigration<T extends Model> {
       return _row;
     });
 
-    // console.log(rows);
-    await modelClass.bulkCreate(rows, {
+    const bulkCreateResult = await modelClass.bulkCreate(rows, {
       // updateOnDuplicate: ["fuelType"]
       ignoreDuplicates: true
     });
-    // console.log(a);
+    // console.log(bulkCreateResult);
 
     // progressBar.start(srcRows.length, 0);
 

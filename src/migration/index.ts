@@ -1,5 +1,17 @@
+import { ReviewReply } from "./../models/review_reply.model";
+import { ReviewImage } from "./../models/review_image.model";
+import { ReviewLike } from "./../models/review_like.model";
+import { ReviewHit } from "./../models/review_hit.model";
+import { ReviewCategory } from "./../models/review_category.model";
+import { PostReply } from "./../models/post_reply.model";
+import { PostHit } from "./../models/post_hit.model";
+import { PostImage } from "./../models/post_image.model";
+import { PostLike } from "./../models/post_like.model";
+import { Post } from "./../models/post.model";
+import { StoreLike } from "./../models/store_like.model";
+import { StoreImage } from "./../models/store_image.model";
 import { UserCar } from "./../models/user_car.model";
-import { StoreKeyword } from "./../models/store_keyword";
+import { StoreKeyword } from "./../models/store_keyword.model";
 import { User } from "./../models/user.model";
 import { Store } from "./../models/store.model";
 import { Keyword } from "./../models/keyword.model";
@@ -22,12 +34,18 @@ import {
   OldUserStatusMap,
   OldUserRoleMap,
   OldStoreKeywordStatusMap,
-  OldUserCarFuelTypeMap
+  OldUserCarFuelTypeMap,
+  OldStoreImageTypeMap,
+  OldPostTypeMap,
+  OldPostSubTypeMap,
+  OldPostStatusMap,
+  OldReviewCategoryData,
+  OldReviewTypeMap
 } from "./old-map";
 
 import * as inflection from "inflection";
 import * as path from "path";
-import { Category } from "@src/models/category.model";
+import { Review } from "@src/models/review.model";
 
 const bootstrap = async () => {
   const srcConnection = new Sequelize({
@@ -298,25 +316,266 @@ const bootstrap = async () => {
   // });
   // migrationStoreKeyword.run();
 
-  await UserCar.sync({ force: true });
-  const migrationUserCar = new NbaseMigration<UserCar>({
+  // const migrationUserCar = new NbaseMigration<UserCar>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: UserCar,
+  //   tableName: "usercars",
+  //   srcQuery: `SELECT usercars.*, IF(insr_expired_date != '', insr_expired_date, null) as insr_expired_date
+  //   FROM usercars
+  //   ORDER BY usercars.id`,
+  //   renamePolicy: {
+  //     model_id: "carModelId"
+  //   },
+  //   transformPolicy: {
+  //     fuel_type: value => OldUserCarFuelTypeMap[value]
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationUserCar.run();
+
+  // await StoreImage.sync({ force: true });
+  // const migrationStoreImage = new NbaseMigration<StoreImage>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: StoreImage,
+  //   tableName: "store_images",
+  //   srcQuery: `SELECT store_images.*
+  //   FROM store_images
+  //   ORDER BY store_images.id`,
+  //   renamePolicy: {
+  //     img_url: "url"
+  //   },
+  //   transformPolicy: {
+  //     type: value => OldStoreImageTypeMap[value]
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationStoreImage.run();
+
+  // await StoreLike.sync({ force: true });
+  // const migrationStoreLike = new NbaseMigration<StoreLike>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: StoreLike,
+  //   tableName: "store_likes",
+  //   srcQuery: `SELECT store_likes.*
+  //   FROM store_likes
+  //   ORDER BY store_likes.id`,
+  //   renamePolicy: {},
+  //   transformPolicy: {},
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationStoreLike.run();
+
+  // await Post.sync({ force: true });
+  // const migrationPost = new NbaseMigration<Post>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: Post,
+  //   tableName: "posts",
+  //   srcQuery: `SELECT posts.*
+  //   FROM posts
+  //   WHERE type in (500,901,902,903,904,910)
+  //   ORDER BY posts.id`,
+  //   renamePolicy: {
+  //     reviews_cnt: "reviewsCount",
+  //     replies_cnt: "repliesCount",
+  //     likes_cnt: "likesCount",
+  //     hits_cnt: "hitsCount",
+  //     mf_hits_cnt: "adminHitsCount",
+  //     board_id: "subType"
+  //   },
+  //   transformPolicy: {
+  //     type: value => OldPostTypeMap[value],
+  //     board_id: value => OldPostSubTypeMap[value],
+  //     status: value => OldPostStatusMap[value]
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationPost.run();
+
+  // await PostHit.sync({ force: true });
+  // const migrationPostHit = new NbaseMigration<PostHit>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: PostHit,
+  //   tableName: "post_hits",
+  //   srcQuery: `SELECT post_hits.*, IF(INSTR(post_hits.user_id, 'ip')>0, post_hits.user_id, '') as ip_address
+  //   FROM post_hits
+  //   JOIN posts ON posts.id = post_hits.post_id
+  //   WHERE posts.type in (500,901,902,903,904,910)
+  //   ORDER BY post_hits.id`,
+  //   renamePolicy: {},
+  //   transformPolicy: {
+  //     user_id: value => (value > 0 ? value : null)
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationPostHit.run();
+
+  // await PostLike.sync({ force: true });
+  // const migrationPostLike = new NbaseMigration<PostLike>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: PostLike,
+  //   tableName: "post_likes",
+  //   srcQuery: `SELECT post_likes.*
+  //   FROM post_likes
+  //   JOIN posts ON posts.id = post_likes.post_id
+  //   WHERE posts.type in (500,901,902,903,904,910)
+  //   ORDER BY post_likes.id`,
+  //   renamePolicy: {},
+  //   transformPolicy: {},
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationPostLike.run();
+
+  // await PostImage.sync({ force: true });
+  // const migrationPostImage = new NbaseMigration<PostImage>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: PostImage,
+  //   tableName: "post_images",
+  //   srcQuery: `SELECT post_images.*
+  //   FROM post_images
+  //   JOIN posts ON posts.id = post_images.post_id
+  //   WHERE posts.type in (500,901,902,903,904,910)
+  //   ORDER BY post_images.id`,
+  //   renamePolicy: {
+  //     img_url: "url"
+  //   },
+  //   transformPolicy: {},
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationPostImage.run();
+
+  // await PostReply.sync({ force: true });
+  // const migrationPostReply = new NbaseMigration<PostReply>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: PostReply,
+  //   tableName: "post_replies",
+  //   srcQuery: `SELECT post_replies.*
+  //   FROM post_replies
+  //   JOIN posts ON posts.id = post_replies.post_id
+  //   WHERE posts.type in (500,901,902,903,904,910)
+  //   ORDER BY post_replies.id`,
+  //   renamePolicy: {},
+  //   transformPolicy: {
+  //     parent_id: value => (value > 0 ? value : null)
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationPostReply.run();
+
+  // await ReviewCategory.sync({ force: true });
+  // await ReviewCategory.bulkCreate(OldReviewCategoryData);
+
+  // await Review.sync({ force: true });
+  // const migrationReview = new NbaseMigration<Review>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: Review,
+  //   tableName: "reviews",
+  //   srcQuery: `SELECT reviews.*
+  //   FROM reviews
+  //   WHERE hotdeal_id = 0
+  //   ORDER BY reviews.id`,
+  //   renamePolicy: {
+  //     replies_cnt: "repliesCount",
+  //     likes_cnt: "likesCount",
+  //     hits_cnt: "hitsCount",
+  //     mf_hits_cnt: "adminHitsCount",
+  //     model_id: "carModelId",
+  //     category_id: "reviewCategoryId"
+  //   },
+  //   transformPolicy: {
+  //     model_id: value => (value > 0 ? value : null),
+  //     type: value => OldReviewTypeMap[value]
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationReview.run();
+
+  // await ReviewHit.sync({ force: true });
+  // const migrationReviewHit = new NbaseMigration<ReviewHit>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: ReviewHit,
+  //   tableName: "review_hits",
+  //   srcQuery: `SELECT review_hits.*
+  //   FROM review_hits
+  //   ORDER BY review_hits.id`,
+  //   renamePolicy: {},
+  //   transformPolicy: {
+  //     user_id: value => (value > 0 ? value : null)
+  //   },
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationReviewHit.run();
+
+  await ReviewLike.sync({ force: true });
+  const migrationReviewLike = new NbaseMigration<ReviewLike>({
     srcConnection,
     dstConnection,
-    entityClass: UserCar,
-    tableName: "usercars",
-    srcQuery: `SELECT usercars.*, IF(insr_expired_date != '', insr_expired_date, null) as insr_expired_date
-    FROM usercars
-    ORDER BY usercars.id`,
+    entityClass: ReviewLike,
+    tableName: "review_likes",
+    srcQuery: `SELECT review_likes.*
+    FROM review_likes
+    ORDER BY review_likes.id`,
+    renamePolicy: {},
+    transformPolicy: {},
+    newFieldPolicy: {},
+    subtablePolicies: []
+  });
+  migrationReviewLike.run();
+
+  await ReviewImage.sync({ force: true });
+  const migrationReviewImage = new NbaseMigration<ReviewImage>({
+    srcConnection,
+    dstConnection,
+    entityClass: ReviewImage,
+    tableName: "review_images",
+    srcQuery: `SELECT review_images.*
+    FROM review_images
+    ORDER BY review_images.id`,
     renamePolicy: {
-      model_id: "carModelId"
+      img_url: "url"
     },
+    transformPolicy: {},
+    newFieldPolicy: {},
+    subtablePolicies: []
+  });
+  migrationReviewImage.run();
+
+  await ReviewReply.sync({ force: true });
+  const migrationReviewReply = new NbaseMigration<ReviewReply>({
+    srcConnection,
+    dstConnection,
+    entityClass: ReviewReply,
+    tableName: "review_replies",
+    srcQuery: `SELECT review_replies.*
+    FROM review_replies
+    ORDER BY review_replies.id`,
+    renamePolicy: {},
     transformPolicy: {
-      fuel_type: value => OldUserCarFuelTypeMap[value]
+      parent_id: value => (value > 0 ? value : null)
     },
     newFieldPolicy: {},
     subtablePolicies: []
   });
-  migrationUserCar.run();
+  migrationReviewReply.run();
 
   // end
 };
