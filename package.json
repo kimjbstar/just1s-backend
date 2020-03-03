@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migration": "ts-node -T -r tsconfig-paths/register src/migration/index.ts"
+    "migration": "ts-node -T -r tsconfig-paths/register src/migration/index.ts",
+    "practice": "ts-node -T -r tsconfig-paths/register src/practice.ts"
   },
   "author": "kimjbstar@gmail.com",
   "license": "ISC",

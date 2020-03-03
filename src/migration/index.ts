@@ -57,7 +57,6 @@ const bootstrap = async () => {
   });
 
   const modelPath = path.join(__dirname, "../models");
-
   const dstConnection = new Sequelize({
     database: "nbase",
     username: "kimjbstar",
