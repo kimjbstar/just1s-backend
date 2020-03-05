@@ -1,5 +1,3 @@
-import { ModelHelper } from "./common/model-helper";
-
 import { User } from "./models/user.model";
 import { StoreImage } from "./models/store_image.model";
 import { Category } from "./models/category.model";

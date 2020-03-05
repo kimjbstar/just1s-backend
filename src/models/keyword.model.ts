@@ -1,6 +1,3 @@
-import { Store } from "./store.model";
-import { Category } from "@src/models/category.model";
-
 import {
   Table,
   Column,
@@ -13,6 +10,7 @@ import {
   HasMany,
   BelongsToMany
 } from "sequelize-typescript";
+import { Category } from "./category.model";
 
 type KeywordStatus = "ENABLED" | "DISABLED";
 

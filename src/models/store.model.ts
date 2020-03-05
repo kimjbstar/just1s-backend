@@ -3,7 +3,7 @@ import { StoreImage } from "./store_image.model";
 import { Keyword } from "./keyword.model";
 import { User } from "./user.model";
 import { Company } from "./company.model";
-import { Category } from "@src/models/category.model";
+import { Category } from "./category.model";
 import { CarBrand } from "./car_brand.model";
 import {
   Table,
@@ -13,16 +13,16 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
-  BelongsToMany,
   HasMany,
   Scopes,
-  DefaultScope
+  DefaultScope,
+  ScopesOptionsGetter
 } from "sequelize-typescript";
 
 type StoreLevel = "NORMAL" | "AFFILIATE" | "EXCELLENT";
 type StoreStatus = "WATING" | "HIDDEN" | "NORMAL" | "DELETED";
 
-const StoreOrderbys = {
+const STORE_ORDERBYS = {
   ID__DESC: {
     cursor: "Store.id",
     orderBy: [["id", "desc"]]
@@ -30,10 +30,7 @@ const StoreOrderbys = {
   // distance
 };
 
-@DefaultScope(() => ({
-  include: [User, Category]
-}))
-@Scopes(() => ({
+export const STORE_SCOPES: ScopesOptionsGetter = () => ({
   level: value => {
     return {
       where: { level: value }
@@ -57,6 +54,15 @@ const StoreOrderbys = {
   phoneNumber: value => {
     return {
       where: { phoneNumber: value }
+    };
+  },
+  name__like: value => {
+    return {
+      where: {
+        name: {
+          [Op.like]: `%${value}%`
+        }
+      }
     };
   },
   level__lte: value => {
@@ -92,16 +98,16 @@ const StoreOrderbys = {
       include: [{ model: User, where: { status: value } }]
     };
   },
-  category_name: value => {
+  category__name: value => {
     return {
       include: [{ model: Category, where: { name: value } }]
     };
   },
   order: value => {
-    if (StoreOrderbys[value] == undefined) {
+    if (STORE_ORDERBYS[value] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = StoreOrderbys[value];
+    const { cursor, orderBy } = STORE_ORDERBYS[value];
     return {
       attributes: {
         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -110,17 +116,21 @@ const StoreOrderbys = {
     };
   },
   after: (value, orderbyKey) => {
-    if (StoreOrderbys[orderbyKey] == undefined) {
+    if (STORE_ORDERBYS[orderbyKey] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = StoreOrderbys[orderbyKey];
+    const { cursor, orderBy } = STORE_ORDERBYS[orderbyKey];
     return {
       where: {
         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
       }
     };
   }
+});
+@DefaultScope(() => ({
+  include: [User, Category]
 }))
+@Scopes(STORE_SCOPES)
 @Table
 export class Store extends Model<Store> {
   @Default("NORMAL")
