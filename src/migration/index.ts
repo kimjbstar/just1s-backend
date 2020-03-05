@@ -524,39 +524,39 @@ const bootstrap = async () => {
   // });
   // migrationReviewHit.run();
 
-  await ReviewLike.sync({ force: true });
-  const migrationReviewLike = new NbaseMigration<ReviewLike>({
-    srcConnection,
-    dstConnection,
-    entityClass: ReviewLike,
-    tableName: "review_likes",
-    srcQuery: `SELECT review_likes.*
-    FROM review_likes
-    ORDER BY review_likes.id`,
-    renamePolicy: {},
-    transformPolicy: {},
-    newFieldPolicy: {},
-    subtablePolicies: []
-  });
-  migrationReviewLike.run();
+  // await ReviewLike.sync({ force: true });
+  // const migrationReviewLike = new NbaseMigration<ReviewLike>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: ReviewLike,
+  //   tableName: "review_likes",
+  //   srcQuery: `SELECT review_likes.*
+  //   FROM review_likes
+  //   ORDER BY review_likes.id`,
+  //   renamePolicy: {},
+  //   transformPolicy: {},
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationReviewLike.run();
 
-  await ReviewImage.sync({ force: true });
-  const migrationReviewImage = new NbaseMigration<ReviewImage>({
-    srcConnection,
-    dstConnection,
-    entityClass: ReviewImage,
-    tableName: "review_images",
-    srcQuery: `SELECT review_images.*
-    FROM review_images
-    ORDER BY review_images.id`,
-    renamePolicy: {
-      img_url: "url"
-    },
-    transformPolicy: {},
-    newFieldPolicy: {},
-    subtablePolicies: []
-  });
-  migrationReviewImage.run();
+  // await ReviewImage.sync({ force: true });
+  // const migrationReviewImage = new NbaseMigration<ReviewImage>({
+  //   srcConnection,
+  //   dstConnection,
+  //   entityClass: ReviewImage,
+  //   tableName: "review_images",
+  //   srcQuery: `SELECT review_images.*
+  //   FROM review_images
+  //   ORDER BY review_images.id`,
+  //   renamePolicy: {
+  //     img_url: "url"
+  //   },
+  //   transformPolicy: {},
+  //   newFieldPolicy: {},
+  //   subtablePolicies: []
+  // });
+  // migrationReviewImage.run();
 
   await ReviewReply.sync({ force: true });
   const migrationReviewReply = new NbaseMigration<ReviewReply>({

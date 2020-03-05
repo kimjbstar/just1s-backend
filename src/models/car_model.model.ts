@@ -1,5 +1,6 @@
-import { CarModelgroup } from "./car_modelgroup.model";
 import { CarBrand } from "./car_brand.model";
+
+import { CarModelgroup } from "./car_modelgroup.model";
 import {
   Table,
   Column,
