@@ -6,11 +6,12 @@ import * as inflection from "inflection";
 import * as path from "path";
 import * as dotenv from "dotenv";
 import * as morgan from "morgan";
+import { setPassportConfig } from "./library/passport";
 import logger from "./common/winston";
-
+import * as passport from "passport";
+import * as jwt from "jsonwebtoken";
 require("express-async-errors");
 
-const PORT = 3000;
 let sequelize: Sequelize;
 
 const bootstrap = async () => {
@@ -20,7 +21,7 @@ const bootstrap = async () => {
     createServer();
   } catch (err) {
     logger.error("error in create Server");
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -55,32 +56,47 @@ const setConnection = async () => {
   await sequelize.authenticate();
 };
 
-const createServer = () => {
+const errorHandler = (err: Error, req, res, next) => {
+  if (err instanceof NBaseError) {
+    res.status(err.statusCode).send(err.toJSON());
+  } else {
+    res.status(500).send({
+      status: 500,
+      message: err.message,
+      name: err.name,
+      stack: err.stack
+    });
+  }
+  next();
+};
+
+const createServer = async () => {
   logger.info("set Express Server");
   // load all scopes here ??
   const app = express();
+  const PORT = process.env.EXPRESS_PORT;
   app.listen(PORT, function() {
-    // console.clear();
     logger.info(`listening on port ${PORT}...`);
   });
+
+  app.use(passport.initialize());
+  await setPassportConfig(passport);
+  app.use(morgan("dev"));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 
   app.get("/", (req, res) => {
     res.send("Hello World!");
   });
 
-  const errorHandler = (err: Error, req, res, next) => {
-    if (err instanceof NBaseError) {
-      res.status(err.statusCode).send(err.toJSON());
-    } else {
-      res.status(500).send({
-        status: 500,
-        message: err.message,
-        name: err.name,
-        stack: err.stack
-      });
-    }
-    next();
-  };
+  app.use((req, res, next) => {
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      res.locals.user = user !== false ? user : null;
+      res.locals.isAuthenticated = user !== false;
+      res.locals.tokenFailMessage = info ? info.message : "OK";
+      return next();
+    })(req, res, next);
+  });
 
   app.get("/stores", async (req, res) => {
     const availableScopes = Object.keys(STORE_SCOPES());
@@ -117,13 +133,43 @@ const createServer = () => {
     res.send(result);
   });
 
+  // TODO : post로 변경
+  app.get("/auth/login", async (req, res, next) => {
+    passport.authenticate("local", { session: false }, (err, user, info) => {
+      if (err || !user) {
+        return res.status(400).json({
+          message: "Error occured in authenticate",
+          user: user
+        });
+      }
+      req.login(user, { session: false }, err => {
+        if (err) {
+          res.send(err);
+        }
+        const token = jwt.sign(user, process.env.JWT_SECRET, {
+          expiresIn: "1d"
+        });
+        res.cookie("jwt", token);
+        return res.json({ user, token });
+      });
+      return {};
+    })(req, res);
+  });
+
+  app.get("/auth/whoami", async (req, res, next) => {
+    if (res.locals.isAuthenticated === false) {
+      next(new NBaseError(401, "token 인증 실패", res.locals.tokenFailMessage));
+      return;
+    }
+    res.send({
+      user: res.locals.user.get()
+    });
+  });
+
   app.get("*", function(req, res, next) {
     next(new NBaseError(404, "page not found", "url을 확인해주세요"));
   });
 
-  // app.use 1...
-  // app.use 2...
-  // // log or something, function moduleize
   app.use((err, req, res, next) => {
     errorHandler(err, req, res, next);
   });
