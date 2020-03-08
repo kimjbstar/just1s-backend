@@ -5,6 +5,9 @@ import * as express from "express";
 import * as inflection from "inflection";
 import * as path from "path";
 import * as dotenv from "dotenv";
+import * as morgan from "morgan";
+import logger from "./common/winston";
+
 require("express-async-errors");
 
 const PORT = 3000;
@@ -16,13 +19,13 @@ const bootstrap = async () => {
     await setConnection();
     createServer();
   } catch (err) {
-    console.log("[nBase] : 서버 생성 중 에러발생");
+    logger.error("error in create Server");
     console.log(err);
   }
 };
 
 const setEnvrionment = () => {
-  console.log("[nBase] : set env..");
+  logger.info("set Environment");
   const result = dotenv.config({
     path: path.resolve(__dirname, `../config/${process.env.NODE_ENV}.env`)
   });
@@ -32,7 +35,7 @@ const setEnvrionment = () => {
 };
 
 const setConnection = async () => {
-  console.log("[nBase] : set conn..");
+  logger.info("set Sequelize connection");
   const modelPath = path.join(__dirname, "./models");
 
   sequelize = new Sequelize({
@@ -53,12 +56,12 @@ const setConnection = async () => {
 };
 
 const createServer = () => {
-  console.log("[nBase] : set server..");
+  logger.info("set Express Server");
   // load all scopes here ??
   const app = express();
   app.listen(PORT, function() {
-    console.clear();
-    console.log(`[nBase] : listening on port ${PORT}...`);
+    // console.clear();
+    logger.info(`listening on port ${PORT}...`);
   });
 
   app.get("/", (req, res) => {
@@ -107,7 +110,7 @@ const createServer = () => {
       next(new NBaseError(422, "data not found", "id를 확인해주세요"));
       return;
     }
-    console.log(store);
+    logger.info(store);
     const result = {
       store: store.get({ plain: true })
     };
