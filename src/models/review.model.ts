@@ -1,7 +1,8 @@
+import { Op, Sequelize } from "sequelize";
 import { ReviewCategory } from "./review_category.model";
 import { User } from "./user.model";
-import { Keyword } from "./keyword.model";
 import { Store } from "./store.model";
+import { CarModel } from "./car_model.model";
 
 import {
   Table,
@@ -10,14 +11,80 @@ import {
   Default,
   DataType,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  ScopesOptionsGetter,
+  DefaultScope,
+  Scopes
 } from "sequelize-typescript";
-import { CarModel } from "./car_model.model";
 
 type ReviewStatus = "HIDDEN" | "NORMAL";
-
 type ReviewType = "CUSTOMER" | "STORE";
 
+const REVIEW_ORDERBYS = {
+  ID__DESC: {
+    cursor: "Review.id",
+    orderBy: [["id", "desc"]]
+  }
+};
+
+export const ReviewScopes: ScopesOptionsGetter = () => ({
+  status: value => {
+    return {
+      where: { status: value }
+    };
+  },
+  type: value => {
+    return {
+      where: { type: value }
+    };
+  },
+  title__like: value => {
+    return {
+      where: {
+        title: {
+          [Op.like]: `%${value}%`
+        }
+      }
+    };
+  },
+  user__status: value => {
+    return {
+      include: [{ model: User, where: { status: value } }]
+    };
+  },
+  user__name: value => {
+    return {
+      include: [{ model: User, where: { name: value } }]
+    };
+  },
+  order: value => {
+    if (REVIEW_ORDERBYS[value] == undefined) {
+      return {};
+    }
+    const { cursor, orderBy } = REVIEW_ORDERBYS[value];
+    return {
+      attributes: {
+        include: [[Sequelize.literal(cursor), "cursor"]]
+      },
+      order: orderBy
+    };
+  },
+  after: (value, orderbyKey) => {
+    if (REVIEW_ORDERBYS[orderbyKey] == undefined) {
+      return {};
+    }
+    const { cursor, orderBy } = REVIEW_ORDERBYS[orderbyKey];
+    return {
+      where: {
+        [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
+      }
+    };
+  }
+});
+@DefaultScope(() => ({
+  include: [ReviewCategory, Store, User]
+}))
+@Scopes(ReviewScopes)
 @Table
 export class Review extends Model<Review> {
   @Default("CUSTOMER")

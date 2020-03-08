@@ -40,7 +40,8 @@ import {
   OldPostSubTypeMap,
   OldPostStatusMap,
   OldReviewCategoryData,
-  OldReviewTypeMap
+  OldReviewTypeMap,
+  OldReviewStatusMap
 } from "./old-map";
 
 import * as inflection from "inflection";
@@ -499,6 +500,7 @@ const bootstrap = async () => {
   //   },
   //   transformPolicy: {
   //     model_id: value => (value > 0 ? value : null),
+  //     status: value => OldReviewStatusMap[value];
   //     type: value => OldReviewTypeMap[value]
   //   },
   //   newFieldPolicy: {},

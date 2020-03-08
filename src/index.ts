@@ -1,6 +1,7 @@
-import { NBaseError } from "./common/nbase-error";
 import { Sequelize } from "sequelize-typescript";
-import { Store, STORE_SCOPES } from "./models/store.model";
+import { NBaseError } from "./common/nbase-error";
+import { Store, StoreScopes } from "./models/store.model";
+import { Review, ReviewScopes } from "./models/review.model";
 import * as express from "express";
 import * as inflection from "inflection";
 import * as path from "path";
@@ -66,6 +67,7 @@ const errorHandler = (err: Error, req, res, next) => {
       name: err.name,
       stack: err.stack
     });
+    logger.error(err.stack);
   }
   next();
 };
@@ -85,10 +87,6 @@ const createServer = async () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
-  app.get("/", (req, res) => {
-    res.send("Hello World!");
-  });
-
   app.use((req, res, next) => {
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
       res.locals.user = user !== false ? user : null;
@@ -98,8 +96,12 @@ const createServer = async () => {
     })(req, res, next);
   });
 
+  app.get("/", (req, res) => {
+    res.send("Hello World!");
+  });
+
   app.get("/stores", async (req, res) => {
-    const availableScopes = Object.keys(STORE_SCOPES());
+    const availableScopes = Object.keys(StoreScopes());
     const scopes = Object.keys(req.query)
       .filter(scope => !["offset", "limit"].includes(scope))
       .filter(scope => availableScopes.includes(scope))
@@ -129,6 +131,43 @@ const createServer = async () => {
     logger.info(store);
     const result = {
       store: store.get({ plain: true })
+    };
+    res.send(result);
+  });
+
+  app.get("/reviews", async (req, res) => {
+    const availableScopes = Object.keys(ReviewScopes());
+    const scopes = Object.keys(req.query)
+      .filter(scope => !["offset", "limit"].includes(scope))
+      .filter(scope => {
+        return availableScopes.includes(scope);
+      })
+      .reduce((result, key, index) => {
+        result.push({
+          method: [key, req.query[key]]
+        });
+        return result;
+      }, []);
+
+    const reviews: Review[] = await Review.scope(scopes).findAll({
+      offset: Number(req.query.offset) || 0,
+      limit: Number(req.query.limit) || 5
+    });
+    const result = {
+      reviews: reviews.map(review => review.get({ plain: true }))
+    };
+    res.send(result);
+  });
+
+  app.get("/reviews/:id", async (req, res, next) => {
+    const review: Review = await Review.findByPk(req.params.id);
+    if (review == null) {
+      next(new NBaseError(422, "data not found", "id를 확인해주세요"));
+      return;
+    }
+    logger.info(review);
+    const result = {
+      review: review.get({ plain: true })
     };
     res.send(result);
   });

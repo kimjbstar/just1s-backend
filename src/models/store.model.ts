@@ -1,10 +1,8 @@
 import { Op, Sequelize } from "sequelize";
 import { StoreImage } from "./store_image.model";
-import { Keyword } from "./keyword.model";
 import { User } from "./user.model";
 import { Company } from "./company.model";
 import { Category } from "./category.model";
-import { CarBrand } from "./car_brand.model";
 import {
   Table,
   Column,
@@ -30,7 +28,7 @@ const STORE_ORDERBYS = {
   // distance
 };
 
-export const STORE_SCOPES: ScopesOptionsGetter = () => ({
+export const StoreScopes: ScopesOptionsGetter = () => ({
   level: value => {
     return {
       where: { level: value }
@@ -130,7 +128,7 @@ export const STORE_SCOPES: ScopesOptionsGetter = () => ({
 @DefaultScope(() => ({
   include: [User, Category]
 }))
-@Scopes(STORE_SCOPES)
+@Scopes(StoreScopes)
 @Table
 export class Store extends Model<Store> {
   @Default("NORMAL")
