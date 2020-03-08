@@ -1,32 +1,46 @@
+import { NBaseError } from "./common/nbase-error";
 import { Sequelize } from "sequelize-typescript";
 import { Store, STORE_SCOPES } from "./models/store.model";
 import * as express from "express";
-import { sequelize } from "./sequelize";
-import * as figlet from "figlet";
 import * as inflection from "inflection";
 import * as path from "path";
+import * as dotenv from "dotenv";
+require("express-async-errors");
 
 const PORT = 3000;
+let sequelize: Sequelize;
 
 const bootstrap = async () => {
-  const WELCOME_TEXT = "welcome to nBase";
-  figlet(WELCOME_TEXT, (err, data) => {
-    console.log(!err ? data : WELCOME_TEXT);
-
-    setConnection();
+  try {
+    setEnvrionment();
+    await setConnection();
     createServer();
-  });
+  } catch (err) {
+    console.log("[nBase] : 서버 생성 중 에러발생");
+    console.log(err);
+  }
 };
 
-const setConnection = () => {
+const setEnvrionment = () => {
+  console.log("[nBase] : set env..");
+  const result = dotenv.config({
+    path: path.resolve(__dirname, `../config/${process.env.NODE_ENV}.env`)
+  });
+  if (result.error) {
+    throw result.error;
+  }
+};
+
+const setConnection = async () => {
+  console.log("[nBase] : set conn..");
   const modelPath = path.join(__dirname, "./models");
 
-  const dstConnection = new Sequelize({
-    database: "nbase",
-    username: "kimjbstar",
-    password: "12091457",
+  sequelize = new Sequelize({
+    database: process.env.SEQUELIZE_DATABASE,
+    username: process.env.SEQUELIZE_USERNAME,
+    password: process.env.SEQUELIZE_PASSWORD,
+    host: process.env.SEQUELIZE_HOST,
     dialect: "mysql",
-    host: "localhost",
     models: [modelPath],
     modelMatch: (_filename, _member) => {
       const filename = inflection.camelize(_filename.replace(".model", ""));
@@ -35,19 +49,35 @@ const setConnection = () => {
     },
     timezone: "+09:00"
   });
-  // sequelize.authenticate()
+  await sequelize.authenticate();
 };
 
 const createServer = () => {
+  console.log("[nBase] : set server..");
   // load all scopes here ??
   const app = express();
   app.listen(PORT, function() {
-    console.log(`Example app listening on port ${PORT}!`);
+    console.clear();
+    console.log(`[nBase] : listening on port ${PORT}...`);
   });
 
   app.get("/", (req, res) => {
     res.send("Hello World!");
   });
+
+  const errorHandler = (err: Error, req, res, next) => {
+    if (err instanceof NBaseError) {
+      res.status(err.statusCode).send(err.toJSON());
+    } else {
+      res.status(500).send({
+        status: 500,
+        message: err.message,
+        name: err.name,
+        stack: err.stack
+      });
+    }
+    next();
+  };
 
   app.get("/stores", async (req, res) => {
     const availableScopes = Object.keys(STORE_SCOPES());
@@ -74,8 +104,7 @@ const createServer = () => {
   app.get("/stores/:id", async (req, res, next) => {
     const store: Store = await Store.findByPk(req.params.id);
     if (store == null) {
-      // TODO : error를 타입별로 관리하고 싶으면 상속
-      next(new Error("store가 null이 나왔어요..."));
+      next(new NBaseError(422, "data not found", "id를 확인해주세요"));
       return;
     }
     console.log(store);
@@ -86,24 +115,14 @@ const createServer = () => {
   });
 
   app.get("*", function(req, res, next) {
-    // res.status(404).send("what???");
-    // TODO : next -> globalHandler에 statusCode 전달 가능하도록 처리
-    next(new Error("what??"));
+    next(new NBaseError(404, "page not found", "url을 확인해주세요"));
   });
 
   // app.use 1...
   // app.use 2...
   // // log or something, function moduleize
-  // this is error handler(4 params)
   app.use((err, req, res, next) => {
-    res.status(500).send({
-      status: 500,
-      message: err.message,
-      name: err.name,
-      type: "internal"
-    });
-
-    next();
+    errorHandler(err, req, res, next);
   });
 };
 bootstrap();
