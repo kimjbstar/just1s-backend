@@ -1,5 +1,5 @@
 import { NBaseError } from "./../common/nbase-error";
-import logger from "../common/winston";
+import logger from "../library/winston";
 import * as passport from "passport";
 var express = require("express");
 var authRouter = express.Router();

@@ -5,7 +5,7 @@ require("express-async-errors");
 const reviewsRouter = express.Router();
 
 reviewsRouter.get("/", async (req, res) => {
-  const reviews: object[] = await ReviewService.find(req.query);
+  const reviews: object[] = await ReviewService.find(req);
   const result = {
     reviews: reviews
   };

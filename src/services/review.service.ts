@@ -1,10 +1,10 @@
 import { NBaseError } from "./../common/nbase-error";
 import { ReviewScopes, Review } from "./../models/review.model";
-import { getFindScopesFromQuery } from "./../common/util";
+import { getFindScopesFromRequest } from "./../common/util";
 export default class ReviewService {
-  static async find(query): Promise<object[]> {
-    const { scopes, offset, limit } = getFindScopesFromQuery(
-      query,
+  static async find(req): Promise<object[]> {
+    const { scopes, offset, limit } = getFindScopesFromRequest(
+      req,
       Object.keys(ReviewScopes())
     );
     const reviews: Review[] = await Review.scope(scopes).findAll({

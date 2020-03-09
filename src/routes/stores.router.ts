@@ -5,7 +5,7 @@ require("express-async-errors");
 const storesRouter = express.Router();
 
 storesRouter.get("/", async (req, res) => {
-  const stores: object[] = await StoreService.find(req.query);
+  const stores: object[] = await StoreService.find(req);
   const result = {
     stores: stores
   };

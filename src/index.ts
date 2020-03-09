@@ -1,16 +1,16 @@
 import { Sequelize } from "sequelize-typescript";
 import { NBaseError } from "./common/nbase-error";
 import { setPassportConfig } from "./library/passport";
-import logger from "./common/winston";
+import logger from "./library/winston";
 import * as express from "express";
 import * as inflection from "inflection";
 import * as path from "path";
 import * as dotenv from "dotenv";
 import * as morgan from "morgan";
 import * as passport from "passport";
-import storesRouter from "./routes/stores";
-import reviewsRouter from "./routes/reviews";
-import authRouter from "./routes/auth";
+import storesRouter from "./routes/stores.router";
+import reviewsRouter from "./routes/reviews.router";
+import authRouter from "./routes/auth.router";
 require("express-async-errors");
 
 let sequelize: Sequelize;
