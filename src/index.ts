@@ -55,6 +55,7 @@ const setConnection = async () => {
     timezone: "+09:00"
   });
   await sequelize.authenticate();
+  // sequelize.sync({ alter: true });
 };
 
 const errorHandler = (err: Error, req, res, next) => {

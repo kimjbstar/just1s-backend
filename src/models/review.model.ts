@@ -14,8 +14,15 @@ import {
   BelongsTo,
   ScopesOptionsGetter,
   DefaultScope,
-  Scopes
+  Scopes,
+  NotEmpty,
+  IsUrl,
+  HasMany,
+  IsNumeric,
+  NotNull,
+  AllowNull
 } from "sequelize-typescript";
+import { ReviewImage } from "./review_image.model";
 
 type ReviewStatus = "HIDDEN" | "NORMAL";
 type ReviewType = "CUSTOMER" | "STORE";
@@ -87,40 +94,69 @@ export const ReviewScopes: ScopesOptionsGetter = () => ({
 @Scopes(ReviewScopes)
 @Table
 export class Review extends Model<Review> {
+  @AllowNull(false)
   @Default("CUSTOMER")
   @Column(DataType.ENUM("CUSTOMER", "STORE"))
   type: ReviewType;
 
+  @NotEmpty
+  @AllowNull(false)
+  @Default("")
   @Column
   title: string;
 
+  @AllowNull(false)
+  @Default("")
   @Column
   content: string;
 
+  @IsNumeric
+  @AllowNull(false)
+  @Default(0)
   @Column
   workingHours: number;
 
+  @IsNumeric
+  @AllowNull(false)
+  @Default(0)
   @Column
   price: number;
 
+  @AllowNull(false)
+  @Default("")
   @Column
   beforeImgUrl: string;
 
+  @AllowNull(false)
+  @Default("")
   @Column
   repImgUrl: string;
 
+  @IsNumeric
+  @AllowNull(false)
+  @Default(0)
   @Column
   repliesCount: number;
 
+  @IsNumeric
+  @AllowNull(false)
+  @Default(0)
   @Column
   likesCount: number;
 
+  @IsNumeric
+  @AllowNull(false)
+  @Default(0)
   @Column
   hitsCount: number;
 
+  @IsNumeric
+  @AllowNull(false)
+  @Default(0)
   @Column
   adminHitsCount: number;
 
+  @AllowNull(false)
   @Default("NORMAL")
   @Column(DataType.ENUM("NORMAL", "HIDDEN"))
   status: ReviewStatus;
@@ -148,4 +184,11 @@ export class Review extends Model<Review> {
 
   @BelongsTo(() => Store)
   store: Store;
+
+  @HasMany(() => ReviewImage, {
+    as: "images",
+    foreignKey: "reviewId",
+    constraints: false
+  })
+  images: ReviewImage[];
 }
