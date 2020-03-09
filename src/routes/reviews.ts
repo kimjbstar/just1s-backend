@@ -1,42 +1,21 @@
-import { ReviewScopes, Review } from "./../models/review.model";
-import { NBaseError } from "./../common/nbase-error";
-import logger from "../common/winston";
 import * as express from "express";
+import ReviewService from "../services/review.service";
+require("express-async-errors");
+
 const reviewsRouter = express.Router();
 
 reviewsRouter.get("/", async (req, res) => {
-  const availableScopes = Object.keys(ReviewScopes());
-  const scopes = Object.keys(req.query)
-    .filter(scope => !["offset", "limit"].includes(scope))
-    .filter(scope => {
-      return availableScopes.includes(scope);
-    })
-    .reduce((result, key, index) => {
-      result.push({
-        method: [key, req.query[key]]
-      });
-      return result;
-    }, []);
-
-  const reviews: Review[] = await Review.scope(scopes).findAll({
-    offset: Number(req.query.offset) || 0,
-    limit: Number(req.query.limit) || 5
-  });
+  const reviews: object[] = await ReviewService.find(req.query);
   const result = {
-    reviews: reviews.map(review => review.get({ plain: true }))
+    reviews: reviews
   };
   res.send(result);
 });
 
 reviewsRouter.get("/:id", async (req, res, next) => {
-  const review: Review = await Review.findByPk(req.params.id);
-  if (review == null) {
-    next(new NBaseError(422, "data not found", "id를 확인해주세요"));
-    return;
-  }
-  logger.info(review);
+  const review: Object = await ReviewService.findByPk(req.params.id);
   const result = {
-    review: review.get({ plain: true })
+    review: review
   };
   res.send(result);
 });
