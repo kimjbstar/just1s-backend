@@ -21,7 +21,6 @@ authRouter.get("/login", async (req, res, next) => {
       const token = jwt.sign(user, process.env.JWT_SECRET, {
         expiresIn: "1d"
       });
-      res.cookie("jwt", token);
       return res.json({ user, token });
     });
     return {};
