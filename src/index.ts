@@ -47,6 +47,7 @@ const setConnection = async () => {
     username: process.env.SEQUELIZE_USERNAME,
     password: process.env.SEQUELIZE_PASSWORD,
     host: process.env.SEQUELIZE_HOST,
+    port: Number(process.env.SEQUELIZE_PORT),
     dialect: "mysql",
     models: [modelPath],
     modelMatch: (_filename, _member) => {
