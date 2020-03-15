@@ -40,6 +40,8 @@ const setConnection = async () => {
   logger.info("set Sequelize connection");
   const modelPath = path.join(__dirname, "./models");
 
+  console.log(process.env);
+
   sequelize = new Sequelize({
     database: process.env.SEQUELIZE_DATABASE,
     username: process.env.SEQUELIZE_USERNAME,

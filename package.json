@@ -9,6 +9,10 @@
     "migration": "ts-node -T -r tsconfig-paths/register src/migration/index.ts",
     "practice": "ts-node -T -r tsconfig-paths/register src/practice.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kimjbstar/nbase.git"
+  },
   "author": "kimjbstar@gmail.com",
   "license": "ISC",
   "dependencies": {
@@ -31,6 +35,7 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^5.21.5",
+    "sequelize-auto-migrations": "^1.0.3",
     "sequelize-typescript": "^1.1.0",
     "ts-node": "^8.6.2",
     "typedi": "^0.8.0",
