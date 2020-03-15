@@ -35,7 +35,6 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^5.21.5",
-    "sequelize-auto-migrations": "^1.0.3",
     "sequelize-typescript": "^1.1.0",
     "ts-node": "^8.6.2",
     "typedi": "^0.8.0",
@@ -48,6 +47,7 @@
     "@types/inflection": "^1.5.28",
     "@types/node": "^13.7.6",
     "@types/validator": "^12.0.1",
+    "sequelize-cli": "^5.5.1",
     "tsconfig-paths": "^3.9.0"
   }
 }
