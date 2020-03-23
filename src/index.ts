@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize-typescript";
 import { NBaseError } from "./common/nbase-error";
+import { setConnection } from "./common/sequelize";
 import { setPassportConfig } from "./library/passport";
-import logger from "./library/winston";
+import logger from "@src/library/winston";
 import * as express from "express";
-import * as inflection from "inflection";
 import * as path from "path";
 import * as dotenv from "dotenv";
 import * as morgan from "morgan";
@@ -11,14 +11,16 @@ import * as passport from "passport";
 import storesRouter from "./routes/stores.router";
 import reviewsRouter from "./routes/reviews.router";
 import authRouter from "./routes/auth.router";
+import * as child_process from "child_process";
 require("express-async-errors");
 
 let sequelize: Sequelize;
 
 const bootstrap = async () => {
   try {
-    setEnvrionment();
-    await setConnection();
+    // setEnvrionment();
+    sequelize = await setConnection();
+    // sequelize.sync({ alter: true });
     createServer();
   } catch (err) {
     logger.error("error in create Server");
@@ -26,46 +28,23 @@ const bootstrap = async () => {
   }
 };
 
-const setEnvrionment = () => {
-  logger.info("set Environment");
-  const result = dotenv.config({
-    path: path.resolve(__dirname, `../config/${process.env.NODE_ENV}.env`)
-  });
-  if (result.error) {
-    throw result.error;
-  }
-};
-
-const setConnection = async () => {
-  logger.info("set Sequelize connection");
-  const modelPath = path.join(__dirname, "./models");
-
-  console.log(process.env);
-
-  sequelize = new Sequelize({
-    database: process.env.SEQUELIZE_DATABASE,
-    username: process.env.SEQUELIZE_USERNAME,
-    password: process.env.SEQUELIZE_PASSWORD,
-    host: process.env.SEQUELIZE_HOST,
-    port: Number(process.env.SEQUELIZE_PORT),
-    dialect: "mysql",
-    models: [modelPath],
-    modelMatch: (_filename, _member) => {
-      const filename = inflection.camelize(_filename.replace(".model", ""));
-      const member = _member;
-      return filename === member;
-    },
-    timezone: "+09:00"
-  });
-  await sequelize.authenticate();
-  // sequelize.sync({ alter: true });
-};
+// const setEnvrionment = () => {
+//   logger.info("set Environment");
+//   const env = process.env.NODE_ENV || "development";
+//   // const env = "development";
+//   const result = dotenv.config({
+//     path: path.resolve(__dirname, `../config/${env}.env`)
+//   });
+//   if (result.error) {
+//     throw result.error;
+//   }
+// };
 
 const errorHandler = (err: Error, req, res, next) => {
   if (err instanceof NBaseError) {
-    res.status(err.statusCode).send(err.toJSON());
+    res.status(err.statusCode).json(err.toJSON());
   } else {
-    res.status(500).send({
+    res.status(500).json({
       status: 500,
       message: err.message,
       name: err.name,
@@ -100,7 +79,20 @@ const createServer = async () => {
   });
 
   app.get("/", (req, res) => {
-    res.send("Hello World!");
+    res.send("Hello World ! 8888");
+  });
+
+  app.get("/whoami", (req: express.Request, res: express.Response) => {
+    const execSync = child_process.execSync;
+    const code = execSync("node -v");
+    const whoami = execSync("whoami");
+    const hostname = execSync("hostname");
+    const result = {
+      code: code.toString().replace("\n", ""),
+      whoami: whoami.toString().replace("\n", ""),
+      hostname: hostname.toString().replace("\n", "")
+    };
+    res.json(result);
   });
 
   app.use("/stores", storesRouter);

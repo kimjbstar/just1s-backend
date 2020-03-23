@@ -21,7 +21,7 @@ storesRouter.get("/", async (req: express.Request, res: express.Response) => {
   const result = {
     stores: stores
   };
-  res.send(result);
+  res.json(result);
 });
 
 storesRouter.get(
@@ -31,7 +31,7 @@ storesRouter.get(
     const result = {
       store: store
     };
-    res.send(result);
+    res.json(result);
   }
 );
 
@@ -42,7 +42,7 @@ storesRouter.post(
     const result = {
       store: store
     };
-    res.send(result);
+    res.json(result);
   }
 );
 
@@ -51,7 +51,7 @@ storesRouter.put(
   async (req: express.Request, res: express.Response, next) => {
     await res.locals.modelService.update(req);
     const result = {};
-    res.send(result);
+    res.json(result);
   }
 );
 
@@ -60,7 +60,7 @@ storesRouter.delete(
   async (req: express.Request, res: express.Response, next) => {
     await res.locals.modelService.destroy(req);
     const result = {};
-    res.send(result);
+    res.json(result);
   }
 );
 

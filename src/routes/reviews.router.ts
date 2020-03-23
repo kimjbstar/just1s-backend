@@ -21,7 +21,7 @@ reviewsRouter.get("/", async (req: express.Request, res: express.Response) => {
   const result = {
     reviews: reviews
   };
-  res.send(result);
+  res.json(result);
 });
 
 reviewsRouter.get(
@@ -31,7 +31,7 @@ reviewsRouter.get(
     const result = {
       review: review
     };
-    res.send(result);
+    res.json(result);
   }
 );
 
@@ -42,7 +42,7 @@ reviewsRouter.post(
     const result = {
       review: review
     };
-    res.send(result);
+    res.json(result);
   }
 );
 
@@ -51,7 +51,7 @@ reviewsRouter.put(
   async (req: express.Request, res: express.Response, next) => {
     await res.locals.modelService.update(req);
     const result = {};
-    res.send(result);
+    res.json(result);
   }
 );
 
@@ -60,7 +60,7 @@ reviewsRouter.delete(
   async (req: express.Request, res: express.Response, next) => {
     await res.locals.modelService.destroy(req);
     const result = {};
-    res.send(result);
+    res.json(result);
   }
 );
 

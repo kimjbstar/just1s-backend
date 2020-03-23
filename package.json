@@ -7,7 +7,12 @@
     "serve": "node -r ts-node/register -r tsconfig-paths/register dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migration": "ts-node -T -r tsconfig-paths/register src/migration/index.ts",
-    "practice": "ts-node -T -r tsconfig-paths/register src/practice.ts"
+    "practice": "ts-node -T -r tsconfig-paths/register src/practice.ts",
+    "tsc": "tsc",
+    "docker-compose:local": "docker-compose -f docker-compose.local.yml build --no-cache && docker-compose -f docker-compose.local.yml up",
+    "docker:build": "docker build -t kimjbstar/nbase -f Dockerfile-web .",
+    "docker:push": "docker push kimjbstar/nbase",
+    "aws:deploy": "aws ecs update-service --cluster=ecs-cluster-01 --service=ecs-service-web --force-new-deployment"
   },
   "repository": {
     "type": "git",

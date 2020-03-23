@@ -1,13 +1,8 @@
-import { User } from "./models/user.model";
-import { StoreImage } from "./models/store_image.model";
-import { Category } from "./models/category.model";
 import { Sequelize } from "sequelize-typescript";
 import { Store } from "./models/store.model";
-import { sequelize } from "./sequelize";
 import * as inflection from "inflection";
 import * as path from "path";
-import { Model, FindOptions } from "sequelize/types";
-import { Op } from "sequelize";
+import { Model } from "sequelize/types";
 
 const sequelizeResultToJson = (rows: Model[]) => {
   return rows.map(el => el.get({ plain: true }));
