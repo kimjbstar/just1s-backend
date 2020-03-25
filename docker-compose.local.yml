@@ -21,6 +21,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-web
+    volumes:
+      - type: bind
+        source: ./src
+        target: /usr/src/app/src
     env_file:
       - "./.local/config/local.env"
     ports:
@@ -28,6 +32,7 @@ services:
       - "80:3000"
     depends_on:
       - "localdb"
+    command: npm run nodemon
 
 volumes:
   database_volume:

@@ -6,7 +6,7 @@ const logger: winston.Logger = winston.createLogger({
     winston.format.json(),
     winston.format.colorize()
   ),
-  defaultMeta: { service: "nbase" },
+  // defaultMeta: { service: "nbase" },
   transports: [
     new winston.transports.File({
       filename: "../../log/error.log",

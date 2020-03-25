@@ -1,17 +1,15 @@
 import { Sequelize } from "sequelize-typescript";
-import { NBaseError } from "./common/nbase-error";
-import { setConnection } from "./common/sequelize";
-import { setPassportConfig } from "./library/passport";
+import { setConnection } from "@src/common/sequelize";
+import { setPassportConfig } from "@src/library/passport";
 import logger from "@src/library/winston";
 import * as express from "express";
-import * as path from "path";
-import * as dotenv from "dotenv";
 import * as morgan from "morgan";
 import * as passport from "passport";
-import storesRouter from "./routes/stores.router";
-import reviewsRouter from "./routes/reviews.router";
-import authRouter from "./routes/auth.router";
+import storesRouter from "@src/routes/stores.router";
+import reviewsRouter from "@src/routes/reviews.router";
+import authRouter from "@src/routes/auth.router";
 import * as child_process from "child_process";
+import { NBaseError } from "@src/common/nbase-error";
 require("express-async-errors");
 
 let sequelize: Sequelize;
@@ -23,7 +21,7 @@ const bootstrap = async () => {
     // sequelize.sync({ alter: true });
     createServer();
   } catch (err) {
-    logger.error("error in create Server");
+    logger.error("error in create Server1 ");
     logger.error(err);
   }
 };
@@ -79,7 +77,7 @@ const createServer = async () => {
   });
 
   app.get("/", (req, res) => {
-    res.send("Hello World ! 999");
+    res.send("Hello World !! 2345");
   });
 
   app.get("/whoami", (req: express.Request, res: express.Response) => {

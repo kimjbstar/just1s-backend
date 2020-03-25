@@ -46,7 +46,6 @@ import {
 
 import * as inflection from "inflection";
 import * as path from "path";
-import { Review } from "@src/models/review.model";
 
 const bootstrap = async () => {
   const srcConnection = new Sequelize({

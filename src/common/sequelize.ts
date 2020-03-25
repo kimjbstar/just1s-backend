@@ -1,18 +1,14 @@
-import { Sequelize } from "sequelize-typescript";
 import logger from "@src/library/winston";
+import { Sequelize } from "sequelize-typescript";
 import * as path from "path";
 import * as inflection from "inflection";
 
 export const setConnection = async () => {
-  logger.info("set Sequelize connection");
   const modelPath = path.join(__dirname, "../models");
-  console.log("modelPath : ", modelPath);
-
-  console.log(process.env);
 
   let sequelize: Sequelize;
   while (true) {
-    console.log("try connect ...");
+    logger.info("try connect to sequelize");
     try {
       sequelize = new Sequelize({
         database: process.env.SEQUELIZE_DATABASE,

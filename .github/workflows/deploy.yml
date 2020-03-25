@@ -2,7 +2,7 @@ name: Deploy
 on: [push]
 jobs:
   build_docker:
-    name: build docker image
+    name: Build Docker Image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -14,7 +14,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           dockerfile: Dockerfile-web
   update-service:
-    name: update ecs service
+    name: Update AWS ESC Service
     needs: build_docker
     runs-on: ubuntu-latest
 
