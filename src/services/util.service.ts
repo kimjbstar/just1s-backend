@@ -1,7 +1,7 @@
-import { Service } from "typedi";
+import { Injectable } from "@nestjs/common";
 
-@Service()
-export default class NBaseService {
+@Injectable()
+export class UtilService {
   getFindScopesFromRequest = (req, includes: string[]) => {
     const scopes = Object.keys(req.query)
       .filter(scope => !["offset", "limit"].includes(scope))

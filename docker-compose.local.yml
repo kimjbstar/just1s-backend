@@ -32,7 +32,7 @@ services:
       - "80:3000"
     depends_on:
       - "localdb"
-    command: npm run nodemon
+    command: npm run start:dev
 
 volumes:
   database_volume:

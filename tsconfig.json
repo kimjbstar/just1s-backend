@@ -7,14 +7,11 @@
     "allowSyntheticDefaultImports": true, // export default 를 export 한 값들을 가지는 객체로 설정
     // "esModuleInterop": true, // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html
     /////////// path ///////////
-    "baseUrl": ".", // Non-relativ 모듈 혹은 paths 옵션의 기준 디렉토리
+    "baseUrl": "./", // Non-relativ 모듈 혹은 paths 옵션의 기준 디렉토리
     "paths": {
-      "@src/*": ["./src/*"]
+      "@src/*": ["src/*"]
     },
-    // "rootDirs": [ ], // 가상 디덱토리를 설정
-    // "rootDir": "./", // 입력파일의 rootDir 설정
     "outDir": "./dist",
-    // "outFile": "", // 단일파일로 출력시 파일명
     /////////// declaration ///////////
     "declaration": false, // .d.ts 파일의 생성 여부
     // "declarationDir": "", // .d.ts 파일이 생성되는 디렉토리 설정
