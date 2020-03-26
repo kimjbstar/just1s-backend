@@ -33,7 +33,7 @@ export class ReviewsController {
     return result;
   }
 
-  @Put()
+  @Put(":id")
   async update(@Req() req: Request): Promise<any> {
     const review: Object = await this.reviewsService.update(req);
     const result = {

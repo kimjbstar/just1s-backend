@@ -1,18 +1,68 @@
-import { CarModelgroup } from "./car_modelgroup.model";
-import { CarBrand } from "./car_brand.model";
+import { Op } from "sequelize";
+import { Sequelize } from "sequelize";
+import { UserCar } from "@src/models/user_car.model";
+import { Car } from "@src/models/car.model";
 import {
   Table,
   Column,
   Model,
   Default,
   DataType,
-  ForeignKey,
-  BelongsTo
+  BelongsToMany,
+  ScopesOptionsGetter,
+  Scopes
 } from "sequelize-typescript";
 
 type UserRole = "NORMAL" | "BUSINESS" | "STAFF" | "ADMIN";
 type UserStatus = "NORMAL" | "WITHDRAWN";
 
+const USER_ORDERBYS = {
+  ID__DESC: {
+    cursor: "User.id",
+    orderBy: [["id", "desc"]]
+  }
+};
+
+export const UserScopes: ScopesOptionsGetter = () => ({
+  status: value => {
+    return {
+      where: { status: value }
+    };
+  },
+  email__like: value => {
+    return {
+      where: {
+        email: {
+          [Op.like]: `%${value}%`
+        }
+      }
+    };
+  },
+  order: value => {
+    if (USER_ORDERBYS[value] == undefined) {
+      return {};
+    }
+    const { cursor, orderBy } = USER_ORDERBYS[value];
+    return {
+      attributes: {
+        include: [[Sequelize.literal(cursor), "cursor"]]
+      },
+      order: orderBy
+    };
+  },
+  after: (value, orderbyKey) => {
+    if (USER_ORDERBYS[orderbyKey] == undefined) {
+      return {};
+    }
+    const { cursor, orderBy } = USER_ORDERBYS[orderbyKey];
+    return {
+      where: {
+        [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
+      }
+    };
+  }
+});
+@Scopes(UserScopes)
 @Table
 export class User extends Model<User> {
   @Default("NORMAL")

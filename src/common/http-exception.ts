@@ -50,3 +50,20 @@ export class TokenAuthenticateFailException extends HttpException {
 }
 // next(new NBaseError(401, "token 인증 실패", res.locals.tokenFailMessage));
 // HttpExceptionFilter 필요;
+
+export class AuthUserNotFoundException extends HttpException {
+  constructor() {
+    super("id에 해당하는 유저 정보가 없습니다.", HttpStatus.FORBIDDEN);
+  }
+}
+
+export class AuthUserPasswordNotValidException extends HttpException {
+  constructor() {
+    super("비밀번호가 틀립니다.", HttpStatus.FORBIDDEN);
+  }
+}
+export class AuthLoginFailException extends HttpException {
+  constructor() {
+    super("로그인 정보가 잘못되었습니다.", HttpStatus.FORBIDDEN);
+  }
+}

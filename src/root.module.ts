@@ -1,3 +1,5 @@
+import { AuthModule } from "./modules/auth/auth.module";
+import { UsersModule } from "./modules/users/users.module";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { Module } from "@nestjs/common";
 import { AppModule } from "@src/app.module";
@@ -25,7 +27,9 @@ import * as inflection from "inflection";
       timezone: "+09:00"
     }),
     AppModule,
-    ReviewsModule
+    ReviewsModule,
+    UsersModule,
+    AuthModule
   ]
 })
 export class RootModule {
