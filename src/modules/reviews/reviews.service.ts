@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { ReviewImage } from "../../models/review_image.model";
-import { ReviewScopes, Review } from "../../models/review.model";
+import { ReviewImage } from "@src/models/review_image.model";
+import { ReviewScopes, Review } from "@src/models/review.model";
 import { UtilService } from "@src/services/util.service";
 import {
   MissingParameterIDException,
@@ -14,6 +14,18 @@ import {
 @Injectable()
 export class ReviewsService {
   constructor(private readonly utilService: UtilService) {}
+
+  async findNewVer(query): Promise<object[]> {
+    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
+      query,
+      Object.keys(ReviewScopes())
+    );
+    const reviews: Review[] = await Review.scope(scopes).findAll({
+      offset: offset,
+      limit: limit
+    });
+    return reviews.map(review => review.get({ plain: true }));
+  }
 
   async find(req): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromRequest(

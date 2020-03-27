@@ -1,7 +1,5 @@
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize";
-import { UserCar } from "@src/models/user_car.model";
-import { Car } from "@src/models/car.model";
 import {
   Table,
   Column,
@@ -12,18 +10,14 @@ import {
   ScopesOptionsGetter,
   Scopes
 } from "sequelize-typescript";
-
-type UserRole = "NORMAL" | "BUSINESS" | "STAFF" | "ADMIN";
-type UserStatus = "NORMAL" | "WITHDRAWN";
-
-const USER_ORDERBYS = {
-  ID__DESC: {
-    cursor: "User.id",
-    orderBy: [["id", "desc"]]
-  }
-};
+import { UserOrderbys, UserRole, UserStatus } from "@src/enums/user";
 
 export const UserScopes: ScopesOptionsGetter = () => ({
+  role: value => {
+    return {
+      where: { role: value }
+    };
+  },
   status: value => {
     return {
       where: { status: value }
@@ -39,10 +33,10 @@ export const UserScopes: ScopesOptionsGetter = () => ({
     };
   },
   order: value => {
-    if (USER_ORDERBYS[value] == undefined) {
+    if (UserOrderbys[value] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = USER_ORDERBYS[value];
+    const { cursor, orderBy } = UserOrderbys[value];
     return {
       attributes: {
         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -51,10 +45,10 @@ export const UserScopes: ScopesOptionsGetter = () => ({
     };
   },
   after: (value, orderbyKey) => {
-    if (USER_ORDERBYS[orderbyKey] == undefined) {
+    if (UserOrderbys[orderbyKey] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = USER_ORDERBYS[orderbyKey];
+    const { cursor, orderBy } = UserOrderbys[orderbyKey];
     return {
       where: {
         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
@@ -66,7 +60,7 @@ export const UserScopes: ScopesOptionsGetter = () => ({
 @Table
 export class User extends Model<User> {
   @Default("NORMAL")
-  @Column(DataType.ENUM("NORMAL", "BUSINESS", "STAFF", "ADMIN"))
+  @Column(DataType.ENUM({ values: Object.values(UserRole) }))
   role: UserRole;
 
   @Column
@@ -94,7 +88,7 @@ export class User extends Model<User> {
   desc: string;
 
   @Default("NORMAL")
-  @Column(DataType.ENUM("NORMAL", "WITHDRAWN"))
+  @Column(DataType.ENUM({ values: Object.values(UserStatus) }))
   status: UserStatus;
 
   @Column(DataType.DATE)

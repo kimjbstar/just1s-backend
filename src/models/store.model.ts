@@ -16,17 +16,7 @@ import {
   DefaultScope,
   ScopesOptionsGetter
 } from "sequelize-typescript";
-
-type StoreLevel = "NORMAL" | "AFFILIATE" | "EXCELLENT";
-type StoreStatus = "WATING" | "HIDDEN" | "NORMAL" | "DELETED";
-
-const STORE_ORDERBYS = {
-  ID__DESC: {
-    cursor: "Store.id",
-    orderBy: [["id", "desc"]]
-  }
-  // distance
-};
+import { StoreLevel, StoreStatus, StoreOrderbys } from "@src/enums/store";
 
 export const StoreScopes: ScopesOptionsGetter = () => ({
   level: value => {
@@ -102,10 +92,10 @@ export const StoreScopes: ScopesOptionsGetter = () => ({
     };
   },
   order: value => {
-    if (STORE_ORDERBYS[value] == undefined) {
+    if (StoreOrderbys[value] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = STORE_ORDERBYS[value];
+    const { cursor, orderBy } = StoreOrderbys[value];
     return {
       attributes: {
         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -114,10 +104,10 @@ export const StoreScopes: ScopesOptionsGetter = () => ({
     };
   },
   after: (value, orderbyKey) => {
-    if (STORE_ORDERBYS[orderbyKey] == undefined) {
+    if (StoreOrderbys[orderbyKey] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = STORE_ORDERBYS[orderbyKey];
+    const { cursor, orderBy } = StoreOrderbys[orderbyKey];
     return {
       where: {
         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
@@ -132,11 +122,11 @@ export const StoreScopes: ScopesOptionsGetter = () => ({
 @Table
 export class Store extends Model<Store> {
   @Default("NORMAL")
-  @Column(DataType.ENUM("NORMAL", "AFFILIATE", "EXCELLENT"))
+  @Column(DataType.ENUM({ values: Object.values(StoreLevel) }))
   level: StoreLevel;
 
   @Default("NORMAL")
-  @Column(DataType.ENUM("WAITING", "HIDDEN", "NORMAL", "DELETED"))
+  @Column(DataType.ENUM({ values: Object.values(StoreStatus) }))
   status: StoreStatus;
 
   @Column

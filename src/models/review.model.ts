@@ -1,8 +1,9 @@
 import { Op, Sequelize } from "sequelize";
-import { ReviewCategory } from "./review_category.model";
-import { User } from "./user.model";
-import { Store } from "./store.model";
-import { CarModel } from "./car_model.model";
+import { ReviewCategory } from "@src/models/review_category.model";
+import { User } from "@src/models/user.model";
+import { Store } from "@src/models/store.model";
+import { CarModel } from "@src/models/car_model.model";
+import { ReviewStatus, ReviewType, ReviewOrderbys } from "@src/enums/review";
 
 import {
   Table,
@@ -16,23 +17,11 @@ import {
   DefaultScope,
   Scopes,
   NotEmpty,
-  IsUrl,
   HasMany,
   IsNumeric,
-  NotNull,
   AllowNull
 } from "sequelize-typescript";
 import { ReviewImage } from "./review_image.model";
-
-type ReviewStatus = "HIDDEN" | "NORMAL";
-type ReviewType = "CUSTOMER" | "STORE";
-
-const REVIEW_ORDERBYS = {
-  ID__DESC: {
-    cursor: "Review.id",
-    orderBy: [["id", "desc"]]
-  }
-};
 
 export const ReviewScopes: ScopesOptionsGetter = () => ({
   status: value => {
@@ -54,6 +43,15 @@ export const ReviewScopes: ScopesOptionsGetter = () => ({
       }
     };
   },
+  price__gte: value => {
+    return {
+      where: {
+        price: {
+          [Op.gte]: value
+        }
+      }
+    };
+  },
   user__status: value => {
     return {
       include: [{ model: User, where: { status: value } }]
@@ -65,10 +63,10 @@ export const ReviewScopes: ScopesOptionsGetter = () => ({
     };
   },
   order: value => {
-    if (REVIEW_ORDERBYS[value] == undefined) {
+    if (ReviewOrderbys[value] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = REVIEW_ORDERBYS[value];
+    const { cursor, orderBy } = ReviewOrderbys[value];
     return {
       attributes: {
         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -77,10 +75,10 @@ export const ReviewScopes: ScopesOptionsGetter = () => ({
     };
   },
   after: (value, orderbyKey) => {
-    if (REVIEW_ORDERBYS[orderbyKey] == undefined) {
+    if (ReviewOrderbys[orderbyKey] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = REVIEW_ORDERBYS[orderbyKey];
+    const { cursor, orderBy } = ReviewOrderbys[orderbyKey];
     return {
       where: {
         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
@@ -92,11 +90,17 @@ export const ReviewScopes: ScopesOptionsGetter = () => ({
   include: [ReviewCategory, Store, User]
 }))
 @Scopes(ReviewScopes)
-@Table
+@Table({
+  timestamps: true
+})
 export class Review extends Model<Review> {
   @AllowNull(false)
   @Default("CUSTOMER")
-  @Column(DataType.ENUM("CUSTOMER", "STORE"))
+  @Column(
+    DataType.ENUM({
+      values: Object.values(ReviewType)
+    })
+  )
   type: ReviewType;
 
   @NotEmpty
@@ -158,7 +162,7 @@ export class Review extends Model<Review> {
 
   @AllowNull(false)
   @Default("NORMAL")
-  @Column(DataType.ENUM("NORMAL", "HIDDEN"))
+  @Column(DataType.ENUM({ values: Object.values(ReviewStatus) }))
   status: ReviewStatus;
 
   @ForeignKey(() => CarModel)

@@ -15,6 +15,18 @@ import {
 export class StoresService {
   constructor(private readonly utilService: UtilService) {}
 
+  async findNewVer(query): Promise<object[]> {
+    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
+      query,
+      Object.keys(StoreScopes())
+    );
+    const stores: Store[] = await Store.scope(scopes).findAll({
+      offset: offset,
+      limit: limit
+    });
+    return stores.map(store => store.get({ plain: true }));
+  }
+
   async find(req): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromRequest(
       req,

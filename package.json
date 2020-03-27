@@ -33,6 +33,7 @@
     "@nestjs/passport": "^7.0.0",
     "@nestjs/platform-express": "^7.0.5",
     "@nestjs/sequelize": "^0.1.0",
+    "@nestjs/swagger": "^4.4.0",
     "@types/morgan": "^1.9.0",
     "@types/passport": "^1.0.2",
     "@types/passport-jwt": "^3.0.3",
@@ -50,6 +51,7 @@
     "rxjs": "^6.5.4",
     "sequelize": "^5.21.5",
     "sequelize-typescript": "^1.1.0",
+    "swagger-ui-express": "^4.1.4",
     "ts-node": "^8.8.1",
     "typescript": "^3.8.3",
     "winston": "^3.2.1"

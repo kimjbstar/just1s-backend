@@ -14,6 +14,26 @@ import {
 export class UsersService {
   constructor(private readonly utilService: UtilService) {}
 
+  // hashPw(pw: string): string {
+  //   const salt = "f9dev-secret-salt-closedshops";
+  //   return crypto
+  //     .createHash("sha512")
+  //     .update(pw + salt)
+  //     .digest("hex");
+  // }
+
+  async findNewVer(query): Promise<object[]> {
+    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
+      query,
+      Object.keys(UserScopes())
+    );
+    const users: User[] = await User.scope(scopes).findAll({
+      offset: offset,
+      limit: limit
+    });
+    return users.map(user => user.get({ plain: true }));
+  }
+
   async find(req): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromRequest(
       req,

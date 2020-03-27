@@ -1,21 +1,34 @@
+import { Review } from "./models/review.model";
+import { ReviewListQuery } from "./modules/reviews/reviews.controller";
 import "reflect-metadata";
 import { RootModule } from "./root.module";
 declare const module: any;
 
 import { NestFactory, Reflector } from "@nestjs/core";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 // import { F9HttpExceptionFilter } from "@src/f9-base/f9-http-exception.filter";
 // import { initCurrentApp } from "@src/middlewares/init-current-app.middleware";
 // import { PublicAuthGuard } from "@src/middlewares/public-auth.guard";
 
 async function bootstrap() {
-  const application = await NestFactory.create(RootModule);
-  // application.setGlobalPrefix("/api/*");
-  //   application.use(initCurrentApp);
-  //   application.useGlobalFilters(new F9HttpExceptionFilter());
-  // application.useGlobalPipes(new ValidationPipe());
-  //   application.useGlobalGuards(new PublicAuthGuard(new Reflector()));
-  await application.listen(3000);
+  const app = await NestFactory.create(RootModule);
+  // app.setGlobalPrefix("/api/*");
+  //   app.use(initCurrentApp);
+  //   app.useGlobalFilters(new F9HttpExceptionFilter());
+  // app.useGlobalPipes(new ValidationPipe());
+  //   app.useGlobalGuards(new PublicAuthGuard(new Reflector()));
+
+  const options = new DocumentBuilder()
+    .setTitle("nBase")
+    .setDescription("nBase API 설명입니다.")
+    .setVersion("1.0")
+    .addTag("cats")
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup("doc", app, document);
+
+  await app.listen(3000);
 
   // if (module.hot) {
   //   module.hot.dispose(async () => {

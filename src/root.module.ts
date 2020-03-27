@@ -6,6 +6,7 @@ import { AppModule } from "@src/app.module";
 import { ReviewsModule } from "@src/modules/reviews/reviews.module";
 import * as path from "path";
 import * as inflection from "inflection";
+import { StoresModule } from "./modules/stores/stores.module";
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import * as inflection from "inflection";
     AppModule,
     ReviewsModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    StoresModule
   ]
 })
 export class RootModule {
