@@ -19,7 +19,8 @@ import {
   NotEmpty,
   HasMany,
   IsNumeric,
-  AllowNull
+  AllowNull,
+  NotContains
 } from "sequelize-typescript";
 import { ReviewImage } from "./review_image.model";
 
@@ -104,6 +105,7 @@ export class Review extends Model<Review> {
   type: ReviewType;
 
   @NotEmpty
+  @NotContains({ msg: "광고는 포함되선 안됩니다.", args: "광고" })
   @AllowNull(false)
   @Default("")
   @Column

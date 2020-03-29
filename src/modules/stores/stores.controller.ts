@@ -1,7 +1,16 @@
 import { Request } from "express";
-import { Controller, Get, Req, Post, Put, Delete, Query } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Req,
+  Post,
+  Put,
+  Delete,
+  Query,
+  Param
+} from "@nestjs/common";
 import { StoresService } from "@src/modules/stores/stores.service";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 
 export class StoreListQuery {
   @ApiProperty({
@@ -64,18 +73,17 @@ export class StoresController {
 
   @Get()
   async find(@Query() storeListQuery: StoreListQuery): Promise<any> {
-    const stores: object[] = await this.storesService.findNewVer(
-      StoreListQuery
-    );
+    const stores: object[] = await this.storesService.find(StoreListQuery);
     const result = {
       stores: stores
     };
     return result;
   }
 
+  @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   @Get(":id")
-  async get(@Req() req: Request): Promise<any> {
-    const review: Object = await this.storesService.findByPk(req);
+  async get(@Param("id") id: Number): Promise<any> {
+    const review: Object = await this.storesService.findByPk(id);
     const result = {
       review: review
     };

@@ -15,7 +15,7 @@ import {
 export class ReviewsService {
   constructor(private readonly utilService: UtilService) {}
 
-  async findNewVer(query): Promise<object[]> {
+  async find(query): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
       query,
       Object.keys(ReviewScopes())
@@ -27,34 +27,22 @@ export class ReviewsService {
     return reviews.map(review => review.get({ plain: true }));
   }
 
-  async find(req): Promise<object[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromRequest(
-      req,
-      Object.keys(ReviewScopes())
-    );
-    const reviews: Review[] = await Review.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
-    });
-    return reviews.map(review => review.get({ plain: true }));
-  }
-
-  async findByPk(req): Promise<object> {
-    if (req.params.id === undefined) {
+  async findByPk(id): Promise<object> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
-    const row: Review = await Review.findByPk(req.params.id);
+    const row: Review = await Review.findByPk(id);
     if (row == null) {
       throw new DataNotFoundException();
     }
     return row;
   }
 
-  async create(req): Promise<object> {
-    if (req.body.review === undefined) {
+  async create(dto): Promise<object> {
+    if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
-    const row = await Review.create(req.body.review, {
+    const row = await Review.create(dto, {
       include: [ReviewImage]
     });
     if (row == null) {
@@ -64,16 +52,16 @@ export class ReviewsService {
     return row.get({ plain: true });
   }
 
-  async update(req): Promise<any> {
-    if (req.params.id === undefined) {
+  async update(id, dto): Promise<any> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
-    if (req.body.review === undefined) {
+    if (dto === undefined) {
       throw new MissingBodyToUpdateException();
     }
-    const [affectedRowCount] = await Review.update(req.body.review, {
+    const [affectedRowCount] = await Review.update(dto, {
       where: {
-        id: req.params.id
+        id: id
       }
     });
     if (affectedRowCount != 1) {
@@ -82,14 +70,14 @@ export class ReviewsService {
     return affectedRowCount;
   }
 
-  async destroy(req): Promise<any> {
-    if (req.params.id === undefined) {
+  async destroy(id): Promise<any> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
 
     const affectedRowCount = await Review.destroy({
       where: {
-        id: req.params.id
+        id: id
       }
     });
     if (affectedRowCount != 1) {

@@ -1,5 +1,3 @@
-import { Review } from "./models/review.model";
-import { ReviewListQuery } from "./modules/reviews/reviews.controller";
 import "reflect-metadata";
 import { RootModule } from "./root.module";
 declare const module: any;

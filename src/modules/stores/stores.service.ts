@@ -15,7 +15,7 @@ import {
 export class StoresService {
   constructor(private readonly utilService: UtilService) {}
 
-  async findNewVer(query): Promise<object[]> {
+  async find(query): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
       query,
       Object.keys(StoreScopes())
@@ -27,23 +27,11 @@ export class StoresService {
     return stores.map(store => store.get({ plain: true }));
   }
 
-  async find(req): Promise<object[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromRequest(
-      req,
-      Object.keys(StoreScopes())
-    );
-    const stores: Store[] = await Store.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
-    });
-    return stores.map(store => store.get({ plain: true }));
-  }
-
-  async findByPk(req): Promise<object> {
-    if (req.params.id === undefined) {
+  async findByPk(id): Promise<object> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
-    const row: Store = await Store.findByPk(req.params.id);
+    const row: Store = await Store.findByPk(id);
     if (row == null) {
       throw new DataNotFoundException();
     }

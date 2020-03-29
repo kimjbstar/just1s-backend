@@ -22,7 +22,7 @@ export class UsersService {
   //     .digest("hex");
   // }
 
-  async findNewVer(query): Promise<object[]> {
+  async find(query): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
       query,
       Object.keys(UserScopes())
@@ -34,34 +34,22 @@ export class UsersService {
     return users.map(user => user.get({ plain: true }));
   }
 
-  async find(req): Promise<object[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromRequest(
-      req,
-      Object.keys(UserScopes())
-    );
-    const users: User[] = await User.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
-    });
-    return users.map(user => user.get({ plain: true }));
-  }
-
-  async findByPk(req): Promise<object> {
-    if (req.params.id === undefined) {
+  async findByPk(id): Promise<object> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
-    const row: User = await User.findByPk(req.params.id);
+    const row: User = await User.findByPk(id);
     if (row == null) {
       throw new DataNotFoundException();
     }
     return row;
   }
 
-  async create(req): Promise<object> {
-    if (req.body.user === undefined) {
+  async create(dto): Promise<object> {
+    if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
-    const row = await User.create(req.body.user);
+    const row = await User.create(dto);
     if (row == null) {
       throw new DataNotFoundException();
     }
@@ -69,16 +57,16 @@ export class UsersService {
     return row.get({ plain: true });
   }
 
-  async update(req): Promise<any> {
-    if (req.params.id === undefined) {
+  async update(id, dto): Promise<any> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
-    if (req.body.user === undefined) {
+    if (dto === undefined) {
       throw new MissingBodyToUpdateException();
     }
-    const [affectedRowCount] = await User.update(req.body.user, {
+    const [affectedRowCount] = await User.update(dto, {
       where: {
-        id: req.params.id
+        id: id
       }
     });
     if (affectedRowCount != 1) {
@@ -87,14 +75,14 @@ export class UsersService {
     return affectedRowCount;
   }
 
-  async destroy(req): Promise<any> {
-    if (req.params.id === undefined) {
+  async destroy(id): Promise<any> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
 
     const affectedRowCount = await User.destroy({
       where: {
-        id: req.params.id
+        id: id
       }
     });
     if (affectedRowCount != 1) {

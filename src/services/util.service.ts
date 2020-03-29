@@ -2,10 +2,6 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class UtilService {
-  getFindScopesFromRequest = (req, includes: string[]) => {
-    return this.getFindScopesFromQuery(req.query, includes);
-  };
-
   getFindScopesFromQuery = (query, includes: string[]) => {
     const scopes = Object.keys(query)
       .filter(scope => !["offset", "limit"].includes(scope))
