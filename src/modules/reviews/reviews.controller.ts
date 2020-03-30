@@ -1,3 +1,5 @@
+import { Sequelize } from "sequelize-typescript";
+
 import { Request } from "express";
 import {
   Controller,
@@ -8,7 +10,8 @@ import {
   Delete,
   Query,
   Param,
-  Body
+  Body,
+  Inject
 } from "@nestjs/common";
 import { ReviewsService } from "@src/modules/reviews/reviews.service";
 import { ApiProperty, ApiQuery, ApiResponse } from "@nestjs/swagger";
