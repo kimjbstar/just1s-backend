@@ -13,12 +13,9 @@ import {
   ModelCtor,
   Model,
   ModelAttributeColumnOptions,
-  AbstractDataTypeConstructor,
-  AbstractDataType,
   DataType,
   IndexesOptions,
-  QueryInterface,
-  QueryTypes
+  QueryInterface
 } from "sequelize/types";
 
 interface IMigrationState {
@@ -28,6 +25,46 @@ interface IMigrationState {
 }
 
 const bootstrap = async () => {
+  if (process.env.NODE_ENV != "local") {
+    console.log("로컬에서만 진행 가능합니다.");
+    process.exit(0);
+  }
+
+  const sequelizercPath = path.resolve(__dirname, "../../.sequelizerc");
+  let configFromSequelizerc = {};
+  try {
+    configFromSequelizerc = require(sequelizercPath);
+    // console.log(configFromSequelizerc); // 내용물 없을 시 {}
+  } catch (err) {
+    console.log(sequelizercPath + "에 모듈 없음. continue....");
+  }
+  const modelsPath =
+    configFromSequelizerc["models-path"] ||
+    path.resolve(__dirname, "../../models");
+  const configPath =
+    configFromSequelizerc["config"] ||
+    path.resolve(__dirname, "../../config/config.json");
+  const migrationsPath =
+    configFromSequelizerc["migrations-path"] ||
+    path.resolve(__dirname, "../../migrations");
+
+  ``;
+  const pathsToCheck = [
+    { path: modelsPath, msg: "모델 경로가 잘못됨" },
+    {
+      path: configPath,
+      msg: "config 경로가 잘못됨, do 'npx sequelize init' first."
+    },
+    { path: migrationsPath, msg: "migration 경로가 잘못됨" }
+  ];
+
+  pathsToCheck.forEach(value => {
+    if (fs.existsSync(value.path) === false) {
+      console.log(value.msg);
+      process.exit(0);
+    }
+  });
+
   const program = createCommand();
   program.version("0.0.1");
   program
@@ -48,9 +85,6 @@ const bootstrap = async () => {
     )
     .parse(process.argv);
 
-  const modelsDir = path.join(__dirname, "../models");
-  const migrationsDir = path.join(__dirname, "../migrations");
-
   const sequelize = new Sequelize({
     dialect: "mysql",
     host: process.env.SEQUELIZE_HOST,
@@ -58,7 +92,7 @@ const bootstrap = async () => {
     username: process.env.SEQUELIZE_USERNAME,
     password: process.env.SEQUELIZE_PASSWORD,
     database: process.env.SEQUELIZE_DATABASE,
-    models: [modelsDir],
+    models: [modelsPath],
     modelMatch: (_filename, _member) => {
       const filename = inflection.camelize(_filename.replace(".model", ""));
       const member = _member;
@@ -112,22 +146,23 @@ const bootstrap = async () => {
   const [
     lastExecutedMigration
   ] = await sequelize.query(
-    'SELECT name FROM "SequelizeMeta" ORDER BY "name" desc limit 1',
-    { type: QueryTypes.SELECT }
+    "SELECT name FROM SequelizeMeta ORDER BY name desc limit 1",
+    { type: "SELECT" }
   );
 
+  const lastRevision =
+    lastExecutedMigration !== undefined
+      ? lastExecutedMigration["name"].split("-")[0]
+      : -1;
   const [
     lastMigration
   ] = await sequelize.query(
-    `SELECT state FROM "SequelizeMetaMigrations" where "revision" = '${
-      lastExecutedMigration === undefined
-        ? -1
-        : lastExecutedMigration["name"].split("-")[0]
-    }'`,
-    { type: QueryTypes.SELECT }
+    `SELECT state FROM SequelizeMetaMigrations where revision = '${lastRevision}'`,
+    { type: "SELECT" }
   );
-
-  if (lastMigration !== undefined) previousState = lastMigration["state"];
+  if (lastMigration !== undefined) {
+    previousState = lastMigration["state"];
+  }
 
   currentState.tables = reverseModels(sequelize, models);
 
@@ -168,14 +203,14 @@ const bootstrap = async () => {
 
   const pruneResult = await pruneOldMigFiles(
     currentState.revision,
-    migrationsDir,
+    migrationsPath,
     program
   );
 
   const info = writeMigration(
     currentState.revision,
     migration,
-    migrationsDir,
+    migrationsPath,
     program.migrationName,
     program.comment
   );
@@ -206,7 +241,7 @@ const bootstrap = async () => {
       return 0;
     }
     console.log(`Use sequelize CLI:
-  sequelize db:migrate --to ${currentState.revision}-${info.info.name} ${
+  npx sequelize db:migrate --to ${info.revisionNumber}-${info.info.name} ${
       program.migrationsPath
         ? `--migrations-path=${program.migrationsPath}`
         : ""
@@ -233,7 +268,7 @@ const reverseModels = (
       [key: string]: ModelAttributeColumnOptions;
     } = model.rawAttributes;
 
-    const resultAttributes = [];
+    const resultAttributes = {};
 
     for (let [column, attribute] of Object.entries(attributes)) {
       let rowAttribute = {};
@@ -250,13 +285,6 @@ const reverseModels = (
       }
 
       if (attribute.type === undefined) {
-        console.log(
-          `[Not supported] Skip column with undefined type ${model}:${column}`
-        );
-        continue;
-      }
-
-      if (typeof attribute.type === "undefined") {
         console.log(
           `[Not supported] Skip column with undefined type ${model}:${column}`
         );
@@ -286,30 +314,34 @@ const reverseModels = (
         }
       }
       rowAttribute = {
-        allowNull: attribute.allowNull,
-        field: attribute.field,
-        type: attribute.type,
-        unique: attribute.unique,
-        primaryKey: attribute.primaryKey,
-        autoIncrement: attribute.autoIncrement,
-        autoIncrementIdentity: attribute.autoIncrementIdentity,
-        comment: attribute.comment,
-        references: attribute.references,
-        onUpdate: attribute.onUpdate,
-        onDelete: attribute.onDelete,
-        validate: attribute.validate,
-        values: attribute.values,
         seqType: seqType
       };
 
-      resultAttributes.push(rowAttribute);
+      [
+        "allowNull",
+        "unique",
+        "primaryKey",
+        "autoIncrement",
+        "autoIncrementIdentity",
+        "comment",
+        "references",
+        "onUpdate",
+        "onDelete",
+        "validate"
+      ].forEach(key => {
+        if (attribute[key] !== undefined) {
+          rowAttribute[key] = attribute[key];
+        }
+      });
+
+      resultAttributes[column] = rowAttribute;
     } // attributes in model
 
     // console.log(resultAttributes);
 
     tables[model.tableName] = {
       tableName: model.tableName,
-      schema: attributes
+      schema: resultAttributes
     };
 
     let idx_out = {};
@@ -486,16 +518,22 @@ const reverseSequelizeDefValueType = (defaultValue, prefix = "Sequelize.") => {
 };
 
 const parseIndex = (idx: IndexesOptions) => {
-  let result = {
-    name: idx.name,
-    type: idx.type,
-    unique: idx.unique,
-    concurrently: idx.concurrently,
-    fields: idx.fields,
-    using: idx.using,
-    operator: idx.operator,
-    where: idx.where
-  };
+  let result = {};
+
+  [
+    "name",
+    "type",
+    "unique",
+    "concurrently",
+    "fields",
+    "using",
+    "operator",
+    "where"
+  ].forEach(key => {
+    if (idx[key] !== undefined) {
+      result[key] = idx[key];
+    }
+  });
 
   const options = {};
 
@@ -530,7 +568,10 @@ const parseIndex = (idx: IndexesOptions) => {
 
 const parseDifference = (previousState, currentState) => {
   const actions = [];
-  const difference: Array<Diff<any, any>> = diff(previousState, currentState);
+  let difference: Array<Diff<any, any>> = diff(previousState, currentState);
+  if (difference === undefined) {
+    return actions;
+  }
 
   difference.forEach(df => {
     switch (df.kind) {
@@ -620,12 +661,11 @@ const parseDifference = (previousState, currentState) => {
           // new index
           if (df.path[1] === "indexes") {
             const tableName = df.path[0];
-            //
-            const copied = JSON.parse(JSON.stringify(df.rhs));
+            const copied = df.rhs
+              ? JSON.parse(JSON.stringify(df.rhs))
+              : undefined;
             const index = copied;
-            //
-            // const index = _.clone(df.rhs);
-            //
+
             index.actionType = "addIndex";
             index.tableName = tableName;
             index.depends = [tableName];
@@ -736,16 +776,6 @@ const parseDifference = (previousState, currentState) => {
   return actions;
 };
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-  return array;
-}
-
 const sortActions = actions => {
   const orderedActionTypes = [
     "removeIndex",
@@ -756,9 +786,6 @@ const sortActions = actions => {
     "changeColumn",
     "addIndex"
   ];
-
-  // test
-  // actions = shuffleArray(actions);
 
   actions.sort((a, b) => {
     if (
@@ -823,9 +850,8 @@ const getMigration = actions => {
   const propertyToStr = obj => {
     const vals = [];
     for (const k in obj) {
-      if (k === "type") {
-        // seqType
-        vals.push(`"type": ${obj[k].constructor.name}`);
+      if (k === "seqType") {
+        vals.push(`"type": ${obj[k]}`);
         continue;
       }
 
@@ -962,7 +988,6 @@ ${JSON.stringify(action.options)}
         break;
 
       case "removeIndex": {
-        //               console.log(action)
         const nameOrAttrs =
           action.options &&
           action.options.indexName &&
@@ -971,14 +996,15 @@ ${JSON.stringify(action.options)}
             : JSON.stringify(action.fields);
 
         const res = `{ fn: "removeIndex", params: [
-    "${action.tableName}",
-    ${nameOrAttrs}
-] }`;
+          "${action.tableName}",
+          ${nameOrAttrs}
+      ] }`;
         commandsUp.push(res);
 
         consoleOut.push(
           `removeIndex ${nameOrAttrs} from table "${action.tableName}"`
         );
+        break;
       }
 
       default:
@@ -991,7 +1017,7 @@ ${JSON.stringify(action.options)}
 
 const pruneOldMigFiles = (
   revision,
-  migrationsDir,
+  migrationsPath,
   options
 ): Promise<Boolean> => {
   // if old files can't be deleted, we won't stop the execution
@@ -1001,7 +1027,7 @@ const pruneOldMigFiles = (
       resolve(false);
     }
     try {
-      const files: String[] = fs.readdirSync(migrationsDir);
+      const files: String[] = fs.readdirSync(migrationsPath);
       if (files.length === 0) {
         resolve(false);
       }
@@ -1010,7 +1036,7 @@ const pruneOldMigFiles = (
       files.forEach(file => {
         i += 1;
         if (file.split("-")[0] === revision.toString()) {
-          fs.unlinkSync(`${migrationsDir}/${file}`);
+          fs.unlinkSync(`${migrationsPath}/${file}`);
           if (options.verbose) {
             console.log(`Successfully deleted ${file}`);
             resolve(true);
@@ -1032,7 +1058,7 @@ const pruneOldMigFiles = (
 const writeMigration = (
   revision,
   migration,
-  migrationsDir,
+  migrationsPath,
   name = "",
   comment = ""
 ) => {
@@ -1114,13 +1140,15 @@ module.exports = {
 };
 `;
 
+  const revisionNumber = revision.toString().padStart(8, "0");
+
   const filename = path.join(
-    migrationsDir,
-    `${`${revision}`.padStart(5, "0") +
+    migrationsPath,
+    `${revisionNumber +
       (name !== "" ? `-${name.replace(/[\s-]/g, "_")}` : "")}.js`
   );
 
   fs.writeFileSync(filename, template);
 
-  return { filename, info };
+  return { filename, info, revisionNumber };
 };
