@@ -3,9 +3,11 @@ import {
   DataType as SequelizeTypescriptDataType
 } from "sequelize-typescript";
 import * as path from "path";
+import * as fs from "fs";
 import * as inflection from "inflection";
 import * as crypto from "crypto";
 import * as beautify from "js-beautify";
+import { createCommand } from "commander";
 import { diff, Diff } from "deep-diff";
 import {
   ModelCtor,
@@ -14,7 +16,9 @@ import {
   AbstractDataTypeConstructor,
   AbstractDataType,
   DataType,
-  IndexesOptions
+  IndexesOptions,
+  QueryInterface,
+  QueryTypes
 } from "sequelize/types";
 
 interface IMigrationState {
@@ -24,6 +28,26 @@ interface IMigrationState {
 }
 
 const bootstrap = async () => {
+  const program = createCommand();
+  program.version("0.0.1");
+  program
+    .option(
+      "-p, --preview",
+      "Show migration preview (does not change any files)"
+    )
+    .option("-n, --migration-name <name>", "Set migration name", "noname")
+    .option("-c, --comment <comment>", "Set migration comment", "")
+    .option("-x, --execute", "Create new migration and execute it")
+    .option("-g, --migrations-path <path>", "The path to the migrations folder")
+    .option("-m, --models-path <path>", "The path to the models folder")
+    .option("-v, --verbose", "Show details about the execution")
+    .option("-d, --debug", "Show error messages to debug problems")
+    .option(
+      "-k, --keep-files",
+      "Don't delete previous files from the current revision (requires a unique --name option for each file)"
+    )
+    .parse(process.argv);
+
   const modelsDir = path.join(__dirname, "../models");
   const migrationsDir = path.join(__dirname, "../migrations");
 
@@ -58,19 +82,65 @@ const bootstrap = async () => {
     version: 1,
     tables: {}
   };
+  const queryInterface: QueryInterface = sequelize.getQueryInterface();
+
+  await queryInterface.createTable("SequelizeMeta", {
+    name: {
+      type: SequelizeTypescriptDataType.STRING,
+      allowNull: false,
+      unique: true,
+      primaryKey: true
+    }
+  });
+  await queryInterface.createTable("SequelizeMetaMigrations", {
+    revision: {
+      type: SequelizeTypescriptDataType.INTEGER,
+      allowNull: false,
+      unique: true,
+      primaryKey: true
+    },
+    name: {
+      type: SequelizeTypescriptDataType.STRING,
+      allowNull: false
+    },
+    state: {
+      type: SequelizeTypescriptDataType.JSON,
+      allowNull: false
+    }
+  });
+
+  const [
+    lastExecutedMigration
+  ] = await sequelize.query(
+    'SELECT name FROM "SequelizeMeta" ORDER BY "name" desc limit 1',
+    { type: QueryTypes.SELECT }
+  );
+
+  const [
+    lastMigration
+  ] = await sequelize.query(
+    `SELECT state FROM "SequelizeMetaMigrations" where "revision" = '${
+      lastExecutedMigration === undefined
+        ? -1
+        : lastExecutedMigration["name"].split("-")[0]
+    }'`,
+    { type: QueryTypes.SELECT }
+  );
+
+  if (lastMigration !== undefined) previousState = lastMigration["state"];
 
   currentState.tables = reverseModels(sequelize, models);
 
-  const actions = parseDifference(previousState.tables, currentState.tables);
+  const upActions = parseDifference(previousState.tables, currentState.tables);
   const downActions = parseDifference(
     currentState.tables,
     previousState.tables
   );
-  // sort actions
-  sortActions(actions);
+
+  sortActions(upActions);
   sortActions(downActions);
 
-  const migration = getMigration(actions);
+  const migration = getMigration(upActions);
   const tmp = getMigration(downActions);
 
   migration.commandsDown = tmp.commandsUp;
@@ -81,20 +151,70 @@ const bootstrap = async () => {
   }
 
   // log migration actions
-
   migration.consoleOut.forEach(v => {
     console.log(`[Actions] ${v}`);
   });
 
   // preview
-  // console.log("Migration result:");
-  // console.log(beautify(`[ \n${migration.commandsUp.join(", \n")} \n];\n`));
-  // console.log("Undo commands:");
-  // console.log(beautify(`[ \n${migration.commandsDown.join(", \n")} \n];\n`));
+  if (program.preview) {
+    console.log("Migration result:");
+    console.log(beautify(`[ \n${migration.commandsUp.join(", \n")} \n];\n`));
+    console.log("Undo commands:");
+    console.log(beautify(`[ \n${migration.commandsDown.join(", \n")} \n];\n`));
+    return 1;
+  }
 
   currentState.revision = previousState.revision + 1;
 
-  //   TODO : pruneOldMigFiles
+  const pruneResult = await pruneOldMigFiles(
+    currentState.revision,
+    migrationsDir,
+    program
+  );
+
+  const info = writeMigration(
+    currentState.revision,
+    migration,
+    migrationsDir,
+    program.migrationName,
+    program.comment
+  );
+
+  console.log(
+    `New migration to revision ${currentState.revision} has been saved to file '${info.filename}'`
+  );
+
+  // save current state, Ugly hack, see https://github.com/sequelize/sequelize/issues/8310
+  const rows = [
+    {
+      revision: currentState.revision,
+      name: info.info.name,
+      state: JSON.stringify(currentState)
+    }
+  ];
+
+  try {
+    await queryInterface.bulkDelete("SequelizeMetaMigrations", {
+      revision: currentState.revision
+    });
+    await queryInterface.bulkInsert("SequelizeMetaMigrations", rows);
+
+    if (program.verbose) {
+      console.log("Updated state on DB.");
+    }
+    if (!program.execute) {
+      return 0;
+    }
+    console.log(`Use sequelize CLI:
+  sequelize db:migrate --to ${currentState.revision}-${info.info.name} ${
+      program.migrationsPath
+        ? `--migrations-path=${program.migrationsPath}`
+        : ""
+    } ${program.modelsPath ? `--models-path=${program.modelsPath}` : ""}`);
+    return 0;
+  } catch (err) {
+    if (program.debug) console.error(err);
+  }
 
   return 1;
 };
@@ -703,8 +823,9 @@ const getMigration = actions => {
   const propertyToStr = obj => {
     const vals = [];
     for (const k in obj) {
-      if (k === "seqType") {
-        vals.push(`"type": ${obj[k]}`);
+      if (k === "type") {
+        // seqType
+        vals.push(`"type": ${obj[k].constructor.name}`);
         continue;
       }
 
@@ -728,7 +849,10 @@ const getMigration = actions => {
       vals.push(JSON.stringify(x).slice(1, -1));
     }
 
-    return `{ ${vals.reverse().join(", ")} }`;
+    return `{ ${vals
+      .filter(v => v !== "")
+      .reverse()
+      .join(", ")} }`;
   };
 
   const getAttributes = attrs => {
@@ -745,13 +869,15 @@ const getMigration = actions => {
 
   for (const _i in actions) {
     const action = actions[_i];
+
     switch (action.actionType) {
       case "createTable":
         {
-          const resUp = `{ fn: "createTable", params: [
-    "${action.tableName}",
-    ${getAttributes(action.attributes)},
-    ${JSON.stringify(action.options)}
+          const resUp = `
+{ fn: "createTable", params: [
+"${action.tableName}",
+${getAttributes(action.attributes)},
+${JSON.stringify(action.options)}
 ] }`;
           commandsUp.push(resUp);
 
@@ -863,48 +989,53 @@ const getMigration = actions => {
   return { commandsUp, commandsDown, consoleOut };
 };
 
-function pruneOldMigFiles(revision, migrationsDir, options) {
+const pruneOldMigFiles = (
+  revision,
+  migrationsDir,
+  options
+): Promise<Boolean> => {
   // if old files can't be deleted, we won't stop the execution
-  return new Promise(resolve => {
-    if (options["keep-files"]) resolve(false);
-    else {
-      fs.readdir(migrationsDir, (err, files) => {
-        if (err) {
-          if (options.debug) console.error(`Can't read dir: ${err}`);
+
+  return new Promise<Boolean>((resolve, reject) => {
+    if (options.keepFiles) {
+      resolve(false);
+    }
+    try {
+      const files: String[] = fs.readdirSync(migrationsDir);
+      if (files.length === 0) {
+        resolve(false);
+      }
+
+      let i = 0;
+      files.forEach(file => {
+        i += 1;
+        if (file.split("-")[0] === revision.toString()) {
+          fs.unlinkSync(`${migrationsDir}/${file}`);
+          if (options.verbose) {
+            console.log(`Successfully deleted ${file}`);
+            resolve(true);
+          }
+        }
+        if (i === files.length) {
           resolve(false);
-        } else if (files.length === 0) resolve(false);
-        else {
-          let i = 0;
-          files.forEach(file => {
-            i += 1;
-            if (file.split("-")[0] === revision.toString()) {
-              fs.unlink(`${migrationsDir}/${file}`, error => {
-                if (error) {
-                  if (options.debug)
-                    console.log(`Failed to delete mig file: ${error}`);
-                  resolve(false);
-                } else {
-                  if (options.verbose)
-                    console.log(`Successfully deleted ${file}`);
-                  resolve(true);
-                }
-              });
-            }
-            if (i === files.length) resolve(false);
-          });
         }
       });
+    } catch (err) {
+      // if (options.debug) console.error(`Can't read dir: ${err}`);
+      // console.log(`Failed to delete mig file: ${error}`);
+      if (options.debug) console.error(`에러발생: ${err}`);
+      resolve(false);
     }
   });
-}
+};
 
-function writeMigration(
+const writeMigration = (
   revision,
   migration,
   migrationsDir,
   name = "",
   comment = ""
-) {
+) => {
   let commands = `var migrationCommands = [ \n${migration.commandsUp.join(
     ", \n"
   )} \n];\n`;
@@ -992,4 +1123,4 @@ module.exports = {
   fs.writeFileSync(filename, template);
 
   return { filename, info };
-}
+};
