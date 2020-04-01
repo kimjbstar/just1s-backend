@@ -37,7 +37,7 @@ var Sequelize = require('sequelize');
 var info = {
     "revision": 1,
     "name": "noname",
-    "created": "2020-03-31T13:26:59.493Z",
+    "created": "2020-04-01T05:39:10.801Z",
     "comment": ""
 };
 
@@ -49,25 +49,25 @@ var migrationCommands = [
             "ReviewCategories",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "parentId": {
-                    "type": Sequelize.INTEGER,
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 }
             },
             {}
@@ -80,10 +80,10 @@ var migrationCommands = [
             "CarBrands",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
@@ -101,12 +101,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -119,10 +119,10 @@ var migrationCommands = [
             "StoreLikes",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "storeId": {
                     "type": Sequelize.INTEGER
@@ -131,12 +131,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -149,10 +149,10 @@ var migrationCommands = [
             "StoreKeywords",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "storeId": {
                     "type": Sequelize.INTEGER
@@ -170,12 +170,12 @@ var migrationCommands = [
                     "type": Sequelize.ENUM('NORMAL', 'DELETED')
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -188,14 +188,14 @@ var migrationCommands = [
             "StoreImages",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "storeId": {
-                    "type": Sequelize.INTEGER,
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "type": {
                     "type": Sequelize.ENUM('NORMAL', 'CONTRACT', 'PRICE')
@@ -204,12 +204,12 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -222,10 +222,10 @@ var migrationCommands = [
             "Categories",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "type": {
                     "type": Sequelize.ENUM('STORE', 'COMPANY', 'STORE_COMPANY')
@@ -246,12 +246,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -264,10 +264,10 @@ var migrationCommands = [
             "ReviewReplies",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "reviewId": {
                     "type": Sequelize.INTEGER
@@ -279,16 +279,16 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "parentId": {
-                    "type": Sequelize.INTEGER,
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 }
             },
             {}
@@ -301,10 +301,10 @@ var migrationCommands = [
             "ReviewLikes",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "reviewId": {
                     "type": Sequelize.INTEGER
@@ -313,12 +313,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -331,10 +331,10 @@ var migrationCommands = [
             "PostHits",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "postId": {
                     "type": Sequelize.INTEGER
@@ -346,12 +346,12 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -364,10 +364,10 @@ var migrationCommands = [
             "PostImages",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "postId": {
                     "type": Sequelize.INTEGER
@@ -376,12 +376,12 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -394,10 +394,10 @@ var migrationCommands = [
             "PostLikes",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "postId": {
                     "type": Sequelize.INTEGER
@@ -406,12 +406,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -424,10 +424,10 @@ var migrationCommands = [
             "PostReplies",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "postId": {
                     "type": Sequelize.INTEGER
@@ -439,16 +439,16 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "parentId": {
-                    "type": Sequelize.INTEGER,
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 }
             },
             {}
@@ -461,25 +461,25 @@ var migrationCommands = [
             "ReviewImages",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "reviewId": {
-                    "type": Sequelize.INTEGER,
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "url": {
                     "type": Sequelize.STRING
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -492,10 +492,10 @@ var migrationCommands = [
             "ReviewHits",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "reviewId": {
                     "type": Sequelize.INTEGER
@@ -504,12 +504,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -522,10 +522,10 @@ var migrationCommands = [
             "Users",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "role": {
                     "type": Sequelize.ENUM('NORMAL', 'BUSINESS', 'STAFF', 'ADMIN')
@@ -564,12 +564,12 @@ var migrationCommands = [
                     "type": Sequelize.BOOLEAN
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -582,10 +582,10 @@ var migrationCommands = [
             "CarModelgroups",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
@@ -603,22 +603,22 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "carBrandId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarBrands",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -631,10 +631,10 @@ var migrationCommands = [
             "Keywords",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
@@ -652,26 +652,26 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "categoryId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Categories",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "parentId": {
-                    "type": Sequelize.INTEGER,
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 }
             },
             {}
@@ -684,10 +684,10 @@ var migrationCommands = [
             "Companies",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
@@ -711,22 +711,22 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "categoryId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Categories",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -739,10 +739,10 @@ var migrationCommands = [
             "Stores",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "level": {
                     "type": Sequelize.ENUM('NORMAL', 'AFFILIATE', 'EXCELLENT')
@@ -796,42 +796,42 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "ownerId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Users",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "categoryId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Categories",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "companyId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Companies",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -844,10 +844,10 @@ var migrationCommands = [
             "CarModels",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
@@ -868,32 +868,32 @@ var migrationCommands = [
                     "type": Sequelize.ENUM('SMALL', 'SEMI_MEDIUM', 'MEDIUM', 'SEMI_LARGE', 'LARGE', 'EXTRA_LARGE')
                 },
                 "carBrandId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarBrands",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "carModelgroupId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarModelgroups",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -906,10 +906,10 @@ var migrationCommands = [
             "Posts",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "type": {
                     "type": Sequelize.ENUM('FREE', 'NOTICE', 'HELP', 'FAQ', 'TERM', 'STORY')
@@ -921,14 +921,14 @@ var migrationCommands = [
                     "type": Sequelize.ENUM('NORMAL', 'HIDDEN')
                 },
                 "userId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Users",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "title": {
                     "type": Sequelize.STRING
@@ -955,12 +955,12 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -973,10 +973,10 @@ var migrationCommands = [
             "CarTrims",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "name": {
                     "type": Sequelize.STRING
@@ -991,42 +991,42 @@ var migrationCommands = [
                     "type": Sequelize.INTEGER
                 },
                 "carBrandId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarBrands",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "carModelgroupId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarModelgroups",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "carModelId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarModels",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -1039,17 +1039,16 @@ var migrationCommands = [
             "Reviews",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "type": {
-                    "type": Sequelize.ENUM('CUSTOMER', 'STORE'),
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.ENUM('CUSTOMER', 'STORE')
                 },
                 "title": {
-                    "type": Sequelize.STRING,
                     "validate": {
                         "notContains": {
                             "msg": "광고는 포함되선 안됩니다.",
@@ -1057,113 +1056,114 @@ var migrationCommands = [
                         },
                         "notEmpty": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.STRING
                 },
                 "content": {
-                    "type": Sequelize.STRING,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.STRING
                 },
                 "workingHours": {
-                    "type": Sequelize.INTEGER,
                     "validate": {
                         "isNumeric": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "price": {
-                    "type": Sequelize.INTEGER,
                     "validate": {
                         "isNumeric": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "beforeImgUrl": {
-                    "type": Sequelize.STRING,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.STRING
                 },
                 "repImgUrl": {
-                    "type": Sequelize.STRING,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.STRING
                 },
                 "repliesCount": {
-                    "type": Sequelize.INTEGER,
                     "validate": {
                         "isNumeric": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "likesCount": {
-                    "type": Sequelize.INTEGER,
                     "validate": {
                         "isNumeric": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "hitsCount": {
-                    "type": Sequelize.INTEGER,
                     "validate": {
                         "isNumeric": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "adminHitsCount": {
-                    "type": Sequelize.INTEGER,
                     "validate": {
                         "isNumeric": true
                     },
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "status": {
-                    "type": Sequelize.ENUM('HIDDEN', 'NORMAL'),
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.ENUM('HIDDEN', 'NORMAL')
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "carModelId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarModels",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "reviewCategoryId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "ReviewCategories",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "userId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Users",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "storeId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "SET NULL",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Stores",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 }
             },
             {}
@@ -1176,10 +1176,10 @@ var migrationCommands = [
             "UserCars",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
                 },
                 "userId": {
                     "type": Sequelize.INTEGER
@@ -1203,22 +1203,22 @@ var migrationCommands = [
                     "type": Sequelize.DATEONLY
                 },
                 "insrCompanyId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "Companies",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
@@ -1231,10 +1231,13 @@ var migrationCommands = [
             "Cars",
             {
                 "id": {
-                    "type": Sequelize.INTEGER,
                     "autoIncrement": true,
                     "primaryKey": true,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
+                },
+                "newCol1": {
+                    "type": Sequelize.STRING
                 },
                 "fullName": {
                     "type": Sequelize.STRING
@@ -1255,52 +1258,52 @@ var migrationCommands = [
                     "type": Sequelize.BOOLEAN
                 },
                 "carBrandId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarBrands",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "carModelgroupId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarModelgroups",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "carModelId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarModels",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "carTrimId": {
-                    "type": Sequelize.INTEGER,
                     "onDelete": "NO ACTION",
                     "onUpdate": "CASCADE",
                     "references": {
                         "model": "CarTrims",
                         "key": "id"
                     },
-                    "allowNull": true
+                    "allowNull": true,
+                    "type": Sequelize.INTEGER
                 },
                 "createdAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 },
                 "updatedAt": {
-                    "type": Sequelize.DATE,
-                    "allowNull": false
+                    "allowNull": false,
+                    "type": Sequelize.DATE
                 }
             },
             {}
