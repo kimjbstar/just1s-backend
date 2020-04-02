@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import { ModelCtor, Model, ModelAttributeColumnOptions } from "sequelize/types";
-import reverseSequelizeColType from "./reverse-sequelize-col-type";
-import reverseSequelizeDefValueType from "./reverse-sequelize-def-value-type";
-import parseIndex from "./parse-index";
+import reverseSequelizeColType from "./reverseSequelizeColType";
+import reverseSequelizeDefValueType from "./reverseSequelizeDefValueType";
+import parseIndex from "./parseIndex";
 
 export default function reverseModels(
   sequelize: Sequelize,
@@ -12,7 +12,6 @@ export default function reverseModels(
 ) {
   const tables = {};
   for (let [modelKey, model] of Object.entries(models)) {
-    const rowTable = {};
     const attributes: {
       [key: string]: ModelAttributeColumnOptions;
     } = model.rawAttributes;
@@ -40,7 +39,7 @@ export default function reverseModels(
         continue;
       }
 
-      let seqType = reverseSequelizeColType(sequelize, attribute);
+      let seqType = reverseSequelizeColType(sequelize, attribute.type);
       if (seqType === "Sequelize.VIRTUAL") {
         console.log(
           `[SKIP] Skip Sequelize.VIRTUAL column "${column}"", defined in model "${model}"`

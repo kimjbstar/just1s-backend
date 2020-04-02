@@ -1,19 +1,16 @@
-import { IMigrationState, ISequelizeRc, sequelizeRcPath } from "./constants";
 import { Sequelize, SequelizeOptions } from "sequelize-typescript";
 import * as fs from "fs";
 import * as beautify from "js-beautify";
 import commander from "commander";
-
+import { IMigrationState, ISequelizeRc, sequelizeRcPath } from "./constants";
 import { ModelCtor, Model, QueryInterface } from "sequelize/types";
-import parseArgs from "./utils/parse-args";
-import reverseModels from "./utils/reverse-models";
-import parseDifference from "./utils/parse-difference";
-import getMigration from "./utils/get-migration";
-import sortActions from "./utils/sort-actions";
-import pruneOldMigFiles from "./utils/prune-old-migration-files";
-import writeMigration from "./utils/write-migration";
-import createMigrationTable from "./utils/create-migration-table";
-import getLastMigrationState from "./utils/get-last-migration-state";
+import parseArgs from "./utils/parseArgs";
+import getTablesFromModels from "./utils/getTablesFromModels";
+import getDiffActionsFromTables from "./utils/getDiffActionsFromTables";
+import getMigration from "./utils/getMigration";
+import createMigrationTable from "./utils/createMigrationTable";
+import getLastMigrationState from "./utils/getLastMigrationState";
+import writeMigration from "./utils/writeMigration";
 
 const bootstrap = async () => {
   if (process.env.NODE_ENV != "local") {
@@ -71,6 +68,7 @@ const bootstrap = async () => {
     process.exit(0);
   }
 
+  // error handling
   const sequelize = new Sequelize(sequelizeConfig);
   const models: {
     [key: string]: ModelCtor<Model>;
@@ -92,17 +90,18 @@ const bootstrap = async () => {
   };
   const currentState: IMigrationState = {
     revision: previousState.revision + 1,
-    tables: reverseModels(sequelize, models)
+    tables: getTablesFromModels(sequelize, models)
   };
 
-  const upActions = parseDifference(previousState.tables, currentState.tables);
-  const downActions = parseDifference(
+  const upActions = getDiffActionsFromTables(
+    previousState.tables,
+    currentState.tables
+  );
+  const downActions = getDiffActionsFromTables(
     currentState.tables,
     previousState.tables
   );
-
-  sortActions(upActions);
-  sortActions(downActions);
+  console.log(upActions);
 
   const migration = getMigration(upActions);
   const tmp = getMigration(downActions);
@@ -126,14 +125,11 @@ const bootstrap = async () => {
     return 1;
   }
 
-  await pruneOldMigFiles(currentState.revision, migrationsPath, program);
-
-  const info = writeMigration(
+  const info = await writeMigration(
     currentState.revision,
     migration,
     migrationsPath,
-    program.migrationName,
-    program.comment
+    program
   );
 
   console.log(

@@ -1,5 +1,5 @@
 import * as fs from "fs";
-export default function pruneOldMigFiles(
+export default function removeCurrentRevisionMigrations(
   revision,
   migrationsPath,
   options

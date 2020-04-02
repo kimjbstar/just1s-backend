@@ -166,23 +166,6 @@ export class Store extends Model<Store> {
   @Column
   openingHours: string;
 
-  @Index("likes-count-index")
-  // @Index({
-  //   // index options
-  //   name: "likes-count-index",
-  //   parser: "my-parser",
-  //   type: "UNIQUE",
-  //   unique: true,
-  //   where: { status: StoreStatus.DELETED },
-  //   concurrently: true,
-  //   using: "BTREE",
-  //   operator: "text_pattern_ops",
-  //   prefix: "test-",
-  //   // index field options
-  //   length: 10,
-  //   order: "ASC",
-  //   collate: "NOCASE"
-  // })
   @Column
   likesCount: number;
 

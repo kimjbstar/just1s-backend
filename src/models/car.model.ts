@@ -9,8 +9,10 @@ import {
   Default,
   DataType,
   ForeignKey,
-  BelongsTo
+  BelongsTo,
+  AllowNull
 } from "sequelize-typescript";
+import { BlobDataTypeOptions } from "sequelize/types";
 
 @Table
 export class Car extends Model<Car> {

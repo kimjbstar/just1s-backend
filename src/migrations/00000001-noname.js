@@ -37,7 +37,7 @@ var Sequelize = require('sequelize');
 var info = {
     "revision": 1,
     "name": "noname",
-    "created": "2020-04-01T05:39:10.801Z",
+    "created": "2020-04-02T07:57:11.825Z",
     "comment": ""
 };
 
@@ -763,10 +763,10 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "lat": {
-                    "type": Sequelize.DECIMAL
+                    "type": Sequelize.DECIMAL(11, 7)
                 },
                 "lng": {
-                    "type": Sequelize.DECIMAL
+                    "type": Sequelize.DECIMAL(11, 7)
                 },
                 "repImgUrl": {
                     "type": Sequelize.STRING
@@ -1235,9 +1235,6 @@ var migrationCommands = [
                     "primaryKey": true,
                     "allowNull": false,
                     "type": Sequelize.INTEGER
-                },
-                "newCol1": {
-                    "type": Sequelize.STRING
                 },
                 "fullName": {
                     "type": Sequelize.STRING
