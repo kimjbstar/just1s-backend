@@ -17,8 +17,8 @@ try {
   sequelizeConfig.models = [path.join(__dirname, "./models")];
   sequelizeConfig.retryAttempts = 20;
   sequelizeConfig.retryDelay = 5000;
-  console.log();
 } catch (err) {
+  console.log(err);
   console.log("err in load sequelize config");
   process.exit(0);
 }

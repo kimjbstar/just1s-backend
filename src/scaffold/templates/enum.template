@@ -1,0 +1,14 @@
+{{#each enums}}
+export enum {{name}} {
+  {{#each values}}
+  {{this}} = "{{this}}"
+  {{/each}}
+}
+{{/each}}
+
+export const {{capitalize name}}Orderbys = {
+  ID__DESC: {
+    cursor: "{{capitalize name}}.id",
+    orderBy: [["id", "desc"]]
+  }
+};

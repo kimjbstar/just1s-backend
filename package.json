@@ -9,6 +9,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "makemigration": "ts-node -T -r tsconfig-paths/register src/sequelize-typescript-migration/index.ts",
+    "scaffold": "ts-node -T -r tsconfig-paths/register src/scaffold/index.ts",
     "practice": "ts-node -T -r tsconfig-paths/register src/practice.ts",
     "tsc": "tsc -p ./tsconfig.json",
     "tsc:watch": "tsc -p ./tsconfig.json --watch",
@@ -68,6 +69,7 @@
     "@types/js-beautify": "^1.8.2",
     "@types/node": "^13.7.6",
     "@types/validator": "^12.0.1",
+    "handlebars": "^4.7.6",
     "nodemon": "^2.0.2",
     "sequelize-cli": "^5.5.1",
     "tsconfig-paths": "^3.9.0"

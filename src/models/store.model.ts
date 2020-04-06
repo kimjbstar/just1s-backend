@@ -15,61 +15,65 @@ import {
   Scopes,
   DefaultScope,
   ScopesOptionsGetter,
-  Index
+  Index,
 } from "sequelize-typescript";
-import { StoreLevel, StoreStatus, StoreOrderbys } from "@src/enums/store";
+import {
+  StoreLevel,
+  StoreStatus,
+  StoreOrderbys,
+} from "@src/modules/stores/stores.enum";
 
 export const StoreScopes: ScopesOptionsGetter = () => ({
   level: value => {
     return {
-      where: { level: value }
+      where: { level: value },
     };
   },
   status: value => {
     return {
-      where: { status: value }
+      where: { status: value },
     };
   },
   name: value => {
     return {
-      where: { name: value }
+      where: { name: value },
     };
   },
   tel: value => {
     return {
-      where: { tel: value }
+      where: { tel: value },
     };
   },
   phoneNumber: value => {
     return {
-      where: { phoneNumber: value }
+      where: { phoneNumber: value },
     };
   },
   name__like: value => {
     return {
       where: {
         name: {
-          [Op.like]: `%${value}%`
-        }
-      }
+          [Op.like]: `%${value}%`,
+        },
+      },
     };
   },
   level__lte: value => {
     return {
       where: {
         level: {
-          [Op.lte]: value
-        }
-      }
+          [Op.lte]: value,
+        },
+      },
     };
   },
   level__gte: value => {
     return {
       where: {
         level: {
-          [Op.gte]: value
-        }
-      }
+          [Op.gte]: value,
+        },
+      },
     };
   },
   level__between: (lte, gte) => {
@@ -77,19 +81,19 @@ export const StoreScopes: ScopesOptionsGetter = () => ({
       where: {
         level: {
           [Op.gte]: gte,
-          [Op.lte]: lte
-        }
-      }
+          [Op.lte]: lte,
+        },
+      },
     };
   },
   user__status: value => {
     return {
-      include: [{ model: User, where: { status: value } }]
+      include: [{ model: User, where: { status: value } }],
     };
   },
   category__name: value => {
     return {
-      include: [{ model: Category, where: { name: value } }]
+      include: [{ model: Category, where: { name: value } }],
     };
   },
   order: value => {
@@ -99,9 +103,9 @@ export const StoreScopes: ScopesOptionsGetter = () => ({
     const { cursor, orderBy } = StoreOrderbys[value];
     return {
       attributes: {
-        include: [[Sequelize.literal(cursor), "cursor"]]
+        include: [[Sequelize.literal(cursor), "cursor"]],
       },
-      order: orderBy
+      order: orderBy,
     };
   },
   after: (value, orderbyKey) => {
@@ -111,13 +115,13 @@ export const StoreScopes: ScopesOptionsGetter = () => ({
     const { cursor, orderBy } = StoreOrderbys[orderbyKey];
     return {
       where: {
-        [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
-      }
+        [Op.and]: Sequelize.literal(`${cursor} < ${value}`),
+      },
     };
-  }
+  },
 });
 @DefaultScope(() => ({
-  include: [User, Category]
+  include: [User, Category],
 }))
 @Scopes(StoreScopes)
 @Table
@@ -148,7 +152,6 @@ export class Store extends Model<Store> {
   @Column(DataType.DECIMAL(11, 7))
   lng: string;
 
-  @Column
   repImgUrl: string;
 
   @Column
@@ -199,7 +202,7 @@ export class Store extends Model<Store> {
   @HasMany(() => StoreImage, {
     as: "images",
     foreignKey: "storeId",
-    constraints: false
+    constraints: false,
   })
   images: StoreImage[];
 

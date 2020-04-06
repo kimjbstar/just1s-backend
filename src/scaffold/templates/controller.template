@@ -1,0 +1,88 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Query,
+  Param,
+  Body,
+} from "@nestjs/common";
+import { {{plucapitalize name}}Service } from "@src/modules/{{pluralize name}}/{{pluralize name}}.service";
+import { ApiProperty, ApiQuery } from "@nestjs/swagger";
+import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/enums/{{name}}";
+
+export class {{capitalize name}}ListQuery {
+{{#each fields}}
+    @ApiProperty({
+        description: "{{name}}을(를) 입력해주세요!",
+        {{#ifCond originType '==' 'ENUM'}}
+        enums: Object.values({{tsType}})
+        {{/ifCond}}
+    })
+    {{name}}: {{tsType}}
+{{/each}}
+}
+
+export class {{capitalize name}}CreateDto {
+    @ApiProperty({
+        description: "{{name}}을(를) 입력해주세요!",
+    })
+    {{name}}: {{tsType}}
+}
+
+@Controller("{{pluralize name}}")
+export class {{plucapitalize name}}Controller {
+  constructor(private readonly {{pluralize name}}Service: {{plucapitalize name}}Service) {}
+
+  @Get()
+  async find(@Query() query: ReviewListQuery): Promise<any> {
+    const {{pluralize name}}: object[] = await this.{{pluralize name}}Service.find(query);
+    const result = {
+      {{pluralize name}}: {{pluralize name}},
+    };
+    return result;
+  }
+
+  @Get(":id")
+  @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
+  async get(@Param("id") id: Number): Promise<any> {
+    const {{name}}: Object = await this.{{pluralize name}}Service.findByPk(id);
+    const result = {
+      {{name}}: {{name}},
+    };
+    return result;
+  }
+
+  @Post()
+  async create(@Body() dto: ReviewCreateDto): Promise<any> {
+    const {{name}}: Object = await this.{{pluralize name}}Service.create(dto);
+    const result = {
+      {{name}}: {{name}},
+    };
+    return result;
+  }
+
+  @Put(":id")
+  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
+  async update(
+    @Param("id") id: Number,
+    @Body() dto: ReviewCreateDto
+  ): Promise<any> {
+    const {{name}}: Object = await this.{{pluralize name}}Service.update(id, dto);
+    const result = {
+      {{name}}: {{name}},
+    };
+    return result;
+  }
+
+  @Delete(":id")
+  @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
+  async delete(@Param("id") id: Number): Promise<any> {
+    const {{name}}: Object = await this.{{pluralize name}}Service.destroy(id);
+    const result = {
+      {{name}}: {{name}},
+    };
+    return result;
+  }
+}

@@ -8,28 +8,32 @@ import {
   DataType,
   BelongsToMany,
   ScopesOptionsGetter,
-  Scopes
+  Scopes,
 } from "sequelize-typescript";
-import { UserOrderbys, UserRole, UserStatus } from "@src/enums/user";
+import {
+  UserOrderbys,
+  UserRole,
+  UserStatus,
+} from "@src/modules/users/users.enum";
 
 export const UserScopes: ScopesOptionsGetter = () => ({
   role: value => {
     return {
-      where: { role: value }
+      where: { role: value },
     };
   },
   status: value => {
     return {
-      where: { status: value }
+      where: { status: value },
     };
   },
   email__like: value => {
     return {
       where: {
         email: {
-          [Op.like]: `%${value}%`
-        }
-      }
+          [Op.like]: `%${value}%`,
+        },
+      },
     };
   },
   order: value => {
@@ -39,9 +43,9 @@ export const UserScopes: ScopesOptionsGetter = () => ({
     const { cursor, orderBy } = UserOrderbys[value];
     return {
       attributes: {
-        include: [[Sequelize.literal(cursor), "cursor"]]
+        include: [[Sequelize.literal(cursor), "cursor"]],
       },
-      order: orderBy
+      order: orderBy,
     };
   },
   after: (value, orderbyKey) => {
@@ -51,10 +55,10 @@ export const UserScopes: ScopesOptionsGetter = () => ({
     const { cursor, orderBy } = UserOrderbys[orderbyKey];
     return {
       where: {
-        [Op.and]: Sequelize.literal(`${cursor} < ${value}`)
-      }
+        [Op.and]: Sequelize.literal(`${cursor} < ${value}`),
+      },
     };
-  }
+  },
 });
 @Scopes(UserScopes)
 @Table

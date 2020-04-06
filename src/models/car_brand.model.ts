@@ -16,5 +16,5 @@ export class CarBrand extends Model<CarBrand> {
   orderNo: number;
 
   @Column
-  carsCount: number; ////
+  carsCount: number;
 }

@@ -1,0 +1,24 @@
+import {
+  Table,
+  Column,
+  Model,
+  Default,
+  DataType,
+  ForeignKey,
+  BelongsTo,
+  AllowNull
+} from "sequelize-typescript";
+
+@Table
+export class {{capitalize name}} extends Model<{{capitalize name}}> {
+{{#each fields}}
+    @Column({
+        type: {{seqType}},
+        {{#each options}}
+        {{@key}}:{{this}},
+        {{/each}}
+    })
+    {{name}}: {{tsType}};
+
+{{/each}}
+}

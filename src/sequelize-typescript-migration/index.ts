@@ -101,7 +101,6 @@ const bootstrap = async () => {
     currentState.tables,
     previousState.tables
   );
-  console.log(upActions);
 
   const migration = getMigration(upActions);
   const tmp = getMigration(downActions);
