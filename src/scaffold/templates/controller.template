@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { {{plucapitalize name}}Service } from "@src/modules/{{pluralize name}}/{{pluralize name}}.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/modules/{{name}}/{{name}}.enum.ts";
+import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/modules/{{pluralize name}}/{{pluralize name}}.enum.ts";
 
 export class {{capitalize name}}ListQuery {
 {{#each fields}}

@@ -9,6 +9,8 @@ import {
   AllowNull
 } from "sequelize-typescript";
 
+import { {{#each enums}}{{name}},{{/each}} } from "@src/modules/{{pluralize name}}/{{pluralize name}}.enum.ts";
+
 @Table
 export class {{capitalize name}} extends Model<{{capitalize name}}> {
 {{#each fields}}
