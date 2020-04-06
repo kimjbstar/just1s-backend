@@ -1,4 +1,4 @@
-export const korFieldNameMap = {
+export const KoreanFieldNameMap = {
   id: "ID",
   key: "키",
   type: "타입",
@@ -75,5 +75,5 @@ export const korFieldNameMap = {
   product: "상품",
   media: "미디어",
   current: "현재",
-  solution: "솔루션"
+  solution: "솔루션",
 };

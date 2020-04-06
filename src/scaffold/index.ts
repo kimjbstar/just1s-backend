@@ -2,8 +2,23 @@ import * as fs from "fs";
 import * as path from "path";
 import * as inflection from "inflection";
 import * as Handlebars from "handlebars";
+import { KoreanFieldNameMap } from "./templates/kor";
 
-const input = {
+interface IScaffoldInput {
+  name: string;
+  fields: IScaffoldInputField[];
+}
+
+interface IScaffoldInputField {
+  name: string;
+  type: string;
+  values?: string[];
+  args?: {
+    [key: string]: boolean;
+  };
+}
+
+const input: IScaffoldInput = {
   name: "post",
   fields: [
     {
@@ -22,13 +37,6 @@ const input = {
     {
       name: "price",
       type: "INTEGER",
-    },
-    {
-      name: "int1",
-      type: "INTEGER",
-      args: {
-        unsigned: true,
-      },
     },
     {
       name: "int1",
@@ -146,6 +154,10 @@ const loadTemplate = async path => {
   return buffer.toString();
 };
 
+const getKoreanWordIfExists = str => {
+  return KoreanFieldNameMap[str] ? KoreanFieldNameMap[str] : str;
+};
+
 const bootstrap = async () => {
   Handlebars.registerHelper("pluralize", str => inflection.pluralize(str));
   Handlebars.registerHelper("capitalize", str => inflection.capitalize(str));
@@ -209,6 +221,7 @@ const bootstrap = async () => {
 
     return {
       name: field.name,
+      korName: getKoreanWordIfExists(field.name),
       options: options,
       originType: field.type,
       seqType: seqType,
