@@ -14,6 +14,7 @@ export const KoreanFieldNameMap = {
   name: "이름",
   level: "레벨",
   category: "카테고리",
+  phoneNumber: "전화번호",
   order: "정렬",
   status: "타입",
   imgURL: "이미지",
@@ -76,4 +77,6 @@ export const KoreanFieldNameMap = {
   media: "미디어",
   current: "현재",
   solution: "솔루션",
+  lat: "위도",
+  lng: "경도",
 };

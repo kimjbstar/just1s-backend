@@ -8,9 +8,44 @@ import {
   BelongsTo,
   AllowNull
 } from "sequelize-typescript";
+import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
 
-import { {{#each enums}}{{name}},{{/each}} } from "@src/modules/{{pluralize name}}/{{pluralize name}}.enum.ts";
-
+export const {{capitalize name}}Scopes: ScopesOptionsGetter = () => ({
+  {{#each fields}}
+  {{name}}: value => {
+    return {
+      where: { {{name}}: value },
+    };
+  },
+  {{/each}}
+  order: value => {
+    if ({{capitalize name}}Orderbys[value] == undefined) {
+      return {};
+    }
+    const { cursor, orderBy } = {{capitalize name}}Orderbys[value];
+    return {
+      attributes: {
+        include: [[Sequelize.literal(cursor), "cursor"]],
+      },
+      order: orderBy,
+    };
+  },
+  after: (value, orderbyKey) => {
+    if ({{capitalize name}}Orderbys[orderbyKey] == undefined) {
+      return {};
+    }
+    const { cursor, orderBy } = {{capitalize name}}Orderbys[orderbyKey];
+    return {
+      where: {
+        [Op.and]: Sequelize.literal(`${cursor} < ${value}`),
+      },
+    };
+  },
+})
+@DefaultScope(() => ({
+  include: [],
+}))
+@Scopes({{capitalize name}}Scopes)
 @Table
 export class {{capitalize name}} extends Model<{{capitalize name}}> {
 {{#each fields}}

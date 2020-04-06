@@ -2,11 +2,14 @@ import * as fs from "fs";
 import * as path from "path";
 import * as inflection from "inflection";
 import * as Handlebars from "handlebars";
-import { KoreanFieldNameMap } from "./templates/kor";
+import { KoreanFieldNameMap } from "./utils/kor";
+import { HandlebarHelpers } from "./utils/handlebar";
 
 interface IScaffoldInput {
   name: string;
   fields: IScaffoldInputField[];
+  hasManyModels?: any[];
+  belongsToModels?: any[];
 }
 
 interface IScaffoldInputField {
@@ -25,6 +28,8 @@ const input: IScaffoldInput = {
       name: "type",
       type: "ENUM",
       values: ["red", "blue", "green"],
+      // TODO : 기본값 처리 추가, ENUM 은 미입력시 첫번째값을 기본값으로 삼는다.
+      // TODO : allowNull 기본 false로 잡도록 처리
     },
     {
       name: "name",
@@ -42,7 +47,6 @@ const input: IScaffoldInput = {
       name: "int1",
       type: "INTEGER",
       args: {
-        binary: true,
         zerofill: true,
       },
     },
@@ -65,7 +69,20 @@ const input: IScaffoldInput = {
       name: "endAt",
       type: "DATE(4)",
     },
-    // TODO store fk
+  ],
+  hasManyModels: [
+    {
+      name: "PostImage",
+      subtable: true, // TODO : name 보고 무조건 subtable true 되도록 처리
+      // subtalbe은 create때 입력 처리 필요
+      // 모델 자체의 존재는 체크하지 않는 방안 고려중, 생성 시에 조건을 너무 많이 걸면 한꺼번에 만들어둘때 힘들 수가 있다. 생성후 일괄 에러 수정이 빠를 때가 있을 수도 있다.
+    },
+  ],
+  // TODO : lnclude에 추가, foreignkey, belongsTo 붙은 필드 각각추가
+  belongsToModels: [
+    {
+      name: "Store",
+    },
   ],
 };
 
@@ -159,38 +176,9 @@ const getKoreanWordIfExists = str => {
 };
 
 const bootstrap = async () => {
-  Handlebars.registerHelper("pluralize", str => inflection.pluralize(str));
-  Handlebars.registerHelper("capitalize", str => inflection.capitalize(str));
-  Handlebars.registerHelper("plucapitalize", str =>
-    inflection.pluralize(inflection.capitalize(str))
-  );
-  Handlebars.registerHelper("singularize", str => inflection.singularize(str));
-  Handlebars.registerHelper("ifCond", function (v1, operator, v2, options) {
-    switch (operator) {
-      case "==":
-        return v1 == v2 ? options.fn(this) : options.inverse(this);
-      case "===":
-        return v1 === v2 ? options.fn(this) : options.inverse(this);
-      case "!=":
-        return v1 != v2 ? options.fn(this) : options.inverse(this);
-      case "!==":
-        return v1 !== v2 ? options.fn(this) : options.inverse(this);
-      case "<":
-        return v1 < v2 ? options.fn(this) : options.inverse(this);
-      case "<=":
-        return v1 <= v2 ? options.fn(this) : options.inverse(this);
-      case ">":
-        return v1 > v2 ? options.fn(this) : options.inverse(this);
-      case ">=":
-        return v1 >= v2 ? options.fn(this) : options.inverse(this);
-      case "&&":
-        return v1 && v2 ? options.fn(this) : options.inverse(this);
-      case "||":
-        return v1 || v2 ? options.fn(this) : options.inverse(this);
-      default:
-        return options.inverse(this);
-    }
-  });
+  for (let [key, value] of Object.entries(HandlebarHelpers)) {
+    Handlebars.registerHelper(key, value);
+  }
 
   const templateTypes = ["model", "enum", "controller", "service", "module"];
   const templates = {};
@@ -236,13 +224,16 @@ const bootstrap = async () => {
     const pluralName = inflection.pluralize(metadata.name);
     const dirs = `/src/modules/${pluralName}/`;
     const fileName =
-      tType !== "model"
+      tType !== "model" && tType !== "enum"
         ? `${pluralName}.${tType}.ts`
         : `${pluralName}.${inflection.singularize(tType)}.ts`;
     const fullPath = path.join(process.cwd(), dirs, fileName);
     console.log(fullPath);
-    await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
-    await fs.writeFileSync(fullPath, codes[tType]);
+    console.log(codes[tType]);
+
+    // await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
+    // await fs.writeFileSync(fullPath, codes[tType]);
   }
+  // console.log(codes["model"]);
 };
 bootstrap();
