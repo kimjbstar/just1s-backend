@@ -1,0 +1,85 @@
+import { Injectable } from "@nestjs/common";
+import { {{capitalize name}}Scopes, {{capitalize name}} } from "@src/models/{{name}}.model";
+import { UtilService } from "@src/services/util.service";
+import {
+  MissingParameterIDException,
+  DataNotFoundException,
+  MissingBodyToUpdateException,
+  UnexpectedDeleteResultException,
+  UnexpectedUpdateResultException,
+  MissingBodyToCreateException
+} from "@src/common/http-exception";
+
+@Injectable()
+export class {{plucapitalize name}}Service {
+  constructor(private readonly utilService: UtilService) {}
+
+  async find(query): Promise<object[]> {
+    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
+      query,
+      Object.keys({{capitalize name}}Scopes())
+    );
+    const {{pluralize name}}: {{capitalize name}}[] = await {{capitalize name}}.scope(scopes).findAll({
+      offset: offset,
+      limit: limit
+    });
+    return {{pluralize name}}.map({{name}} => {{name}}.get({ plain: true }));
+  }
+
+  async findByPk(id): Promise<object> {
+    if (id === undefined) {
+      throw new MissingParameterIDException();
+    }
+    const row: {{capitalize name}} = await {{capitalize name}}.findByPk(id);
+    if (row == null) {
+      throw new DataNotFoundException();
+    }
+    return row;
+  }
+
+  async create(dto): Promise<object> {
+    if (dto === undefined) {
+      throw new MissingBodyToCreateException();
+    }
+    const row = await {{capitalize name}}.create(dto);
+    if (row == null) {
+      throw new DataNotFoundException();
+    }
+
+    return row.get({ plain: true });
+  }
+
+  async update(id, dto): Promise<any> {
+    if (id === undefined) {
+      throw new MissingParameterIDException();
+    }
+    if (dto === undefined) {
+      throw new MissingBodyToUpdateException();
+    }
+    const [affectedRowCount] = await {{capitalize name}}.update(dto, {
+      where: {
+        id: id
+      }
+    });
+    if (affectedRowCount != 1) {
+      throw new UnexpectedUpdateResultException();
+    }
+    return affectedRowCount;
+  }
+
+  async destroy(id): Promise<any> {
+    if (id === undefined) {
+      throw new MissingParameterIDException();
+    }
+
+    const affectedRowCount = await {{capitalize name}}.destroy({
+      where: {
+        id: id
+      }
+    });
+    if (affectedRowCount != 1) {
+      throw new UnexpectedDeleteResultException();
+    }
+    return affectedRowCount;
+  }
+}

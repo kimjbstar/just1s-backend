@@ -17,7 +17,7 @@ export class {{capitalize name}}ListQuery {
     @ApiProperty({
         description: "{{name}}을(를) 입력해주세요!",
         {{#ifCond originType '==' 'ENUM'}}
-        enums: Object.values({{tsType}})
+        enum: Object.values({{tsType}})
         {{/ifCond}}
     })
     {{name}}: {{tsType}}
@@ -36,7 +36,7 @@ export class {{plucapitalize name}}Controller {
   constructor(private readonly {{pluralize name}}Service: {{plucapitalize name}}Service) {}
 
   @Get()
-  async find(@Query() query: ReviewListQuery): Promise<any> {
+  async find(@Query() query: {{plucapitalize name}}ListQuery): Promise<any> {
     const {{pluralize name}}: object[] = await this.{{pluralize name}}Service.find(query);
     const result = {
       {{pluralize name}}: {{pluralize name}},
@@ -55,7 +55,7 @@ export class {{plucapitalize name}}Controller {
   }
 
   @Post()
-  async create(@Body() dto: ReviewCreateDto): Promise<any> {
+  async create(@Body() dto: {{plucapitalize name}}CreateDto): Promise<any> {
     const {{name}}: Object = await this.{{pluralize name}}Service.create(dto);
     const result = {
       {{name}}: {{name}},
@@ -67,7 +67,7 @@ export class {{plucapitalize name}}Controller {
   @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
   async update(
     @Param("id") id: Number,
-    @Body() dto: ReviewCreateDto
+    @Body() dto: {{plucapitalize name}}CreateDto
   ): Promise<any> {
     const {{name}}: Object = await this.{{pluralize name}}Service.update(id, dto);
     const result = {

@@ -180,7 +180,7 @@ const bootstrap = async () => {
     }
   });
 
-  const templateTypes = ["model", "enum", "controller", "module"];
+  const templateTypes = ["model", "enum", "controller", "service", "module"];
   const templates = {};
   for (const tType of templateTypes) {
     templates[tType] = await loadTemplate(
@@ -222,14 +222,14 @@ const bootstrap = async () => {
     codes[tType] = Handlebars.compile(templates[tType])(metadata);
     const pluralName = inflection.pluralize(metadata.name);
     const dirs = `/src/modules/${pluralName}/`;
-    const filePath = path.join(
-      process.cwd(),
-      dirs,
-      `${pluralName}.${tType}.ts`
-    );
-    console.log(filePath);
+    const fileName =
+      tType !== "model"
+        ? `${pluralName}.${tType}.ts`
+        : `${pluralName}.${inflection.singularize(tType)}.ts`;
+    const fullPath = path.join(process.cwd(), dirs, fileName);
+    console.log(fullPath);
     await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
-    await fs.writeFileSync(filePath, codes[tType]);
+    await fs.writeFileSync(fullPath, codes[tType]);
   }
 };
 bootstrap();
