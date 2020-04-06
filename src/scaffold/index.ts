@@ -66,7 +66,7 @@ const tsTypes = {
   VARCHAR: "string",
   DECIMAL: "number",
   INTEGER: "number",
-  DATE: "date",
+  DATE: "Date",
 };
 
 interface IMetadata {
@@ -119,10 +119,14 @@ const parseSeqType = (field, enums) => {
     if (field.args?.zerofill) {
       tsType += ".ZEROFILL";
     }
+    if (field.args?.unsgined) {
+      tsType += ".UNSIGNED";
+    }
   } else {
     const tsEnum = enums[field.name];
     tsType = "ENUM" + `({ values: Object.values(${tsEnum.name})})`;
   }
+  tsType = tsType.replace("VARCHAR", "STRING");
 
   return "DataType." + tsType;
 };
@@ -194,7 +198,7 @@ const bootstrap = async () => {
 
   metadata.fields = input.fields.map(field => {
     const options = {};
-    ["allowNull", "unique", "unsigned", "defalutValue"].forEach(arg => {
+    ["allowNull", "unique", "defalutValue"].forEach(arg => {
       if (field.args && field.args[arg]) {
         options[arg] = field.args[arg];
       }
