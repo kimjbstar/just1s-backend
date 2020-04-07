@@ -1,7 +1,6 @@
 FROM node:10
 WORKDIR /usr/src/app
 RUN mkdir /src
-COPY migrations ./migrations
 COPY src ./src 
 COPY package.json package-lock.json tsconfig.json nodemon.json tsconfig.build.json ./
 RUN npm i -g @nestjs/cli

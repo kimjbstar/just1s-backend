@@ -22,7 +22,7 @@ interface IScaffoldInputField {
 }
 
 const input: IScaffoldInput = {
-  name: "post",
+  name: "product",
   fields: [
     {
       name: "type",
