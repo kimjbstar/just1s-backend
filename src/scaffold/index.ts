@@ -232,8 +232,8 @@ const bootstrap = async () => {
     console.log(fullPath);
     // console.log(codes[tType]);
 
-    // await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
-    // await fs.writeFileSync(fullPath, codes[tType]);
+    await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
+    await fs.writeFileSync(fullPath, codes[tType]);
   }
   // console.log(codes["model"]);
 };

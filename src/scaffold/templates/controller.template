@@ -17,7 +17,7 @@ export class {{capitalize name}}ListQuery {
     @ApiProperty({
         description: "{{korName}}을(를) 입력해주세요!",
         {{#ifCond originType '==' 'ENUM'}}
-        enum: Object.values({{tsType}})
+        enum: Object.values()
         {{/ifCond}}
     })
     {{name}}: {{tsType}};
@@ -29,7 +29,7 @@ export class {{capitalize name}}CreateDto {
     @ApiProperty({
         description: "{{korName}}을(를) 입력해주세요!",
         {{#ifCond originType '==' 'ENUM'}}
-        enum: Object.values({{tsType}})
+        enum: Object.values()
         {{/ifCond}}
     })
     {{name}}: {{tsType}};

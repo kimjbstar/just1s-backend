@@ -6,7 +6,8 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
-  AllowNull
+  AllowNull,
+  ScopesOptionsGetter
 } from "sequelize-typescript";
 import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
 
