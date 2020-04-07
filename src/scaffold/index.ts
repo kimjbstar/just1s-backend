@@ -222,14 +222,15 @@ const bootstrap = async () => {
   for (const tType of templateTypes) {
     codes[tType] = Handlebars.compile(templates[tType])(metadata);
     const pluralName = inflection.pluralize(metadata.name);
-    const dirs = `/src/modules/${pluralName}/`;
+    const dirs =
+      tType !== "model" ? `/src/modules/${pluralName}/` : `/src/models`;
     const fileName =
       tType !== "model" && tType !== "enum"
         ? `${pluralName}.${tType}.ts`
-        : `${pluralName}.${inflection.singularize(tType)}.ts`;
+        : `${inflection.singularize(pluralName)}.${tType}.ts`;
     const fullPath = path.join(process.cwd(), dirs, fileName);
     console.log(fullPath);
-    console.log(codes[tType]);
+    // console.log(codes[tType]);
 
     // await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
     // await fs.writeFileSync(fullPath, codes[tType]);
