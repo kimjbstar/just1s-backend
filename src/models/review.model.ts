@@ -172,13 +172,13 @@ export class Review extends Model<Review> {
   status: ReviewStatus;
 
   @ForeignKey(() => CarModel)
-  carModelId: CarModel;
+  carModelId: number;
 
   @BelongsTo(() => CarModel)
   carModel: CarModel;
 
   @ForeignKey(() => ReviewCategory)
-  reviewCategoryId: ReviewCategory;
+  reviewCategoryId: number;
 
   @BelongsTo(() => ReviewCategory)
   reviewCategory: ReviewCategory;

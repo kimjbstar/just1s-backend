@@ -1,52 +1,36 @@
-import * as beautify from "js-beautify";
-import * as fs from "fs";
-import * as path from "path";
-import removeCurrentRevisionMigrations from "./removeCurrentRevisionMigrations";
-export default async function writeMigration(
-  revision,
-  migration,
-  migrationsPath,
-  program
-) {
-  await removeCurrentRevisionMigrations(revision, migrationsPath, program);
-
-  const name = program.migrationName || "";
-  const comment = program.comment || "";
-  let commands = `var migrationCommands = [ \n${migration.commandsUp.join(
-    ", \n"
-  )} \n];\n`;
-  let commandsDown = `var rollbackCommands = [ \n${migration.commandsDown.join(
-    ", \n"
-  )} \n];\n`;
-
-  const actions = ` * ${migration.consoleOut.join("\n * ")}`;
-
-  commands = beautify(commands);
-  commandsDown = beautify(commandsDown);
-
-  const info = {
-    revision,
-    name,
-    created: new Date(),
-    comment
-  };
-
-  const template = `'use strict';
+'use strict';
 
 var Sequelize = require('sequelize');
 
 /**
  * Actions summary:
  *
-${actions}
+ * removeColumn "repImgUrl" from table "Stores"
  *
  **/
 
-var info = ${JSON.stringify(info, null, 4)};
+var info = {
+    "revision": 2,
+    "name": "noname",
+    "created": "2020-04-10T06:42:59.628Z",
+    "comment": ""
+};
 
-${commands}
+var migrationCommands = [{
+    fn: "removeColumn",
+    params: ["Stores", "repImgUrl"]
+}];
 
-${commandsDown}
+var rollbackCommands = [{
+    fn: "addColumn",
+    params: [
+        "Stores",
+        "repImgUrl",
+        {
+            "type": Sequelize.STRING
+        }
+    ]
+}];
 
 module.exports = {
     pos: 0,
@@ -88,17 +72,3 @@ module.exports = {
     },
     info: info
 };
-`;
-
-  const revisionNumber = revision.toString().padStart(8, "0");
-
-  const filename = path.join(
-    migrationsPath,
-    `${revisionNumber +
-      (name !== "" ? `-${name.replace(/[\s-]/g, "_")}` : "")}.js`
-  );
-
-  fs.writeFileSync(filename, template);
-
-  return { filename, info, revisionNumber };
-}
