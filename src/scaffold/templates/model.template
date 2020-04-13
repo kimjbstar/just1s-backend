@@ -13,7 +13,6 @@ import {
   Scopes,
   ScopesOptionsGetter
 } from "sequelize-typescript";
-[{{isSub}}]
 {{#ifCond isSub '!=' true}}
 import { {{#each ../enums}}{{this.name}},{{/each}} {{camelize ../name}}Orderbys } from "@src/modules/{{pluralize ../name}}/{{../name}}.enum";
 {{/ifCond}}

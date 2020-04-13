@@ -1,0 +1,21 @@
+{
+  "name": "product",
+  "fields": [
+    { "name": "type", "type": "ENUM", "values": ["red", "blue", "green"] },
+    { "name": "name", "type": "VARCHAR" },
+    { "name": "phoneNumber", "type": "VARCHAR(16)" },
+    { "name": "price", "type": "INTEGER" },
+    { "name": "int1", "type": "INTEGER", "zerofill": true },
+    { "name": "lat", "type": "DECIMAL(5,3)" },
+    { "name": "isGood", "type": "BOOLEAN", "allowNull": true },
+    { "name": "beginAt", "type": "DATE" },
+    { "name": "endAt", "type": "DATE(4)" }
+  ],
+  "subModels": [
+    {
+      "name": "image",
+      "fields": [{ "name": "imgUrl", "type": "VARCHAR(128)" }]
+    }
+  ],
+  "belongsToModels": ["store"]
+}
