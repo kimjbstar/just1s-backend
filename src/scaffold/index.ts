@@ -109,12 +109,8 @@ const input: IScaffoldInput = {
           type: "VARCHAR(128)"
         }
       ]
-      // TODO : name 보고 무조건 subtable true 되도록 처리
-      // subtalbe은 create때 입력 처리 필요
-      // 모델 자체의 존재는 체크하지 않는 방안 고려중, 생성 시에 조건을 너무 많이 걸면 한꺼번에 만들어둘때 힘들 수가 있다. 생성후 일괄 에러 수정이 빠를 때가 있을 수도 있다.
     }
   ],
-  // TODO : lnclude에 추가, foreignkey, belongsTo 붙은 필드 각각추가
   belongsToModels: ["store"]
 };
 
