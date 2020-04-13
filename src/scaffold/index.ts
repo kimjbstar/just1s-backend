@@ -5,6 +5,37 @@ import * as Handlebars from "handlebars";
 import { KoreanFieldNameMap } from "./utils/kor";
 import { HandlebarHelpers } from "./utils/handlebar";
 
+const TEMPLATE_TYPES = [
+  {
+    key: "model",
+    getDirectory: (name) => `/src/models`,
+    getFileName: (name) =>
+      `${inflection.underscore(inflection.singularize(name))}.model.ts`,
+    sub: true
+  },
+  {
+    key: "enum",
+    getDirectory: (name) => `/src/modules/${inflection.pluralize(name)}`,
+    getFileName: (name) =>
+      `${inflection.underscore(inflection.singularize(name))}.model.ts`
+  },
+  {
+    key: "controller",
+    getDirectory: (name) => `/src/modules/${inflection.pluralize(name)}`,
+    getFileName: (name) => `${inflection.pluralize(name)}.controller.ts`
+  },
+  {
+    key: "service",
+    getDirectory: (name) => `/src/modules/${inflection.pluralize(name)}`,
+    getFileName: (name) => `${inflection.pluralize(name)}.service.ts`
+  },
+  {
+    key: "module",
+    getDirectory: (name) => `/src/modules/${inflection.pluralize(name)}`,
+    getFileName: (name) => `${inflection.pluralize(name)}.module.ts`
+  }
+];
+
 interface IScaffoldInput {
   name: string;
   fields: IScaffoldInputField[];
@@ -71,7 +102,7 @@ const input: IScaffoldInput = {
   ],
   subModels: [
     {
-      name: "PostImage",
+      name: "image",
       fields: [
         {
           name: "imgUrl",
@@ -98,7 +129,11 @@ const tsTypes = {
 interface IMetadata {
   name: string;
   fields?: IMetadataField[];
+  originalName?: string;
+  belongsToModels?: string[];
+  hasManyModels?: any[];
   enums?: object;
+  isSub?: boolean;
 }
 
 interface IMetadataField {
@@ -180,23 +215,86 @@ const bootstrap = async () => {
     Handlebars.registerHelper(key, value);
   }
 
-  const templateTypes = ["model", "enum", "controller", "service", "module"];
   const templates = {};
-  for (const tType of templateTypes) {
-    templates[tType] = await loadTemplate(
-      path.join(__dirname, `templates/${tType}.template`)
+  for (const templateType of TEMPLATE_TYPES) {
+    templates[templateType.key] = await loadTemplate(
+      path.join(__dirname, `templates/${templateType.key}.template`)
     );
   }
-  console.log(templates);
 
-  let metadata: IMetadata = {
-    name: input.name
-  };
+  const metadata: IMetadata = parseInput(input);
+  metadata.isSub = false;
+  metadata.hasManyModels = [];
+
+  const subMetadatas: IMetadata[] = [];
+  if (input.subModels.length > 0) {
+    input.subModels.forEach((subModel) => {
+      const originalName = subModel.name;
+      subModel.name = [input.name, subModel.name].join("_");
+
+      const subMetadata = parseInput(subModel);
+      subMetadata.isSub = true;
+      subMetadata.originalName = originalName;
+
+      subMetadata.belongsToModels = [metadata.name];
+      subMetadatas.push(subMetadata);
+
+      metadata.hasManyModels.push(subMetadata);
+    });
+  }
+
+  console.dir(metadata, { depth: 3 });
+
+  const codes = {};
+  for (const templateType of TEMPLATE_TYPES) {
+    codes[templateType.key] = Handlebars.compile(templates[templateType.key])(
+      metadata
+    );
+    const dirs = templateType.getDirectory(metadata.name);
+    const fileName = templateType.getFileName(metadata.name);
+    const fullPath = path.join(process.cwd(), dirs, fileName);
+    console.log(fullPath);
+
+    await fs.mkdirSync(
+      path.join(process.cwd(), templateType.getDirectory(metadata.name)),
+      { recursive: true }
+    );
+    await fs.writeFileSync(fullPath, codes[templateType.key]);
+  }
+
+  if (subMetadatas.length > 0) {
+    subMetadatas.forEach(async (subMetadata) => {
+      for (const templateType of TEMPLATE_TYPES) {
+        if (!templateType.sub) {
+          continue;
+        }
+        codes[templateType.key] = Handlebars.compile(
+          templates[templateType.key]
+        )(subMetadata);
+        const dirs = templateType.getDirectory(subMetadata.name);
+        const fileName = templateType.getFileName(subMetadata.name);
+        const fullPath = path.join(process.cwd(), dirs, fileName);
+        console.log(fullPath);
+
+        await fs.mkdirSync(
+          path.join(process.cwd(), templateType.getDirectory(metadata.name)),
+          { recursive: true }
+        );
+        await fs.writeFileSync(fullPath, codes[templateType.key]);
+      }
+    });
+  }
+};
+bootstrap();
+
+const parseInput = (input: IScaffoldInput): IMetadata => {
+  const belongsToModels = input.belongsToModels?.length
+    ? input.belongsToModels
+    : [];
 
   const enums = getEnums(input);
-  metadata.enums = enums;
 
-  metadata.fields = input.fields.map((field) => {
+  const fields = input.fields.map((field) => {
     const options = {
       allowNull: false
     };
@@ -218,28 +316,13 @@ const bootstrap = async () => {
       tsType: tsType
     };
   });
-  console.dir(metadata, { depth: 3 });
 
-  metadata["v1"] = 1;
-  metadata["v2"] = 2;
+  const result: IMetadata = {
+    name: input.name,
+    enums: enums,
+    fields: fields,
+    belongsToModels: belongsToModels
+  };
 
-  const codes = {};
-  for (const tType of templateTypes) {
-    codes[tType] = Handlebars.compile(templates[tType])(metadata);
-    const pluralName = inflection.pluralize(metadata.name);
-    const dirs =
-      tType !== "model" ? `/src/modules/${pluralName}/` : `/src/models`;
-    const fileName =
-      tType !== "model" && tType !== "enum"
-        ? `${pluralName}.${tType}.ts`
-        : `${inflection.singularize(pluralName)}.${tType}.ts`;
-    const fullPath = path.join(process.cwd(), dirs, fileName);
-    console.log(fullPath);
-    // console.log(codes[tType]);
-
-    await fs.mkdirSync(path.join(process.cwd(), dirs), { recursive: true });
-    await fs.writeFileSync(fullPath, codes[tType]);
-  }
-  // console.log(codes["model"]);
+  return result;
 };
-bootstrap();

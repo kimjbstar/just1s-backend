@@ -8,13 +8,23 @@ import {
   ForeignKey,
   BelongsTo,
   AllowNull,
+  HasMany,
   DefaultScope,
   Scopes,
   ScopesOptionsGetter
 } from "sequelize-typescript";
-import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
+[{{isSub}}]
+{{#ifCond isSub '!=' true}}
+import { {{#each ../enums}}{{this.name}},{{/each}} {{camelize ../name}}Orderbys } from "@src/modules/{{pluralize ../name}}/{{../name}}.enum";
+{{/ifCond}}
+{{#each hasManyModels}}
+import { {{camelize this.name}} } from "@src/models/{{underscore this.name}}.model";
+{{/each}}
+{{#each belongsToModels}}
+import { {{camelize this}} } from "@src/models/{{this}}.model";
+{{/each}}
 
-export const {{capitalize name}}Scopes: ScopesOptionsGetter = () => ({
+export const {{camelize name}}Scopes: ScopesOptionsGetter = () => ({
   {{#each fields}}
   {{name}}: value => {
     return {
@@ -22,11 +32,12 @@ export const {{capitalize name}}Scopes: ScopesOptionsGetter = () => ({
     };
   },
   {{/each}}
+  {{#ifCond isSub '!=' true}}
   order: value => {
-    if ({{capitalize name}}Orderbys[value] == undefined) {
+    if ({{camelize ../name}}Orderbys[value] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = {{capitalize name}}Orderbys[value];
+    const { cursor, orderBy } = {{camelize ../name}}Orderbys[value];
     return {
       attributes: {
         include: [[Sequelize.literal(cursor), "cursor"]],
@@ -35,23 +46,24 @@ export const {{capitalize name}}Scopes: ScopesOptionsGetter = () => ({
     };
   },
   after: (value, orderbyKey) => {
-    if ({{capitalize name}}Orderbys[orderbyKey] == undefined) {
+    if ({{camelize ../name}}Orderbys[orderbyKey] == undefined) {
       return {};
     }
-    const { cursor, orderBy } = {{capitalize name}}Orderbys[orderbyKey];
+    const { cursor, orderBy } = {{camelize ../name}}Orderbys[orderbyKey];
     return {
       where: {
         [Op.and]: Sequelize.literal(`${cursor} < ${value}`),
       },
     };
   },
+  {{/ifCond}}
 })
 @DefaultScope(() => ({
-  include: [],
+  include: [ {{#each belongsToModels}} {{camelize this}}, {{/each}}],
 }))
-@Scopes({{capitalize name}}Scopes)
+@Scopes({{camelize name}}Scopes)
 @Table
-export class {{capitalize name}} extends Model<{{capitalize name}}> {
+export class {{camelize name}} extends Model<{{camelize name}}> {
 {{#each fields}}
     @Column({
         type: {{seqType}},
@@ -61,5 +73,22 @@ export class {{capitalize name}} extends Model<{{capitalize name}}> {
     })
     {{name}}: {{tsType}};
 
+{{/each}}
+
+{{#each belongsToModels}}
+  @ForeignKey(() => {{camelize this}})
+  {{camelizeFirstLow this}}Id: number;
+
+  @BelongsTo(() => {{camelize this}})
+  {{camelizeFirstLow this}}: {{camelize this}};
+{{/each}}
+
+{{#each hasManyModels}}
+  @HasMany(() => {{camelize this.name}}, {
+    as: "{{pluralize this.originalName}}",
+    foreignKey: "{{toLowerCase ../name}}Id",
+    constraints: false
+  })
+  {{pluralize this.originalName}}: {{camelize this.name}}[];
 {{/each}}
 }

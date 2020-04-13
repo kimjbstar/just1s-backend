@@ -9,6 +9,9 @@ import {
   UnexpectedUpdateResultException,
   MissingBodyToCreateException
 } from "@src/common/http-exception";
+{{#each hasManyModels}}
+import { {{camelize this.name}} } from "@src/models/{{underscore this.name}}.model";
+{{/each}}
 
 @Injectable()
 export class {{plucapitalize name}}Service {
@@ -41,7 +44,9 @@ export class {{plucapitalize name}}Service {
     if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
-    const row = await {{capitalize name}}.create(dto);
+    const row = await {{capitalize name}}.create(dto, {
+      include: [{{#each hasManyModels}} {{camelize this.name}}  {{/each}} ]
+    });
     if (row == null) {
       throw new DataNotFoundException();
     }

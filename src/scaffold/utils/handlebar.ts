@@ -4,6 +4,10 @@ export const HandlebarHelpers = {
   capitalize: (str) => inflection.capitalize(str),
   plucapitalize: (str) => inflection.pluralize(inflection.capitalize(str)),
   singularize: (str) => inflection.singularize(str),
+  underscore: (str) => inflection.underscore(str),
+  camelize: (str) => inflection.camelize(str),
+  camelizeFirstLow: (str) => inflection.camelize(str, true),
+  toLowerCase: (str) => str.toLowerCase(),
   ifCond: (v1, operator, v2, options) => {
     switch (operator) {
       case "==":
