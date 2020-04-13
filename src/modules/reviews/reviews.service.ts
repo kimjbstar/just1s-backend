@@ -24,7 +24,7 @@ export class ReviewsService {
       offset: offset,
       limit: limit
     });
-    return reviews.map(review => review.get({ plain: true }));
+    return reviews.map((review) => review.get({ plain: true }));
   }
 
   async findByPk(id): Promise<object> {

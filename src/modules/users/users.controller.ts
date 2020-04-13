@@ -1,7 +1,7 @@
 import {
   UserRole,
   UserStatus,
-  UserOrderbys,
+  UserOrderbys
 } from "@src/modules/users/users.enum";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { Request } from "express";
@@ -14,7 +14,7 @@ import {
   Delete,
   Query,
   Param,
-  Body,
+  Body
 } from "@nestjs/common";
 import { UsersService } from "@src/modules/users/users.service";
 
@@ -22,26 +22,26 @@ export class UserListQuery {
   @ApiProperty({
     description: "role을(를) 입력해주세요 !",
     enum: Object.values(UserRole),
-    default: UserRole.NORMAL,
+    default: UserRole.NORMAL
   })
   role: UserRole;
   @ApiProperty({
     description: "status을(를) 입력해주세요 !",
     enum: Object.values(UserStatus),
-    default: UserStatus.NORMAL,
+    default: UserStatus.NORMAL
   })
   status: UserStatus;
   @ApiProperty({
-    description: "email__like을(를) 입력해주세요 !",
+    description: "email__like을(를) 입력해주세요 !"
   })
   email__like: string;
   @ApiProperty({
     description: "order을(를) 입력해주세요 !",
-    enum: Object.keys(UserOrderbys),
+    enum: Object.keys(UserOrderbys)
   })
   order: string;
   @ApiProperty({
-    description: "after을(를) 입력해주세요 !",
+    description: "after을(를) 입력해주세요 !"
   })
   after: number;
 }
@@ -49,53 +49,53 @@ export class UserListQuery {
 export class UserCreateDto {
   @ApiProperty({
     description: "role을(를) 입력해주세요 !",
-    enum: Object.values(UserRole),
+    enum: Object.values(UserRole)
   })
   role: UserRole;
   @ApiProperty({
     description: "status을(를) 입력해주세요 !",
-    enum: Object.values(UserStatus),
+    enum: Object.values(UserStatus)
   })
   status: UserStatus;
   @ApiProperty({
-    description: "email을(를) 입력해주세요 !",
+    description: "email을(를) 입력해주세요 !"
   })
   email: string;
   @ApiProperty({
-    description: "stringId을(를) 입력해주세요 !",
+    description: "stringId을(를) 입력해주세요 !"
   })
   stringId: string;
   @ApiProperty({
-    description: "pw을(를) 입력해주세요 !",
+    description: "pw을(를) 입력해주세요 !"
   })
   pw: string;
   @ApiProperty({
-    description: "imgUrl을(를) 입력해주세요 !",
+    description: "imgUrl을(를) 입력해주세요 !"
   })
   imgUrl: string;
   @ApiProperty({
-    description: "nickname을(를) 입력해주세요 !",
+    description: "nickname을(를) 입력해주세요 !"
   })
   nickname: string;
   @ApiProperty({
-    description: "name을(를) 입력해주세요 !",
+    description: "name을(를) 입력해주세요 !"
   })
   name: string;
   @ApiProperty({
-    description: "phoneNumber을(를) 입력해주세요 !",
+    description: "phoneNumber을(를) 입력해주세요 !"
   })
   phoneNumber: string;
   @ApiProperty({
-    description: "desc을(를) 입력해주세요 !",
+    description: "desc을(를) 입력해주세요 !"
   })
   desc: string;
 
   @ApiProperty({
-    description: "blockedUntil을(를) 입력해주세요 !",
+    description: "blockedUntil을(를) 입력해주세요 !"
   })
   blockedUntil: Date;
   @ApiProperty({
-    description: "toGetPushed을(를) 입력해주세요 !",
+    description: "toGetPushed을(를) 입력해주세요 !"
   })
   toGetPushed: boolean;
 }
@@ -108,7 +108,7 @@ export class UsersController {
   async find(@Query() query: UserListQuery): Promise<any> {
     const users: object[] = await this.usersService.find(query);
     const result = {
-      users: users,
+      users: users
     };
     return result;
   }
@@ -118,7 +118,7 @@ export class UsersController {
   async get(@Param("id") id: Number): Promise<any> {
     const user: Object = await this.usersService.findByPk(id);
     const result = {
-      user: user,
+      user: user
     };
     return result;
   }
@@ -127,7 +127,7 @@ export class UsersController {
   async create(@Body() dto: UserCreateDto): Promise<any> {
     const user: Object = await this.usersService.create(dto);
     const result = {
-      user: user,
+      user: user
     };
     return result;
   }
@@ -140,7 +140,7 @@ export class UsersController {
   ): Promise<any> {
     const user: Object = await this.usersService.update(id, dto);
     const result = {
-      user: user,
+      user: user
     };
     return result;
   }
@@ -150,7 +150,7 @@ export class UsersController {
   async delete(@Param("id") id: Number): Promise<any> {
     const user: Object = await this.usersService.destroy(id);
     const result = {
-      user: user,
+      user: user
     };
     return result;
   }

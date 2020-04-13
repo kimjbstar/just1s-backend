@@ -17,7 +17,7 @@ const bootstrap = async () => {
       const member = _member;
       return filename === member;
     },
-    timezone: "+09:00",
+    timezone: "+09:00"
     // logging: false,
   });
   await sequelize.authenticate();
@@ -26,7 +26,7 @@ const bootstrap = async () => {
     {
       outDir: path.join(__dirname, "../migrations"),
       preview: true,
-      migrationName: "foo bar",
+      migrationName: "foo bar"
     }
   );
   console.log(makeMigrationResult);

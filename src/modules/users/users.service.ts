@@ -31,7 +31,7 @@ export class UsersService {
       offset: offset,
       limit: limit
     });
-    return users.map(user => user.get({ plain: true }));
+    return users.map((user) => user.get({ plain: true }));
   }
 
   async findByPk(id): Promise<object> {

@@ -78,5 +78,5 @@ export const KoreanFieldNameMap = {
   current: "현재",
   solution: "솔루션",
   lat: "위도",
-  lng: "경도",
+  lng: "경도"
 };

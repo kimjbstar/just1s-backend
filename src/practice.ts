@@ -5,7 +5,7 @@ import * as path from "path";
 import { Model } from "sequelize/types";
 
 const sequelizeResultToJson = (rows: Model[]) => {
-  return rows.map(el => el.get({ plain: true }));
+  return rows.map((el) => el.get({ plain: true }));
 };
 
 const bootstrap = async () => {

@@ -71,6 +71,7 @@
     "@types/validator": "^12.0.1",
     "handlebars": "^4.7.6",
     "nodemon": "^2.0.2",
+    "prettier": "^2.0.4",
     "sequelize-cli": "^5.5.1",
     "sequelize-typescript-migration": "0.0.1-beta.3",
     "tsconfig-paths": "^3.9.0"

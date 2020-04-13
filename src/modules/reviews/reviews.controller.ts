@@ -6,52 +6,52 @@ import {
   Delete,
   Query,
   Param,
-  Body,
+  Body
 } from "@nestjs/common";
 import { ReviewsService } from "@src/modules/reviews/reviews.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import {
   ReviewStatus,
   ReviewType,
-  ReviewOrderbys,
+  ReviewOrderbys
 } from "@src/modules/reviews/review.enum";
 
 export class ReviewListQuery {
   @ApiProperty({
     description: "status을(를) 입력해주세요 !",
     enum: Object.values(ReviewStatus),
-    default: ReviewStatus.NORMAL,
+    default: ReviewStatus.NORMAL
   })
   status: string;
   @ApiProperty({
     description: "type을(를) 입력해주세요 !",
-    enum: Object.values(ReviewType),
+    enum: Object.values(ReviewType)
   })
   type: string;
   @ApiProperty({
-    description: "title__like을(를) 입력해주세요 !",
+    description: "title__like을(를) 입력해주세요 !"
   })
   title__like: string;
   @ApiProperty({
-    description: "user__status을(를) 입력해주세요 !",
+    description: "user__status을(를) 입력해주세요 !"
   })
   user__status: string;
   @ApiProperty({
-    description: "user__name을(를) 입력해주세요 !",
+    description: "user__name을(를) 입력해주세요 !"
   })
   user__name: string;
   @ApiProperty({
     type: Number,
-    description: "price__gte을(를) 입력해주세요 !",
+    description: "price__gte을(를) 입력해주세요 !"
   })
   price__gte: number;
   @ApiProperty({
     description: "order을(를) 입력해주세요 !",
-    enum: Object.keys(ReviewOrderbys),
+    enum: Object.keys(ReviewOrderbys)
   })
   order: string;
   @ApiProperty({
-    description: "after을(를) 입력해주세요 !",
+    description: "after을(를) 입력해주세요 !"
   })
   after: string;
 }
@@ -59,72 +59,72 @@ export class ReviewListQuery {
 export class ReviewCreateDto {
   @ApiProperty({
     description: "type을(를) 입력해주세요 !",
-    enum: Object.values(ReviewType),
+    enum: Object.values(ReviewType)
   })
   type: ReviewType;
   @ApiProperty({
     description: "status을(를) 입력해주세요 !",
-    enum: Object.values(ReviewStatus),
+    enum: Object.values(ReviewStatus)
   })
   status: ReviewStatus;
   @ApiProperty({
-    description: "title을(를) 입력해주세요 !",
+    description: "title을(를) 입력해주세요 !"
   })
   title: string;
   @ApiProperty({
-    description: "content을(를) 입력해주세요 !",
+    description: "content을(를) 입력해주세요 !"
   })
   content: string;
   @ApiProperty({
-    description: "workingHours을(를) 입력해주세요 !",
+    description: "workingHours을(를) 입력해주세요 !"
   })
   workingHours: number;
   @ApiProperty({
-    description: "price을(를) 입력해주세요 !",
+    description: "price을(를) 입력해주세요 !"
   })
   price: number;
   @ApiProperty({
-    description: "beforeImgUrl을(를) 입력해주세요 !",
+    description: "beforeImgUrl을(를) 입력해주세요 !"
   })
   beforeImgUrl: string;
   @ApiProperty({
-    description: "repImgUrl을(를) 입력해주세요 !",
+    description: "repImgUrl을(를) 입력해주세요 !"
   })
   repImgUrl: string;
   @ApiProperty({
-    description: "repliesCount을(를) 입력해주세요 !",
+    description: "repliesCount을(를) 입력해주세요 !"
   })
   repliesCount: number;
   @ApiProperty({
-    description: "likesCount을(를) 입력해주세요 !",
+    description: "likesCount을(를) 입력해주세요 !"
   })
   likesCount: number;
   @ApiProperty({
-    description: "hitsCount을(를) 입력해주세요 !",
+    description: "hitsCount을(를) 입력해주세요 !"
   })
   hitsCount: number;
   @ApiProperty({
-    description: "adminHitsCount을(를) 입력해주세요 !",
+    description: "adminHitsCount을(를) 입력해주세요 !"
   })
   adminHitsCount: number;
   @ApiProperty({
-    description: "carModelId을(를) 입력해주세요 !",
+    description: "carModelId을(를) 입력해주세요 !"
   })
   carModelId: number;
   @ApiProperty({
-    description: "reviewCategoryId을(를) 입력해주세요 !",
+    description: "reviewCategoryId을(를) 입력해주세요 !"
   })
   reviewCategoryId: number;
   @ApiProperty({
-    description: "userId을(를) 입력해주세요 !",
+    description: "userId을(를) 입력해주세요 !"
   })
   userId: number;
   @ApiProperty({
-    description: "storeId을(를) 입력해주세요 !",
+    description: "storeId을(를) 입력해주세요 !"
   })
   storeId: number;
   @ApiProperty({
-    description: "이미지을(를) 입력해주세요 !",
+    description: "이미지을(를) 입력해주세요 !"
   })
   images: string[];
 }
@@ -137,7 +137,7 @@ export class ReviewsController {
   async find(@Query() query: ReviewListQuery): Promise<any> {
     const reviews: object[] = await this.reviewsService.find(query);
     const result = {
-      reviews: reviews,
+      reviews: reviews
     };
     return result;
   }
@@ -147,7 +147,7 @@ export class ReviewsController {
   async get(@Param("id") id: Number): Promise<any> {
     const review: Object = await this.reviewsService.findByPk(id);
     const result = {
-      review: review,
+      review: review
     };
     return result;
   }
@@ -156,7 +156,7 @@ export class ReviewsController {
   async create(@Body() dto: ReviewCreateDto): Promise<any> {
     const review: Object = await this.reviewsService.create(dto);
     const result = {
-      review: review,
+      review: review
     };
     return result;
   }
@@ -169,7 +169,7 @@ export class ReviewsController {
   ): Promise<any> {
     const review: Object = await this.reviewsService.update(id, dto);
     const result = {
-      review: review,
+      review: review
     };
     return result;
   }
@@ -179,7 +179,7 @@ export class ReviewsController {
   async delete(@Param("id") id: Number): Promise<any> {
     const review: Object = await this.reviewsService.destroy(id);
     const result = {
-      review: review,
+      review: review
     };
     return result;
   }

@@ -26,48 +26,48 @@ const input: IScaffoldInput = {
     {
       name: "type",
       type: "ENUM",
-      values: ["red", "blue", "green"],
+      values: ["red", "blue", "green"]
       // TODO : 기본값 처리 추가, ENUM 은 미입력시 첫번째값을 기본값으로 삼는다.
       // TODO : allowNull 기본 false로 잡도록 처리
     },
     {
       name: "name",
-      type: "VARCHAR",
+      type: "VARCHAR"
     },
     {
       name: "phoneNumber",
-      type: "VARCHAR(16)",
+      type: "VARCHAR(16)"
     },
     {
       name: "price",
-      type: "INTEGER",
+      type: "INTEGER"
     },
     {
       name: "int1",
       type: "INTEGER",
       args: {
-        zerofill: true,
-      },
+        zerofill: true
+      }
     },
     {
       name: "lat",
-      type: "DECIMAL(5,3)",
+      type: "DECIMAL(5,3)"
     },
     {
       name: "isGood",
       type: "BOOLEAN",
       args: {
-        allowNull: true,
-      },
+        allowNull: true
+      }
     },
     {
       name: "beginAt",
-      type: "DATE",
+      type: "DATE"
     },
     {
       name: "endAt",
-      type: "DATE(4)",
-    },
+      type: "DATE(4)"
+    }
   ],
   subModels: [
     {
@@ -75,16 +75,16 @@ const input: IScaffoldInput = {
       fields: [
         {
           name: "imgUrl",
-          type: "VARCHAR(128)",
-        },
-      ],
+          type: "VARCHAR(128)"
+        }
+      ]
       // TODO : name 보고 무조건 subtable true 되도록 처리
       // subtalbe은 create때 입력 처리 필요
       // 모델 자체의 존재는 체크하지 않는 방안 고려중, 생성 시에 조건을 너무 많이 걸면 한꺼번에 만들어둘때 힘들 수가 있다. 생성후 일괄 에러 수정이 빠를 때가 있을 수도 있다.
-    },
+    }
   ],
   // TODO : lnclude에 추가, foreignkey, belongsTo 붙은 필드 각각추가
-  belongsToModels: ["store"],
+  belongsToModels: ["store"]
 };
 
 const tsTypes = {
@@ -92,7 +92,7 @@ const tsTypes = {
   VARCHAR: "string",
   DECIMAL: "number",
   INTEGER: "number",
-  DATE: "Date",
+  DATE: "Date"
 };
 
 interface IMetadata {
@@ -109,18 +109,18 @@ interface IMetadataField {
   tsType: any;
 }
 
-const getEnums = table => {
+const getEnums = (table) => {
   const result = {};
   table.fields
-    .filter(field => {
+    .filter((field) => {
       return field.type === "ENUM";
     })
-    .map(field => {
+    .map((field) => {
       const name =
         inflection.capitalize(table.name) + inflection.capitalize(field.name);
       let code = `export enum ${name} {
         `;
-      field.values.forEach(enumField => {
+      field.values.forEach((enumField) => {
         code += `  ${enumField} = "${enumField}"
         `;
       });
@@ -129,7 +129,7 @@ const getEnums = table => {
         name: name,
         values: field.values,
         code: code,
-        tsType: `ENUM({ values: Object.values(${field.values})})`,
+        tsType: `ENUM({ values: Object.values(${field.values})})`
       };
     });
   return result;
@@ -166,12 +166,12 @@ const parseTsType = (field, enums) => {
   return tsTypes[field.type.replace(/\(.*\)/, "")];
 };
 
-const loadTemplate = async path => {
+const loadTemplate = async (path) => {
   const buffer: Buffer = fs.readFileSync(path);
   return buffer.toString();
 };
 
-const getKoreanWordIfExists = str => {
+const getKoreanWordIfExists = (str) => {
   return KoreanFieldNameMap[str] ? KoreanFieldNameMap[str] : str;
 };
 
@@ -190,17 +190,17 @@ const bootstrap = async () => {
   console.log(templates);
 
   let metadata: IMetadata = {
-    name: input.name,
+    name: input.name
   };
 
   const enums = getEnums(input);
   metadata.enums = enums;
 
-  metadata.fields = input.fields.map(field => {
+  metadata.fields = input.fields.map((field) => {
     const options = {
-      allowNull: false,
+      allowNull: false
     };
-    ["allowNull", "unique", "defaultValue"].forEach(arg => {
+    ["allowNull", "unique", "defaultValue"].forEach((arg) => {
       if (field.args && field.args[arg]) {
         options[arg] = field.args[arg];
       }
@@ -215,7 +215,7 @@ const bootstrap = async () => {
       options: options,
       originType: field.type,
       seqType: seqType,
-      tsType: tsType,
+      tsType: tsType
     };
   });
   console.dir(metadata, { depth: 3 });

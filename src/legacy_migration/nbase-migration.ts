@@ -62,7 +62,7 @@ export class NbaseMigration<T extends Model> {
           raw: true,
           type: "SELECT"
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
       if (typeof srcRows == "undefined") {
@@ -107,14 +107,14 @@ export class NbaseMigration<T extends Model> {
     const keysToRename = Object.keys(renamePolicy);
 
     const srcKeys = Object.keys(srcRows[0]);
-    const dstKeys = srcKeys.map(key => {
+    const dstKeys = srcKeys.map((key) => {
       const dstKey =
         keysToRename.indexOf(key) < 0
           ? inflection.camelize(key, true)
           : renamePolicy[key];
 
       const column: ISequelizeDescribeResult = columns.find(
-        _column => _column.fieldName == dstKey
+        (_column) => _column.fieldName == dstKey
       );
       if (!column || transformPolicy[key]) {
         // NOTHING TO DO
@@ -123,16 +123,16 @@ export class NbaseMigration<T extends Model> {
         column.type == "DATE" ||
         column.type.toString().indexOf("function Date") >= 0
       ) {
-        transformPolicy[key] = value =>
+        transformPolicy[key] = (value) =>
           value == "" && key != "created_at" ? null : new Date(value * 1000);
       } else if (column.type == "float") {
-        transformPolicy[key] = value =>
+        transformPolicy[key] = (value) =>
           value == "" ? column.defaultValue : parseFloat(value);
       } else if (
         column.type == "int" ||
         column.type.toString().indexOf("function Number") >= 0
       ) {
-        transformPolicy[key] = value =>
+        transformPolicy[key] = (value) =>
           value == "" ? column.defaultValue : parseInt(value);
       }
 
@@ -150,7 +150,7 @@ export class NbaseMigration<T extends Model> {
 
     // const repo = dstConnection.getRepository(entityClass);
 
-    const rows = srcRows.map(function(srcRow) {
+    const rows = srcRows.map(function (srcRow) {
       let _row: any = dstKeys.reduce((result, pair) => {
         const value = transformPolicy[pair.srcKey]
           ? transformPolicy[pair.srcKey](srcRow[pair.srcKey])
@@ -167,7 +167,7 @@ export class NbaseMigration<T extends Model> {
       }
 
       if (subtablePolicies != null && subtablePolicies.length > 0) {
-        subtablePolicies.forEach(policy => {
+        subtablePolicies.forEach((policy) => {
           if (policy.determine && policy.determine(_row) === false) {
             return;
           }

@@ -570,7 +570,7 @@ const bootstrap = async () => {
     ORDER BY review_replies.id`,
     renamePolicy: {},
     transformPolicy: {
-      parent_id: value => (value > 0 ? value : null)
+      parent_id: (value) => (value > 0 ? value : null)
     },
     newFieldPolicy: {},
     subtablePolicies: []

@@ -24,7 +24,7 @@ export class StoresService {
       offset: offset,
       limit: limit
     });
-    return stores.map(store => store.get({ plain: true }));
+    return stores.map((store) => store.get({ plain: true }));
   }
 
   async findByPk(id): Promise<object> {
