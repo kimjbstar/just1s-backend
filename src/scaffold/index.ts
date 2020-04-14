@@ -1,85 +1,22 @@
+import { IScaffoldInput } from "./utils/constants";
+import { scaffold } from "./utils/scaffold";
 import * as fs from "fs";
-import * as path from "path";
-import * as Handlebars from "handlebars";
-import { HandlebarHelpers } from "./utils/handlebar";
-import { IScaffoldInput, TEMPLATE_TYPES, IMetadata } from "./utils/constants";
-import { loadTemplate, parseInput } from "./utils/utils";
 
-const bootstrap = async (input: IScaffoldInput) => {
-  for (let [key, value] of Object.entries(HandlebarHelpers)) {
-    Handlebars.registerHelper(key, value);
-  }
+if (process.argv.length != 3) {
+  console.log("usage : npm run scaffold -- <file>");
+  process.exit();
+}
+const definitionPath = process.argv[2];
 
-  const templates = {};
-  for (const templateType of TEMPLATE_TYPES) {
-    templates[templateType.key] = await loadTemplate(
-      path.join(__dirname, `templates/${templateType.key}.template`)
-    );
-  }
-
-  const metadata: IMetadata = parseInput(input);
-  metadata.isSub = false;
-  metadata.hasManyModels = [];
-
-  const subMetadatas: IMetadata[] = [];
-  if (input.subModels.length > 0) {
-    input.subModels.forEach((subModel) => {
-      const originalName = subModel.name;
-      subModel.name = [input.name, subModel.name].join("_");
-
-      const subMetadata = parseInput(subModel);
-      subMetadata.isSub = true;
-      subMetadata.originalName = originalName;
-
-      subMetadata.belongsToModels = [metadata.name];
-      subMetadatas.push(subMetadata);
-
-      metadata.hasManyModels.push(subMetadata);
-    });
-  }
-
-  console.dir(metadata, { depth: 3 });
-
-  const codes = {};
-  for (const templateType of TEMPLATE_TYPES) {
-    codes[templateType.key] = Handlebars.compile(templates[templateType.key])(
-      metadata
-    );
-    const dirs = templateType.getDirectory(metadata.name);
-    const fileName = templateType.getFileName(metadata.name);
-    const fullPath = path.join(process.cwd(), dirs, fileName);
-    console.log(fullPath);
-
-    await fs.mkdirSync(
-      path.join(process.cwd(), templateType.getDirectory(metadata.name)),
-      { recursive: true }
-    );
-    await fs.writeFileSync(fullPath, codes[templateType.key]);
-  }
-
-  if (subMetadatas.length > 0) {
-    subMetadatas.forEach(async (subMetadata) => {
-      for (const templateType of TEMPLATE_TYPES) {
-        if (!templateType.sub) {
-          continue;
-        }
-        codes[templateType.key] = Handlebars.compile(
-          templates[templateType.key]
-        )(subMetadata);
-        const dirs = templateType.getDirectory(subMetadata.name);
-        const fileName = templateType.getFileName(subMetadata.name);
-        const fullPath = path.join(process.cwd(), dirs, fileName);
-        console.log(fullPath);
-
-        await fs.mkdirSync(
-          path.join(process.cwd(), templateType.getDirectory(metadata.name)),
-          { recursive: true }
-        );
-        await fs.writeFileSync(fullPath, codes[templateType.key]);
-      }
-    });
-  }
-};
-
-const input: IScaffoldInput = require("./product.json");
-bootstrap(input);
+if (fs.existsSync(definitionPath) == false) {
+  console.log("file not exists");
+  process.exit();
+}
+if (definitionPath.endsWith(".json") === false) {
+  console.log("not json");
+  process.exit();
+}
+const inputJson = fs.readFileSync(definitionPath).toString();
+const input: IScaffoldInput = JSON.parse(inputJson);
+scaffold(input);
+console.log("DONE!");
