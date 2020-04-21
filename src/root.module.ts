@@ -5,7 +5,10 @@ import { Module } from "@nestjs/common";
 import { AppModule } from "@src/app.module";
 import { ReviewsModule } from "@src/modules/reviews/reviews.module";
 import { StoresModule } from "./modules/stores/stores.module";
+import { MulterModule } from "@nestjs/platform-express";
 import * as path from "path";
+import { FilesModule } from "./modules/files/files.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
 
 let sequelizeConfig: SequelizeModuleOptions;
 try {
@@ -30,7 +33,14 @@ try {
     UsersModule,
     AuthModule,
     StoresModule,
-    SequelizeModule.forRoot(sequelizeConfig)
+    FilesModule,
+    SequelizeModule.forRoot(sequelizeConfig),
+    MulterModule.register({
+      dest: "./static"
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, "..", "static")
+    })
   ],
   providers: []
 })

@@ -2,7 +2,7 @@ const path = require("path");
 const inflection = require("inflection");
 
 const commonConfig = {
-  username: process.env.SEQUELIZE_USERNAME + "aaaa",
+  username: process.env.SEQUELIZE_USERNAME,
   password: process.env.SEQUELIZE_PASSWORD,
   database: process.env.SEQUELIZE_DATABASE,
   host: process.env.SEQUELIZE_HOST,
