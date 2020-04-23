@@ -1,18 +1,15 @@
-import { Sequelize } from "sequelize-typescript";
+import { Sequelize, ModelCtor, Model } from "sequelize-typescript";
 import { Store } from "./models/store.model";
 import * as inflection from "inflection";
 import * as path from "path";
-import { Model } from "sequelize/types";
-
-const sequelizeResultToJson = (rows: Model[]) => {
-  return rows.map((el) => el.get({ plain: true }));
-};
+import { Review } from "./models/review.model";
+import { Op, ModelAttributeColumnOptions } from "sequelize";
 
 const bootstrap = async () => {
   const modelPath = path.join(__dirname, "./models");
 
-  const dstConnection = new Sequelize({
-    database: "nbase",
+  const sequelize: Sequelize = new Sequelize({
+    database: "test_migration",
     username: "kimjbstar",
     password: "12091457",
     dialect: "mysql",
@@ -23,41 +20,114 @@ const bootstrap = async () => {
       const member = _member;
       return filename === member;
     },
-    timezone: "+09:00"
+    timezone: "+09:00",
+    logging: false
   });
 
-  // from qs
-  const params = {
-    category__name: "드레스업",
-    level__gte: 1,
-    level__lte: 3,
-    order: "ID__DESC"
-  };
+  let tableNameModelMap = {};
+  for (let [key, model] of Object.entries(sequelize.models)) {
+    const tableName: string = model.tableName;
+    tableNameModelMap[tableName] = model;
+  }
 
-  let _limit = 2;
-  let _offset = 0;
-  const stores = await Store.scope([
-    { method: ["level", 3] },
-    { method: ["order", "ID__DESC"] }
-  ]).findAll({
-    offset: _offset,
-    limit: _limit
-  });
-  console.log(stores);
+  let fkModelMap = {};
+  for (let [key, _model] of Object.entries(sequelize.models)) {
+    const attributes: { [attribute: string]: ModelAttributeColumnOptions } =
+      _model.rawAttributes;
+
+    let fkModelMapRow = {};
+    for (let [key, value] of Object.entries(attributes)) {
+      if (value.references) {
+        const tableName = value.references.model.toString();
+        const parentModel = tableNameModelMap[tableName];
+        fkModelMapRow[key] = parentModel;
+      }
+    }
+    fkModelMap[_model.tableName] = fkModelMapRow;
+  }
+
+  // console.log(fkModelMap);
+  const a = await getModelAndPks(Review, [8, 9], fkModelMap);
+  console.log(a);
+  // const reviews = await Review.findAll({
+  //   where: {
+  //     id: {
+  //       [Op.in]: [8, 9]
+  //     }
+  //   }
+  // });
+  // reviews.forEach((review) => {
+  //   // storeId: [1,2,3,4]
+  //   // userId:[1]
+  //   // 등을 모으기
+  //   // review 1,2,3,4,
+  //   // store 1,2,3,4
+  //   // category 2,3
+  //   // 의 array로 리턴
+  // });
+  // // console.log(reviews[0]);
+  // const reviewFkModelMap = fkModelMap[Review.tableName];
+  // console.log(reviewFkModelMap);
+
+  // console.log(attributes);
+
+  // const described = await Review.describe();
+  // console.log(described);
+  // console.log(Review.getTableName());
 };
 
+// getModelAndPks = function(){
+
+// }
+
+// table 이름, id 어레이의 쌍 리턴
+
+const getModelAndPks = async (
+  model: ModelCtor<Model<any, any>>,
+  pks: number[],
+  fkModelMap: {
+    [attribute: string]: ModelAttributeColumnOptions;
+  }
+) => {
+  console.log("DOOOOO", model, pks);
+  const rows = await model.findAll({
+    where: {
+      id: {
+        [Op.in]: pks
+      }
+    }
+  });
+  const subParams = {};
+
+  for (let [fkFieldName, modelClass] of Object.entries(
+    fkModelMap[model.tableName]
+  )) {
+    // subParams[modelClass] = [];
+    rows
+      .filter((row) => row[fkFieldName])
+      .forEach((row) => {
+        if (subParams[modelClass] === undefined) {
+          subParams[modelClass] = [];
+        }
+        if (subParams[modelClass].indexOf(row[fkFieldName]) < 0) {
+          subParams[modelClass].push(row[fkFieldName]);
+        }
+      });
+  }
+
+  console.log(subParams);
+  // ids = rows.map((row) => row.id);
+
+  return {
+    tableName: model.tableName
+    // ids: ids
+  };
+};
+
+interface aa {
+  [key: string]: ModelCtor<Model<any, any>>;
+}
+interface bb {
+  [attribute: string]: ModelAttributeColumnOptions;
+}
 bootstrap();
-
-// 파라미터가 없을 경우 기본처리가 필요할 수도 있다.
-
-// not equel
-
-// join 후 조건
-
-// not null 체크
-
-// ** filter -> 여러 조건이 들어감
-
-// ** orderby -> 정렬
-
-// ** mode 개념 넣는다 했지 ( filter, orderby 동시 )

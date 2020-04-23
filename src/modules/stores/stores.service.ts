@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { StoreImage } from "../../models/store_image.model";
-import { StoreScopes, Store } from "../../models/store.model";
+import { StoreImage } from "@src/models/store_image.model";
+import { StoreScopes, Store } from "@src/models/store.model";
 import { UtilService } from "@src/services/util.service";
 import {
   MissingParameterIDException,
@@ -38,11 +38,11 @@ export class StoresService {
     return row;
   }
 
-  async create(req): Promise<object> {
-    if (req.body.store === undefined) {
+  async create(dto): Promise<object> {
+    if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
-    const row = await Store.create(req.body.store, {
+    const row = await Store.create(dto, {
       include: [StoreImage]
     });
     if (row == null) {
@@ -52,17 +52,16 @@ export class StoresService {
     return row.get({ plain: true });
   }
 
-  async update(req): Promise<any> {
-    if (req.params.id === undefined) {
+  async update(id, dto): Promise<any> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
-    if (req.body.store === undefined) {
+    if (dto === undefined) {
       throw new MissingBodyToUpdateException();
     }
-
-    const [affectedRowCount] = await Store.update(req.body.store, {
+    const [affectedRowCount] = await Store.update(dto, {
       where: {
-        id: req.params.id
+        id: id
       }
     });
     if (affectedRowCount != 1) {
@@ -71,14 +70,14 @@ export class StoresService {
     return affectedRowCount;
   }
 
-  async destroy(req): Promise<any> {
-    if (req.params.id === undefined) {
+  async destroy(id): Promise<any> {
+    if (id === undefined) {
       throw new MissingParameterIDException();
     }
 
     const affectedRowCount = await Store.destroy({
       where: {
-        id: req.params.id
+        id: id
       }
     });
     if (affectedRowCount != 1) {

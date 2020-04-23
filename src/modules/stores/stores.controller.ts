@@ -7,7 +7,8 @@ import {
   Put,
   Delete,
   Query,
-  Param
+  Param,
+  Body
 } from "@nestjs/common";
 import { StoresService } from "@src/modules/stores/stores.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
@@ -67,52 +68,80 @@ export class StoreListQuery {
   after: string;
 }
 
+export class StoreCreateDto {
+  @ApiProperty({
+    description: "level을(를) 입력해주세요 !"
+  })
+  level: string;
+  @ApiProperty({
+    description: "status을(를) 입력해주세요 !"
+  })
+  status: string;
+  @ApiProperty({
+    description: "name을(를) 입력해주세요 !"
+  })
+  name: string;
+  @ApiProperty({
+    description: "tel을(를) 입력해주세요 !"
+  })
+  tel: string;
+  @ApiProperty({
+    description: "phoneNumber을(를) 입력해주세요 !"
+  })
+  phoneNumber: string;
+}
+
 @Controller("stores")
 export class StoresController {
   constructor(private readonly storesService: StoresService) {}
 
   @Get()
-  async find(@Query() storeListQuery: StoreListQuery): Promise<any> {
-    const stores: object[] = await this.storesService.find(StoreListQuery);
+  async find(@Query() query: StoreListQuery): Promise<any> {
+    const stores: object[] = await this.storesService.find(query);
     const result = {
       stores: stores
     };
     return result;
   }
 
-  @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   @Get(":id")
+  @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id") id: Number): Promise<any> {
-    const review: Object = await this.storesService.findByPk(id);
+    const store: Object = await this.storesService.findByPk(id);
     const result = {
-      review: review
+      store: store
     };
     return result;
   }
 
   @Post()
-  async create(@Req() req: Request): Promise<any> {
-    const review: Object = await this.storesService.create(req);
+  async create(@Body() dto: StoreCreateDto): Promise<any> {
+    const store: Object = await this.storesService.create(dto);
     const result = {
-      review: review
+      store: store
     };
     return result;
   }
 
   @Put(":id")
-  async update(@Req() req: Request): Promise<any> {
-    const review: Object = await this.storesService.update(req);
+  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
+  async update(
+    @Param("id") id: Number,
+    @Body() dto: StoreCreateDto
+  ): Promise<any> {
+    const store: Object = await this.storesService.update(id, dto);
     const result = {
-      review: review
+      store: store
     };
     return result;
   }
 
-  @Delete()
-  async delete(@Req() req: Request): Promise<any> {
-    const review: Object = await this.storesService.destroy(req);
+  @Delete(":id")
+  @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
+  async delete(@Param("id") id: Number): Promise<any> {
+    const store: Object = await this.storesService.destroy(id);
     const result = {
-      review: review
+      store: store
     };
     return result;
   }
