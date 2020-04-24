@@ -42,11 +42,11 @@ export class ReviewsService {
     if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
-    console.log(dto);
+
     const row = await Review.create(dto, {
       include: [ReviewImage]
     });
-    console.log(row);
+
     if (row == null) {
       throw new DataNotFoundException();
     }

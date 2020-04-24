@@ -1,11 +1,24 @@
 import { Sequelize, ModelCtor, Model } from "sequelize-typescript";
-import { Store } from "./models/store.model";
 import * as inflection from "inflection";
 import * as path from "path";
+import * as fs from "fs";
 import { Review } from "./models/review.model";
-import { Op, ModelAttributeColumnOptions } from "sequelize";
+import {
+  Op,
+  ModelAttributeColumnOptions,
+  Model as NativeSequelizeModel,
+  QueryTypes
+} from "sequelize";
+
+export type SequelizeModelCtor = ModelCtor<Model<any, any>>;
+
+export interface SequelizeModelCtorMap {
+  [key: string]: ModelCtor<Model<any, any>>;
+}
 
 const bootstrap = async () => {
+  const fixtureDir = path.join(process.cwd(), "./tests/fixtures");
+
   const modelPath = path.join(__dirname, "./models");
 
   const sequelize: Sequelize = new Sequelize({
@@ -25,6 +38,7 @@ const bootstrap = async () => {
   });
 
   let tableNameModelMap = {};
+
   for (let [key, model] of Object.entries(sequelize.models)) {
     const tableName: string = model.tableName;
     tableNameModelMap[tableName] = model;
@@ -39,95 +53,79 @@ const bootstrap = async () => {
     for (let [key, value] of Object.entries(attributes)) {
       if (value.references) {
         const tableName = value.references.model.toString();
-        const parentModel = tableNameModelMap[tableName];
+        const parentModel: SequelizeModelCtorMap = tableNameModelMap[tableName];
         fkModelMapRow[key] = parentModel;
       }
     }
     fkModelMap[_model.tableName] = fkModelMapRow;
   }
 
-  // console.log(fkModelMap);
-  const a = await getModelAndPks(Review, [8, 9], fkModelMap);
-  console.log(a);
-  // const reviews = await Review.findAll({
-  //   where: {
-  //     id: {
-  //       [Op.in]: [8, 9]
-  //     }
-  //   }
-  // });
-  // reviews.forEach((review) => {
-  //   // storeId: [1,2,3,4]
-  //   // userId:[1]
-  //   // 등을 모으기
-  //   // review 1,2,3,4,
-  //   // store 1,2,3,4
-  //   // category 2,3
-  //   // 의 array로 리턴
-  // });
-  // // console.log(reviews[0]);
-  // const reviewFkModelMap = fkModelMap[Review.tableName];
-  // console.log(reviewFkModelMap);
-
-  // console.log(attributes);
-
-  // const described = await Review.describe();
-  // console.log(described);
-  // console.log(Review.getTableName());
+  const res = await getModelAndPks(Review, [8, 9], fkModelMap);
+  res.forEach(async (row) => {
+    const sql = `SELECT * FROM ${
+      row.modelClass.tableName
+    } WHERE id IN(${row.ids.join(",")})`;
+    const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
+    const filePath = path.join(fixtureDir, row.modelClass.tableName);
+    await fs.writeFileSync(filePath, JSON.stringify(rows));
+    console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
+  });
 };
 
-// getModelAndPks = function(){
-
-// }
-
-// table 이름, id 어레이의 쌍 리턴
-
 const getModelAndPks = async (
-  model: ModelCtor<Model<any, any>>,
+  modelCtor: SequelizeModelCtor,
   pks: number[],
   fkModelMap: {
     [attribute: string]: ModelAttributeColumnOptions;
   }
 ) => {
-  console.log("DOOOOO", model, pks);
-  const rows = await model.findAll({
+  const rows = await modelCtor.findAll({
     where: {
       id: {
         [Op.in]: pks
       }
     }
   });
+
   const subParams = {};
 
   for (let [fkFieldName, modelClass] of Object.entries(
-    fkModelMap[model.tableName]
+    fkModelMap[modelCtor.tableName]
   )) {
-    // subParams[modelClass] = [];
     rows
       .filter((row) => row[fkFieldName])
       .forEach((row) => {
-        if (subParams[modelClass] === undefined) {
-          subParams[modelClass] = [];
+        if (subParams[modelClass.tableName] === undefined) {
+          subParams[modelClass.tableName] = {
+            modelClass: modelClass,
+            ids: []
+          };
         }
-        if (subParams[modelClass].indexOf(row[fkFieldName]) < 0) {
-          subParams[modelClass].push(row[fkFieldName]);
+        if (subParams[modelClass.tableName].ids.indexOf(row[fkFieldName]) < 0) {
+          subParams[modelClass.tableName].ids.push(row[fkFieldName]);
         }
       });
+
+    if (subParams[modelClass.tableName]) {
+      subParams[modelClass.tableName] = await getModelAndPks(
+        modelClass,
+        subParams[modelClass.tableName].ids,
+        fkModelMap
+      );
+    }
   }
 
-  console.log(subParams);
-  // ids = rows.map((row) => row.id);
+  let result = [];
+  result.push({
+    modelClass: modelCtor,
+    ids: pks
+  });
 
-  return {
-    tableName: model.tableName
-    // ids: ids
-  };
+  for (let [k, v] of Object.entries(subParams)) {
+    result = result.concat(Object.values(v));
+  }
+
+  return result;
 };
 
-interface aa {
-  [key: string]: ModelCtor<Model<any, any>>;
-}
-interface bb {
-  [attribute: string]: ModelAttributeColumnOptions;
-}
 bootstrap();
