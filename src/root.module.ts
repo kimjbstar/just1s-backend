@@ -7,6 +7,9 @@ import { MulterModule } from "@nestjs/platform-express";
 import * as path from "path";
 import { FilesModule } from "./modules/files/files.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { DecksModule } from "./modules/decks/decks.module";
+import { HashtagsModule } from "./modules/hashtags/hashtags.module";
+import { MusicModule } from "./modules/music/music.module";
 
 let sequelizeConfig: SequelizeModuleOptions;
 try {
@@ -30,6 +33,9 @@ try {
     UsersModule,
     AuthModule,
     FilesModule,
+    DecksModule,
+    HashtagsModule,
+    MusicModule,
     SequelizeModule.forRoot(sequelizeConfig),
     MulterModule.register({
       dest: "./static"

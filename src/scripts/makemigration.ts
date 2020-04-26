@@ -26,8 +26,8 @@ const bootstrap = async () => {
     sequelize,
     {
       outDir: path.join(__dirname, "../migrations"),
-      preview: true,
-      migrationName: "foo bar"
+      preview: false,
+      migrationName: "init"
     }
   );
   console.log(makeMigrationResult);

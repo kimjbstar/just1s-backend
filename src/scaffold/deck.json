@@ -1,0 +1,9 @@
+{
+  "name": "deck",
+  "fields": [
+    { "name": "title", "type": "VARCHAR(256)" },
+    { "name": "hitsCount", "type": "INTEGER" },
+    { "name": "averageScore", "type": "INTEGER" }
+  ],
+  "belongsToModels": ["user"]
+}

@@ -22,7 +22,7 @@ export const scaffold = async (input: IScaffoldInput) => {
   metadata.hasManyModels = [];
 
   const subMetadatas: IMetadata[] = [];
-  if (input.subModels.length > 0) {
+  if (input.subModels?.length > 0) {
     input.subModels.forEach((subModel) => {
       const originalName = subModel.name;
       subModel.name = [input.name, subModel.name].join("_");

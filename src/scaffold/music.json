@@ -1,0 +1,11 @@
+{
+  "name": "music",
+  "fields": [
+    { "name": "title", "type": "VARCHAR(256)" },
+    { "name": "artist", "type": "VARCHAR(256)" },
+    { "name": "link", "type": "VARCHAR(256)" },
+    { "name": "averageScore", "type": "INTEGER" },
+    { "name": "belogsDecksCount", "type": "INTEGER" },
+    { "name": "performsCount", "type": "INTEGER" }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "hashtag",
+  "fields": [{ "name": "name", "type": "VARCHAR(256)" }],
+  "belongsToModels": [""]
+}

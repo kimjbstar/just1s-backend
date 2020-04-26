@@ -18,8 +18,8 @@ async function bootstrap() {
   //   app.useGlobalGuards(new PublicAuthGuard(new Reflector()));
 
   const options = new DocumentBuilder()
-    .setTitle("nBase")
-    .setDescription("nBase API 설명입니다.")
+    .setTitle("just1s")
+    .setDescription("just1s API 설명입니다.")
     .setVersion("1.0")
     .addTag("cats")
     .build();
