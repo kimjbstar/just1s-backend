@@ -20,6 +20,7 @@ const bootstrap = async () => {
     timezone: "+09:00"
     // logging: false,
   });
+
   await sequelize.authenticate();
   const makeMigrationResult = await SequelizeTypescriptMigration.makeMigration(
     sequelize,

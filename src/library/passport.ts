@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
-import { User } from "./../models/user.model";
+import { User } from "../models/user.model";
 import * as passportJWT from "passport-jwt";
 import * as passportLocal from "passport-local";
 import { PassportStatic } from "passport";

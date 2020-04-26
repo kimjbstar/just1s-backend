@@ -12,14 +12,14 @@ import {
 } from "sequelize-typescript";
 import {
   UserOrderbys,
-  UserRole,
-  UserStatus
+  UserStatus,
+  UserSNSType
 } from "@src/modules/users/users.enum";
 
 export const UserScopes: ScopesOptionsGetter = () => ({
-  role: (value) => {
+  snsType: (value) => {
     return {
-      where: { role: value }
+      where: { snsType: value }
     };
   },
   status: (value) => {
@@ -27,7 +27,7 @@ export const UserScopes: ScopesOptionsGetter = () => ({
       where: { status: value }
     };
   },
-  email__like: (value) => {
+  name__like: (value) => {
     return {
       where: {
         email: {
@@ -64,46 +64,34 @@ export const UserScopes: ScopesOptionsGetter = () => ({
 @Table
 export class User extends Model<User> {
   @Default("NORMAL")
-  @Column(DataType.ENUM({ values: Object.values(UserRole) }))
-  role: UserRole;
-
-  @Column
-  email: string;
-
-  @Column
-  stringId: string;
-
-  @Column
-  pw: string;
-
-  @Column
-  imgUrl: string;
-
-  @Column
-  nickname: string;
-
-  @Column
-  name: string;
-
-  @Column
-  phoneNumber: string;
-
-  @Column
-  desc: string;
+  @Column(DataType.ENUM({ values: Object.values(UserSNSType) }))
+  snsType: UserSNSType;
 
   @Default("NORMAL")
   @Column(DataType.ENUM({ values: Object.values(UserStatus) }))
   status: UserStatus;
 
-  @Column(DataType.DATE)
-  blockedUntil: Date;
+  @Column
+  snsKey: string;
 
-  @Column(DataType.BOOLEAN)
-  toGetPushed: boolean;
+  @Column
+  email: string;
 
-  // @BelongsToMany(
-  //   () => Car,
-  //   () => UserCar
-  // )
-  // cars: Car[];
+  @Column
+  imgUrl: string;
+
+  @Column
+  name: string;
+
+  @Column
+  createdDecksCount: number;
+
+  @Column
+  performedMusicsCount: number;
+
+  @Column
+  performedDecksCount: number;
+
+  @Column
+  averageScore: number;
 }

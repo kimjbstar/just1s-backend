@@ -5,13 +5,12 @@ export const UserOrderbys = {
   }
 };
 
-export enum UserRole {
-  NORMAL = "NORMAL",
-  BUSINESS = "BUSINESS",
-  STAFF = "STAFF",
-  ADMIN = "ADMIN"
+export enum UserSNSType {
+  EMAIL = "EMAIL",
+  FACEBOOK = "FACEBOOK",
+  INSTAGRAM = "INSTAGRAM",
+  NAVER = "NAVER"
 }
-
 export enum UserStatus {
   NORMAL = "NORMAL",
   WITHDRAWN = "WITHDRAWN"

@@ -1,10 +1,9 @@
 import {
-  UserRole,
   UserStatus,
-  UserOrderbys
+  UserOrderbys,
+  UserSNSType
 } from "@src/modules/users/users.enum";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import { Request } from "express";
 import {
   Controller,
   Get,
@@ -20,11 +19,11 @@ import { UsersService } from "@src/modules/users/users.service";
 
 export class UserListQuery {
   @ApiProperty({
-    description: "role을(를) 입력해주세요 !",
-    enum: Object.values(UserRole),
-    default: UserRole.NORMAL
+    description: "UserSNSType(를) 입력해주세요 !",
+    enum: Object.values(UserSNSType),
+    default: UserSNSType.EMAIL
   })
-  role: UserRole;
+  snsType: UserSNSType;
   @ApiProperty({
     description: "status을(를) 입력해주세요 !",
     enum: Object.values(UserStatus),
@@ -48,10 +47,10 @@ export class UserListQuery {
 
 export class UserCreateDto {
   @ApiProperty({
-    description: "role을(를) 입력해주세요 !",
-    enum: Object.values(UserRole)
+    description: "UserSNSType(를) 입력해주세요 !",
+    enum: Object.values(UserSNSType)
   })
-  role: UserRole;
+  snsType: UserSNSType;
   @ApiProperty({
     description: "status을(를) 입력해주세요 !",
     enum: Object.values(UserStatus)

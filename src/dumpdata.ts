@@ -2,7 +2,7 @@ import { Sequelize, ModelCtor, Model } from "sequelize-typescript";
 import * as inflection from "inflection";
 import * as path from "path";
 import * as fs from "fs";
-import { Review } from "./models/review.model";
+// import { Review } from "./models/_legacy/review.model";
 import {
   Op,
   ModelAttributeColumnOptions,
@@ -22,7 +22,7 @@ const bootstrap = async () => {
   const modelPath = path.join(__dirname, "./models");
 
   const sequelize: Sequelize = new Sequelize({
-    database: "test_migration",
+    database: "just1s",
     username: "kimjbstar",
     password: "12091457",
     dialect: "mysql",
@@ -60,16 +60,16 @@ const bootstrap = async () => {
     fkModelMap[_model.tableName] = fkModelMapRow;
   }
 
-  const res = await getModelAndPks(Review, [8, 9], fkModelMap);
-  res.forEach(async (row) => {
-    const sql = `SELECT * FROM ${
-      row.modelClass.tableName
-    } WHERE id IN(${row.ids.join(",")})`;
-    const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
-    const filePath = path.join(fixtureDir, row.modelClass.tableName);
-    await fs.writeFileSync(filePath, JSON.stringify(rows));
-    console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
-  });
+  // const res = await getModelAndPks(Review, [8, 9], fkModelMap);
+  // res.forEach(async (row) => {
+  //   const sql = `SELECT * FROM ${
+  //     row.modelClass.tableName
+  //   } WHERE id IN(${row.ids.join(",")})`;
+  //   const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
+  //   const filePath = path.join(fixtureDir, row.modelClass.tableName);
+  //   await fs.writeFileSync(filePath, JSON.stringify(rows));
+  //   console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
+  // });
 };
 
 const getModelAndPks = async (

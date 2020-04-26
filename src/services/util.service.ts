@@ -20,4 +20,12 @@ export class UtilService {
       limit: limit
     };
   };
+
+  // hashPw(pw: string): string {
+  //   const salt = "f9dev-secret-salt-closedshops";
+  //   return crypto
+  //     .createHash("sha512")
+  //     .update(pw + salt)
+  //     .digest("hex");
+  // }
 }
