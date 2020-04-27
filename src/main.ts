@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { RootModule } from "./root.module";
+import * as child_process from "child_process";
 declare const module: any;
 
 import { NestFactory, Reflector } from "@nestjs/core";
@@ -25,6 +26,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("doc", app, document);
+
+  await child_process.execSync(`npx sequelize db:migrate --env local`);
 
   await app.listen(3000);
 

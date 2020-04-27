@@ -21,6 +21,8 @@ try {
   sequelizeConfig.models = [path.join(__dirname, "./models")];
   sequelizeConfig.retryAttempts = 20;
   sequelizeConfig.retryDelay = 5000;
+  sequelizeConfig.logging = true;
+  // console.log(path.join(__dirname, "..", "static"));
 } catch (err) {
   console.log(err);
   console.log("err in load sequelize config");
@@ -39,10 +41,10 @@ try {
     SequelizeModule.forRoot(sequelizeConfig),
     MulterModule.register({
       dest: "./static"
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, "..", "static")
     })
+    // ServeStaticModule.forRoot({
+    //   rootPath: path.join(__dirname, "..", "static")
+    // })
   ],
   providers: []
 })

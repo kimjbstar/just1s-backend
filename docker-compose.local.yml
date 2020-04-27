@@ -14,7 +14,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: n!12091457
-      MYSQL_DATABASE: nbase
+      MYSQL_DATABASE: just1s
       MYSQL_USER: kimjbstar
       MYSQL_PASSWORD: n!12091457
   web01:
@@ -25,8 +25,13 @@ services:
       - type: bind
         source: ./src
         target: /usr/src/app/src
-    env_file:
-      - "./.local/config/local.env"
+    environment:
+      NODE_ENV: local
+      SEQUELIZE_USERNAME: kimjbstar
+      SEQUELIZE_PASSWORD: n!12091457
+      SEQUELIZE_DATABASE: just1s
+      SEQUELIZE_HOST: localdb
+      SEQUELIZE_PORT: 3306
     ports:
       - "9999:3000"
       - "80:3000"

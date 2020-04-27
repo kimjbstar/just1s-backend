@@ -1,5 +1,5 @@
 {
-  "name": "nbase",
+  "name": "just1s-backend",
   "version": "1.0.0",
   "description": "practice node.js, express, sequelize ... and so more.",
   "main": "index.js",
@@ -16,15 +16,15 @@
     "nodemon": "nodemon",
     "ts-node": "ts-node -T -r tsconfig-paths/register src/index.ts",
     "local:build": "docker-compose -f docker-compose.local.yml build --no-cache && docker-compose -f docker-compose.local.yml up",
-    "docker:build": "docker build -t kimjbstar/nbase -f Dockerfile-web .",
-    "docker:push": "docker push kimjbstar/nbase",
+    "docker:build": "docker build -t kimjbstar/just1s-backend -f Dockerfile-web .",
+    "docker:push": "docker push kimjbstar/just1s-backend",
     "aws:deploy": "aws ecs update-service --cluster=ecs-cluster-01 --service=ecs-service-web --force-new-deployment",
     "old:serve": "node -r ts-node/register -r tsconfig-paths/register dist/index.js",
     "test": "mocha --debug -r ts-node/register -r tsconfig-paths/register ./**/*.test.ts --timeout 20000"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kimjbstar/nbase.git"
+    "url": "git://github.com/kimjbstar/just1s-backend.git"
   },
   "author": "kimjbstar@gmail.com",
   "license": "ISC",
