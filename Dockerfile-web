@@ -6,5 +6,5 @@ COPY tests ./tests
 COPY config ./config 
 COPY package.json package-lock.json tsconfig.json nodemon.json tsconfig.build.json .sequelizerc ./
 RUN npm install && npm run tsc
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "start"]
 EXPOSE 3000
