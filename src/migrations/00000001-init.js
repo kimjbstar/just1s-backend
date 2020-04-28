@@ -5,12 +5,11 @@ var Sequelize = require('sequelize');
 /**
  * Actions summary:
  *
- * createTable "Hashtags", deps: []
  * createTable "Music", deps: []
  * createTable "Performs", deps: []
  * createTable "Users", deps: []
  * createTable "Decks", deps: [Users]
- * createTable "DeckHashtags", deps: [Decks, Hashtags]
+ * createTable "DeckHashtags", deps: [Decks]
  * createTable "DeckMusics", deps: [Decks, Music]
  *
  **/
@@ -18,39 +17,11 @@ var Sequelize = require('sequelize');
 var info = {
     "revision": 1,
     "name": "init",
-    "created": "2020-04-26T14:09:50.395Z",
+    "created": "2020-04-28T14:12:20.340Z",
     "comment": ""
 };
 
 var migrationCommands = [
-
-    {
-        fn: "createTable",
-        params: [
-            "Hashtags",
-            {
-                "id": {
-                    "autoIncrement": true,
-                    "primaryKey": true,
-                    "allowNull": false,
-                    "type": Sequelize.INTEGER
-                },
-                "name": {
-                    "allowNull": false,
-                    "type": Sequelize.STRING(256)
-                },
-                "createdAt": {
-                    "allowNull": false,
-                    "type": Sequelize.DATE
-                },
-                "updatedAt": {
-                    "allowNull": false,
-                    "type": Sequelize.DATE
-                }
-            },
-            {}
-        ]
-    },
 
     {
         fn: "createTable",
@@ -75,16 +46,17 @@ var migrationCommands = [
                     "allowNull": false,
                     "type": Sequelize.STRING(256)
                 },
-                "averageScore": {
+                "key": {
                     "allowNull": false,
+                    "type": Sequelize.STRING(256)
+                },
+                "averageScore": {
                     "type": Sequelize.INTEGER
                 },
                 "belogsDecksCount": {
-                    "allowNull": false,
                     "type": Sequelize.INTEGER
                 },
                 "performsCount": {
-                    "allowNull": false,
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
@@ -163,6 +135,7 @@ var migrationCommands = [
                     "type": Sequelize.STRING
                 },
                 "name": {
+                    "allowNull": false,
                     "type": Sequelize.STRING
                 },
                 "createdDecksCount": {
@@ -206,11 +179,10 @@ var migrationCommands = [
                     "type": Sequelize.STRING(256)
                 },
                 "hitsCount": {
-                    "allowNull": false,
                     "type": Sequelize.INTEGER
                 },
                 "averageScore": {
-                    "allowNull": false,
+                    "allowNull": true,
                     "type": Sequelize.INTEGER
                 },
                 "createdAt": {
@@ -241,6 +213,12 @@ var migrationCommands = [
         params: [
             "DeckHashtags",
             {
+                "id": {
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "type": Sequelize.INTEGER
+                },
                 "deckId": {
                     "onDelete": "CASCADE",
                     "onUpdate": "CASCADE",
@@ -248,20 +226,12 @@ var migrationCommands = [
                         "model": "Decks",
                         "key": "id"
                     },
-                    "primaryKey": true,
-                    "unique": "DeckHashtags_hashtagId_deckId_unique",
+                    "allowNull": true,
                     "type": Sequelize.INTEGER
                 },
-                "hashtagId": {
-                    "onDelete": "CASCADE",
-                    "onUpdate": "CASCADE",
-                    "references": {
-                        "model": "Hashtags",
-                        "key": "id"
-                    },
-                    "primaryKey": true,
-                    "unique": "DeckHashtags_hashtagId_deckId_unique",
-                    "type": Sequelize.INTEGER
+                "hashtag": {
+                    "allowNull": false,
+                    "type": Sequelize.STRING
                 },
                 "createdAt": {
                     "allowNull": false,
@@ -290,6 +260,7 @@ var migrationCommands = [
                     },
                     "primaryKey": true,
                     "unique": "DeckMusics_musicId_deckId_unique",
+                    "allowNull": true,
                     "type": Sequelize.INTEGER
                 },
                 "musicId": {
@@ -301,6 +272,7 @@ var migrationCommands = [
                     },
                     "primaryKey": true,
                     "unique": "DeckMusics_musicId_deckId_unique",
+                    "allowNull": true,
                     "type": Sequelize.INTEGER
                 },
                 "second": {
@@ -331,10 +303,6 @@ var rollbackCommands = [{
     {
         fn: "dropTable",
         params: ["DeckMusics"]
-    },
-    {
-        fn: "dropTable",
-        params: ["Hashtags"]
     },
     {
         fn: "dropTable",

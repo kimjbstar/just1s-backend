@@ -7,11 +7,13 @@ import {
   DefaultScope,
   Scopes,
   ScopesOptionsGetter,
-  BelongsToMany
+  BelongsToMany,
+  BeforeCreate
 } from "sequelize-typescript";
 import { MusicOrderbys } from "@src/modules/music/music.enum";
 import { Deck } from "./deck.model";
 import { DeckMusic } from "./deckMusic.model";
+import { Hook } from "mocha";
 
 export const MusicScopes: ScopesOptionsGetter = () => ({
   title: (value) => {
@@ -88,25 +90,32 @@ export class Music extends Model<Music> {
 
   @Column({
     type: DataType.STRING(256),
-    allowNull: false
+    allowNull: false,
+    defaultValue: ""
   })
   link: string;
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING(256),
     allowNull: false
+  })
+  key: string;
+
+  @Column({
+    type: DataType.INTEGER,
+    defaultValue: 0
   })
   averageScore: number;
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false
+    defaultValue: 0
   })
   belogsDecksCount: number;
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false
+    defaultValue: 0
   })
   performsCount: number;
 

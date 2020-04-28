@@ -8,7 +8,7 @@ import {
   Param,
   Body
 } from "@nestjs/common";
-import { MusicService } from "@src/modules/music/music.service";
+import { MusicsService } from "@src/modules/music/music.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { MusicOrderbys } from "@src/modules/music/music.enum";
 
@@ -52,23 +52,11 @@ export class MusicCreateDto {
     description: "link을(를) 입력해주세요!"
   })
   link: string;
-  @ApiProperty({
-    description: "averageScore을(를) 입력해주세요!"
-  })
-  averageScore: number;
-  @ApiProperty({
-    description: "belogsDecksCount을(를) 입력해주세요!"
-  })
-  belogsDecksCount: number;
-  @ApiProperty({
-    description: "performsCount을(를) 입력해주세요!"
-  })
-  performsCount: number;
 }
 
 @Controller("musics")
 export class MusicController {
-  constructor(private readonly musicService: MusicService) {}
+  constructor(private readonly musicService: MusicsService) {}
 
   @Get()
   async find(@Query() query: MusicListQuery): Promise<any> {

@@ -9,9 +9,10 @@ import {
   UnexpectedUpdateResultException,
   MissingBodyToCreateException
 } from "@src/common/http-exception";
+import { MusicCreateDto } from "./music.controller";
 
 @Injectable()
-export class MusicService {
+export class MusicsService {
   constructor(private readonly utilService: UtilService) {}
 
   async find(query): Promise<object[]> {
@@ -23,7 +24,7 @@ export class MusicService {
       offset: offset,
       limit: limit
     });
-    return music.map(music => music.get({ plain: true }));
+    return music.map((music) => music.get({ plain: true }));
   }
 
   async findByPk(id): Promise<object> {
@@ -41,8 +42,11 @@ export class MusicService {
     if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
+    if (dto.link != "") {
+      dto.key = this.getKey(dto.link);
+    }
     const row = await Music.create(dto, {
-      include: [ ]
+      include: []
     });
     if (row == null) {
       throw new DataNotFoundException();
@@ -83,5 +87,14 @@ export class MusicService {
       throw new UnexpectedDeleteResultException();
     }
     return affectedRowCount;
+  }
+
+  getKey(link): string {
+    let result = link;
+    const youtubeLinkRegex = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/;
+    if (link.match(youtubeLinkRegex)) {
+      result = link.match(youtubeLinkRegex)[1];
+    }
+    return result;
   }
 }

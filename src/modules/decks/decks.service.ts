@@ -9,10 +9,17 @@ import {
   UnexpectedUpdateResultException,
   MissingBodyToCreateException
 } from "@src/common/http-exception";
+import { Music } from "@src/models/music.model";
+import { MusicsService } from "../music/music.service";
+import { DeckHashtag } from "@src/models/deckHashtag.model";
+import { DeckMusic } from "@src/models/deckMusic.model";
 
 @Injectable()
 export class DecksService {
-  constructor(private readonly utilService: UtilService) {}
+  constructor(
+    private readonly utilService: UtilService,
+    private readonly musicService: MusicsService
+  ) {}
 
   async find(query): Promise<object[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
@@ -23,7 +30,7 @@ export class DecksService {
       offset: offset,
       limit: limit
     });
-    return decks.map(deck => deck.get({ plain: true }));
+    return decks.map((deck) => deck.get({ plain: true }));
   }
 
   async findByPk(id): Promise<object> {
@@ -41,9 +48,12 @@ export class DecksService {
     if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }
-    const row = await Deck.create(dto, {
-      include: [ ]
+    const row: Deck = await Deck.create(dto, {
+      include: [DeckHashtag, Music]
     });
+
+    // music 유니크 처리
+
     if (row == null) {
       throw new DataNotFoundException();
     }
@@ -83,5 +93,48 @@ export class DecksService {
       throw new UnexpectedDeleteResultException();
     }
     return affectedRowCount;
+  }
+
+  async register(dto): Promise<object> {
+    if (!dto.musics || !Array.isArray(dto.musics)) {
+      throw new MissingBodyToCreateException();
+    }
+
+    // make music rows
+    const musics: Music[] = [];
+    for (const dtoMusic of dto.musics) {
+      const key: string = this.musicService.getKey(dtoMusic["link"]);
+      let musicRow = await Music.findOne({
+        where: { key: key }
+      });
+
+      if (!musicRow) {
+        if (dtoMusic["link"] != "") {
+          dtoMusic["key"] = key;
+        }
+        musicRow = await Music.create(dtoMusic);
+      }
+      musics.push(musicRow);
+    }
+    dto.musics = [];
+
+    const createdDeck = await Deck.create(dto, {
+      include: [DeckHashtag]
+    });
+    await createdDeck.$set("musics", musics);
+
+    const savedDeck: Deck = await Deck.findByPk(createdDeck.id, {
+      include: [DeckHashtag, Music]
+    });
+
+    const result = savedDeck.get({ plain: true });
+    result["musics"] = savedDeck.musics?.map((music) =>
+      music.get({ plain: true })
+    );
+    result["hashtags"] = savedDeck.hashtags?.map((hashtag) =>
+      hashtag.get({ plain: true })
+    );
+
+    return result;
   }
 }

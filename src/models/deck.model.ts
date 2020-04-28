@@ -16,7 +16,6 @@ import {
 } from "sequelize-typescript";
 import { DeckOrderbys } from "@src/modules/decks/deck.enum";
 import { User } from "@src/models/user.model";
-import { Hashtag } from "./hashtag.model";
 import { DeckHashtag } from "./deckHashtag.model";
 import { Music } from "./music.model";
 import { DeckMusic } from "./deckMusic.model";
@@ -65,13 +64,13 @@ export class Deck extends Model<Deck> {
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false
+    defaultValue: 0
   })
   hitsCount: number;
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false
+    allowNull: true
   })
   averageScore: number;
 
@@ -81,9 +80,19 @@ export class Deck extends Model<Deck> {
   @BelongsTo(() => User)
   user: User;
 
-  @BelongsToMany(() => Hashtag, () => DeckHashtag)
-  hashtags: Hashtag[];
+  @HasMany(() => DeckHashtag)
+  hashtags: DeckHashtag[];
 
   @BelongsToMany(() => Music, () => DeckMusic)
-  musics: Music[];
+  musics: Array<Music & { DeckMusic: DeckMusic }>;
 }
+
+// User.findAll({
+//   include: [{
+//     model: Project,
+//     through: {
+//       attributes: ['createdAt', 'startedAt', 'finishedAt'],
+//       where: {completed: true}
+//     }
+//   }]
+// });

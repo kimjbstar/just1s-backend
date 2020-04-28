@@ -80,16 +80,24 @@ export class User extends Model<User> {
   @Column
   imgUrl: string;
 
-  @Column
+  @Column({
+    allowNull: false
+  })
   name: string;
 
-  @Column
+  @Column({
+    defaultValue: 0
+  })
   createdDecksCount: number;
 
-  @Column
+  @Column({
+    defaultValue: 0
+  })
   performedMusicsCount: number;
 
-  @Column
+  @Column({
+    defaultValue: 0
+  })
   performedDecksCount: number;
 
   @Column

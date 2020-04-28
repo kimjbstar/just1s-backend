@@ -6,40 +6,40 @@ import {
   Delete,
   Query,
   Param,
-  Body,
+  Body
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import {  DeckOrderbys } from "@src/modules/decks/deck.enum";
+import { DeckOrderbys } from "@src/modules/decks/deck.enum";
 
 export class DeckListQuery {
-    @ApiProperty({
-        description: "제목을(를) 입력해주세요!",
-    })
-    title: string;
-    @ApiProperty({
-        description: "hitsCount을(를) 입력해주세요!",
-    })
-    hitsCount: number;
-    @ApiProperty({
-        description: "averageScore을(를) 입력해주세요!",
-    })
-    averageScore: number;
+  @ApiProperty({
+    description: "제목을(를) 입력해주세요!"
+  })
+  title: string;
+  @ApiProperty({
+    description: "hitsCount을(를) 입력해주세요!"
+  })
+  hitsCount: number;
+  @ApiProperty({
+    description: "averageScore을(를) 입력해주세요!"
+  })
+  averageScore: number;
 }
 
 export class DeckCreateDto {
-    @ApiProperty({
-        description: "제목을(를) 입력해주세요!",
-    })
-    title: string;
-    @ApiProperty({
-        description: "hitsCount을(를) 입력해주세요!",
-    })
-    hitsCount: number;
-    @ApiProperty({
-        description: "averageScore을(를) 입력해주세요!",
-    })
-    averageScore: number;
+  @ApiProperty({
+    description: "제목을(를) 입력해주세요!"
+  })
+  title: string;
+  @ApiProperty({
+    description: "hitsCount을(를) 입력해주세요!"
+  })
+  hitsCount: number;
+  @ApiProperty({
+    description: "averageScore을(를) 입력해주세요!"
+  })
+  averageScore: number;
 }
 
 @Controller("decks")
@@ -50,7 +50,7 @@ export class DecksController {
   async find(@Query() query: DeckListQuery): Promise<any> {
     const decks: object[] = await this.decksService.find(query);
     const result = {
-      decks: decks,
+      decks: decks
     };
     return result;
   }
@@ -60,7 +60,7 @@ export class DecksController {
   async get(@Param("id") id: Number): Promise<any> {
     const deck: Object = await this.decksService.findByPk(id);
     const result = {
-      deck: deck,
+      deck: deck
     };
     return result;
   }
@@ -69,7 +69,7 @@ export class DecksController {
   async create(@Body() dto: DeckCreateDto): Promise<any> {
     const deck: Object = await this.decksService.create(dto);
     const result = {
-      deck: deck,
+      deck: deck
     };
     return result;
   }
@@ -82,7 +82,7 @@ export class DecksController {
   ): Promise<any> {
     const deck: Object = await this.decksService.update(id, dto);
     const result = {
-      deck: deck,
+      deck: deck
     };
     return result;
   }
@@ -92,7 +92,17 @@ export class DecksController {
   async delete(@Param("id") id: Number): Promise<any> {
     const deck: Object = await this.decksService.destroy(id);
     const result = {
-      deck: deck,
+      deck: deck
+    };
+    return result;
+  }
+
+  @Post("register")
+  async register(@Body() dto: DeckCreateDto): Promise<any> {
+    console.log(dto);
+    const deck: Object = await this.decksService.register(dto);
+    const result = {
+      deck: deck
     };
     return result;
   }
