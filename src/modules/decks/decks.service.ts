@@ -114,7 +114,7 @@ export class DecksService {
         }
         musicRow = await Music.create(dtoMusic);
       }
-      musics.push(musicRow);
+      musics.push(musicRow); //
     }
     dto.musics = [];
 
