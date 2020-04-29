@@ -8,14 +8,13 @@ import * as path from "path";
 import { FilesModule } from "./modules/files/files.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { DecksModule } from "./modules/decks/decks.module";
-import { HashtagsModule } from "./modules/hashtags/hashtags.module";
 import { MusicModule } from "./modules/music/music.module";
 
 let sequelizeConfig: SequelizeModuleOptions;
 try {
   const sequelizeRcPath = path.join(process.cwd(), ".sequelizerc");
   const sequelizeRc = require(sequelizeRcPath);
-  const configPath: string = sequelizeRc["config"];
+  const configPath: string = sequelizeRc["config"]; //
 
   sequelizeConfig = require(configPath)[process.env.NODE_ENV];
   sequelizeConfig.models = [path.join(__dirname, "./models")];
@@ -36,7 +35,6 @@ try {
     AuthModule,
     FilesModule,
     DecksModule,
-    HashtagsModule,
     MusicModule,
     SequelizeModule.forRoot(sequelizeConfig),
     MulterModule.register({

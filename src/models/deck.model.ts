@@ -24,7 +24,7 @@ export const DeckScopes: ScopesOptionsGetter = () => ({
   title: (value) => {
     return {
       where: { title: value }
-    };
+    }; //
   },
   order: (value) => {
     if (DeckOrderbys[value] == undefined) {
