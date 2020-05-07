@@ -1,141 +1,104 @@
-import { Sequelize, ModelCtor, Model } from "sequelize-typescript";
-import * as inflection from "inflection";
 import * as path from "path";
 import * as fs from "fs";
-// import { Review } from "./models/_legacy/review.model";
-import {
-  Op,
-  ModelAttributeColumnOptions,
-  Model as NativeSequelizeModel,
-  QueryTypes
-} from "sequelize";
+import { NbaseEntity } from "./common/types/nbase-entity";
+import { getConnectionManager } from "typeorm";
+import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
+import { Deck } from "./entities/deck.entity";
 
-export type SequelizeModelCtor = ModelCtor<Model<any, any>>;
+export type TypeOrmEntityCtor = new () => NbaseEntity;
 
-export interface SequelizeModelCtorMap {
-  [key: string]: ModelCtor<Model<any, any>>;
-}
+export type FixtureEntityInspectResult = {
+  modelClass: TypeOrmEntityCtor;
+  ids: number[];
+};
 
 const bootstrap = async () => {
   const fixtureDir = path.join(process.cwd(), "./tests/fixtures");
+  const entityPath = path.join(__dirname, "entities/**{.ts,.js}");
 
-  const modelPath = path.join(__dirname, "./models");
-
-  const sequelize: Sequelize = new Sequelize({
-    database: "just1s",
-    username: "kimjbstar",
-    password: "12091457",
-    dialect: "mysql",
-    host: "localhost",
-    models: [modelPath],
-    modelMatch: (_filename, _member) => {
-      const filename = inflection.camelize(_filename.replace(".model", ""));
-      const member = _member;
-      return filename === member;
-    },
-    timezone: "+09:00",
-    logging: false
+  const connectionManager = getConnectionManager();
+  const beforeConnection = connectionManager.create({
+    type: "mysql",
+    host: process.env.TYPEORM_HOST,
+    port: 3306,
+    username: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    database: process.env.TYPEORM_DATABASE,
+    entities: [entityPath]
   });
 
-  let tableNameModelMap = {};
+  const conn = await beforeConnection.connect();
 
-  for (let [key, model] of Object.entries(sequelize.models)) {
-    const tableName: string = model.tableName;
-    tableNameModelMap[tableName] = model;
-  }
+  const resultEntityWithPks = await getModelAndPksTypeORM(Deck, [15]);
+  // const resultEntityWithPks: FixtureEntityInspectResult[] = await getModelAndPksTypeORM(
+  //   DeckMusic,
+  //   [5, 6, 7, 8]
+  // );
 
-  let fkModelMap = {};
-  for (let [key, _model] of Object.entries(sequelize.models)) {
-    const attributes: { [attribute: string]: ModelAttributeColumnOptions } =
-      _model.rawAttributes;
+  resultEntityWithPks.forEach(async (resultEntityWithPk) => {
+    const tableName = (resultEntityWithPk.modelClass as any).getRepository()
+      .metadata.tableName;
 
-    let fkModelMapRow = {};
-    for (let [key, value] of Object.entries(attributes)) {
-      if (value.references) {
-        const tableName = value.references.model.toString();
-        const parentModel: SequelizeModelCtorMap = tableNameModelMap[tableName];
-        fkModelMapRow[key] = parentModel;
-      }
-    }
-    fkModelMap[_model.tableName] = fkModelMapRow;
-  }
+    const rows = await conn
+      .createQueryBuilder()
+      .select(tableName)
+      .from(resultEntityWithPk.modelClass, tableName)
+      .whereInIds(resultEntityWithPk.ids)
+      .getMany();
 
-  // const res = await getModelAndPks(User, [1, 2, 3], fkModelMap);
-  // res.forEach(async (row) => {
-  //   const sql = `SELECT * FROM ${
-  //     row.modelClass.tableName
-  //   } WHERE id IN(${row.ids.join(",")})`;
-  //   const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
-  //   const filePath = path.join(fixtureDir, row.modelClass.tableName);
-  //   await fs.writeFileSync(filePath, JSON.stringify(rows));
-  //   console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
-  // });
-
-  // const res1 = await getModelAndPks(Music, [1], fkModelMap);
-  // res1.forEach(async (row) => {
-  //   const sql = `SELECT * FROM ${
-  //     row.modelClass.tableName
-  //   } WHERE id IN(${row.ids.join(",")})`;
-  //   const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
-  //   const filePath = path.join(fixtureDir, row.modelClass.tableName);
-  //   await fs.writeFileSync(filePath, JSON.stringify(rows));
-  //   console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
-  // });
+    const filePath = path.join(fixtureDir, tableName);
+    await fs.writeFileSync(filePath, JSON.stringify(rows));
+    console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
+  });
 };
 
-const getModelAndPks = async (
-  modelCtor: SequelizeModelCtor,
-  pks: number[],
-  fkModelMap: {
-    [attribute: string]: ModelAttributeColumnOptions;
-  }
-) => {
-  const rows = await modelCtor.findAll({
-    where: {
-      id: {
-        [Op.in]: pks
-      }
-    }
-  });
+const getModelAndPksTypeORM = async (
+  modelCtor: TypeOrmEntityCtor,
+  pks: number[]
+): Promise<FixtureEntityInspectResult[]> => {
+  // User.findByIds([1, 2], {});
 
-  const subParams = {};
+  const columns: ColumnMetadata[] = (modelCtor as any).getRepository().metadata
+    .columns;
+  let fkInfos = [];
+  columns.forEach((column) => {
+    if (column.referencedColumn !== undefined) {
+      const targetName = column.referencedColumn.entityMetadata.targetName;
+      // console.log(`${modelCtor.name} has ${targetName}`);
 
-  for (let [fkFieldName, modelClass] of Object.entries(
-    fkModelMap[modelCtor.tableName]
-  )) {
-    rows
-      .filter((row) => row[fkFieldName])
-      .forEach((row) => {
-        if (subParams[modelClass.tableName] === undefined) {
-          subParams[modelClass.tableName] = {
-            modelClass: modelClass,
-            ids: []
-          };
-        }
-        if (subParams[modelClass.tableName].ids.indexOf(row[fkFieldName]) < 0) {
-          subParams[modelClass.tableName].ids.push(row[fkFieldName]);
-        }
+      fkInfos.push({
+        columnName: column.propertyName,
+        tableName: column.referencedColumn.entityMetadata.tableName,
+        target: column.referencedColumn.entityMetadata.target
+        // targetName: column.referencedColumn.entityMetadata.targetName
       });
-
-    if (subParams[modelClass.tableName]) {
-      subParams[modelClass.tableName] = await getModelAndPks(
-        modelClass,
-        subParams[modelClass.tableName].ids,
-        fkModelMap
-      );
     }
-  }
-
-  let result = [];
-  result.push({
-    modelClass: modelCtor,
-    ids: pks
   });
 
-  for (let [k, v] of Object.entries(subParams)) {
-    result = result.concat(Object.values(v));
-  }
+  const relations = fkInfos.map((fkInfo) => fkInfo.tableName);
+  const rows: NbaseEntity[] = await (modelCtor as any).findByIds(pks, {
+    relations: relations
+  });
 
+  let result: FixtureEntityInspectResult[] = [
+    {
+      modelClass: modelCtor,
+      ids: pks
+    }
+  ];
+  fkInfos.forEach((fkInfo) => {
+    const pks = rows.reduce((result, row) => {
+      const pk = row[fkInfo.columnName].id;
+      if (result.indexOf(pk) < 0) {
+        result.push(pk);
+      }
+      return result;
+    }, []);
+    result.push({
+      modelClass: fkInfo.target,
+      ids: pks
+    });
+  });
   return result;
 };
 
