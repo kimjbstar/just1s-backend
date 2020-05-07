@@ -16,14 +16,14 @@ import { Deck } from "./deck.entity";
 @Entity()
 export class User extends NbaseEntity {
   @Column({
-    type: "enum",
+    type: "simple-enum",
     enum: UserSNSType,
     default: UserSNSType.EMAIL
   })
   snsType: UserSNSType;
 
   @Column({
-    type: "enum",
+    type: "simple-enum",
     enum: UserStatus,
     default: UserStatus.NORMAL
   })

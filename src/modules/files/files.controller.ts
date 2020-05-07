@@ -44,7 +44,7 @@ export class FilesController {
     }
 
     if (q.type === "temp") {
-      const imageDir = path.resolve(process.cwd(), "./dist/static");
+      const imageDir = path.resolve(process.cwd(), "./dist/src/static");
       if ((await fs.existsSync(imageDir)) === false) {
         await fs.mkdirSync(imageDir);
       }

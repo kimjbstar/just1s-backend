@@ -4,6 +4,7 @@ import { NbaseEntity } from "./common/types/nbase-entity";
 import { getConnectionManager } from "typeorm";
 import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
 import { Deck } from "./entities/deck.entity";
+import { DeckMusic } from "./entities/deckMusic.entity";
 
 export type TypeOrmEntityCtor = new () => NbaseEntity;
 
@@ -28,13 +29,19 @@ const bootstrap = async () => {
   });
 
   const conn = await beforeConnection.connect();
+  await conn.runMigrations();
 
   const resultEntityWithPks = await getModelAndPksTypeORM(Deck, [15]);
-  // const resultEntityWithPks: FixtureEntityInspectResult[] = await getModelAndPksTypeORM(
-  //   DeckMusic,
-  //   [5, 6, 7, 8]
-  // );
+  dump(conn, fixtureDir, resultEntityWithPks);
 
+  const resultEntityWithPks2: FixtureEntityInspectResult[] = await getModelAndPksTypeORM(
+    DeckMusic,
+    [5, 6, 7, 8]
+  );
+  dump(conn, fixtureDir, resultEntityWithPks2);
+};
+
+const dump = async (conn, fixtureDir, resultEntityWithPks) => {
   resultEntityWithPks.forEach(async (resultEntityWithPk) => {
     const tableName = (resultEntityWithPk.modelClass as any).getRepository()
       .metadata.tableName;

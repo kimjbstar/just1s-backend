@@ -15,16 +15,13 @@ import { Connection, UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
 import { classToPlain } from "class-transformer";
 import { User } from "@src/entities/user.entity";
-import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
 import { DeckMusic } from "@src/entities/deckMusic.entity";
-import { DeckHashtag } from "@src/entities/deckHashtag.entity";
 
 @Injectable()
 export class DecksService {
   constructor(
     private readonly utilService: UtilService,
-    private readonly musicsService: MusicsService,
-    private connection: Connection
+    private readonly musicsService: MusicsService
   ) {}
 
   async find(query): Promise<object[]> {
@@ -86,7 +83,6 @@ export class DecksService {
       throw new MissingBodyToCreateException();
     }
 
-    // make music rows
     // TODO : 비동기 reduce 처리
     dto.deckMusics = [];
     for (const dtoMusic of dto.musics) {
