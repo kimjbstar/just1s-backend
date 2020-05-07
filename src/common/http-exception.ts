@@ -25,6 +25,12 @@ export class MissingBodyToCreateException extends HttpException {
   }
 }
 
+export class WrongIdException extends HttpException {
+  constructor() {
+    super("잘못된 ID입니다.", HttpStatus.FORBIDDEN);
+  }
+}
+
 export class MissingBodyToUpdateException extends HttpException {
   constructor() {
     super("업데이트할 데이터가 없습니다.", HttpStatus.FORBIDDEN);

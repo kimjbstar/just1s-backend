@@ -4,7 +4,7 @@ RUN mkdir /src
 COPY src ./src 
 COPY tests ./tests 
 COPY config ./config 
-COPY package.json package-lock.json tsconfig.json nodemon.json tsconfig.build.json .sequelizerc ./
+COPY package.json package-lock.json tsconfig.json nodemon.json nodemon-debug.json tsconfig.build.json .sequelizerc ormconfig.js ./ 
 RUN npm install && npm run tsc
 CMD ["npm", "run", "start"]
 EXPOSE 3000

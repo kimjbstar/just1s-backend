@@ -32,6 +32,12 @@ services:
       SEQUELIZE_DATABASE: just1s
       SEQUELIZE_HOST: localdb
       SEQUELIZE_PORT: 3306
+      TYPEORM_DATABASE: just1s
+      TYPEORM_USERNAME: kimjbstar
+      TYPEORM_PASSWORD: n!12091457
+      TYPEORM_HOST: localdb
+      TYPEORM_PORT: 3306
+      EXPRESS_PORT: 3000
     ports:
       - "9999:3000"
       - "80:3000"

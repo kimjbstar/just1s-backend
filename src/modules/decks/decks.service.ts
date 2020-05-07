@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { DeckScopes, Deck } from "@src/models/deck.model";
 import { UtilService } from "@src/services/util.service";
 import {
   MissingParameterIDException,
@@ -7,92 +6,79 @@ import {
   MissingBodyToUpdateException,
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
-  MissingBodyToCreateException
+  MissingBodyToCreateException,
+  WrongIdException
 } from "@src/common/http-exception";
-import { Music } from "@src/models/music.model";
 import { MusicsService } from "../music/music.service";
-import { DeckHashtag } from "@src/models/deckHashtag.model";
-import { DeckMusic } from "@src/models/deckMusic.model";
+import { Deck } from "@src/entities/deck.entity";
+import { Connection, UpdateResult, DeleteResult } from "typeorm";
+import { Music } from "@src/entities/music.entity";
+import { classToPlain } from "class-transformer";
+import { User } from "@src/entities/user.entity";
+import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
+import { DeckMusic } from "@src/entities/deckMusic.entity";
+import { DeckHashtag } from "@src/entities/deckHashtag.entity";
 
 @Injectable()
 export class DecksService {
   constructor(
     private readonly utilService: UtilService,
-    private readonly musicService: MusicsService
+    private readonly musicsService: MusicsService,
+    private connection: Connection
   ) {}
 
   async find(query): Promise<object[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
-      query,
-      Object.keys(DeckScopes())
-    );
-    const decks: Deck[] = await Deck.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
+    const decks: Deck[] = await Deck.find({
+      relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
     });
-    return decks.map((deck) => deck.get({ plain: true }));
+    let result = decks.map((deck) => {
+      return classToPlain(deck);
+    });
+
+    return Promise.resolve(result);
   }
 
   async findByPk(id): Promise<object> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
-    }
-    const row: Deck = await Deck.findByPk(id);
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
-    return row;
+    const deck: Deck = await Deck.findOne(id, {
+      relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
+    });
+    let result = classToPlain(deck);
+
+    return Promise.resolve(result);
   }
 
   async create(dto): Promise<object> {
-    if (dto === undefined) {
-      throw new MissingBodyToCreateException();
-    }
-    const row: Deck = await Deck.create(dto, {
-      include: [DeckHashtag, Music]
-    });
+    const deck: Deck = new Deck(dto);
+    await deck.save();
 
-    // music 유니크 처리
+    let result = await this.findByPk(deck.id);
+    result = classToPlain(result);
 
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
-
-    return row.get({ plain: true });
+    return Promise.resolve(result);
   }
 
   async update(id, dto): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: UpdateResult = await Deck.update(id, dto);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-    if (dto === undefined) {
-      throw new MissingBodyToUpdateException();
-    }
-    const [affectedRowCount] = await Deck.update(dto, {
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedUpdateResultException();
     }
-    return affectedRowCount;
+
+    const deck = await this.findByPk(id);
+    return Promise.resolve(deck);
   }
 
   async destroy(id): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: DeleteResult = await Deck.delete(id);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-
-    const affectedRowCount = await Deck.destroy({
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedDeleteResultException();
     }
-    return affectedRowCount;
+    return Promise.resolve();
   }
 
   async register(dto): Promise<object> {
@@ -101,10 +87,11 @@ export class DecksService {
     }
 
     // make music rows
-    const musics: Music[] = [];
+    // TODO : 비동기 reduce 처리
+    dto.deckMusics = [];
     for (const dtoMusic of dto.musics) {
-      const key: string = this.musicService.getKey(dtoMusic["link"]);
-      let musicRow = await Music.findOne({
+      const key: string = this.musicsService.getKey(dtoMusic["link"]);
+      let musicRow: Music = await Music.findOne({
         where: { key: key }
       });
 
@@ -112,29 +99,25 @@ export class DecksService {
         if (dtoMusic["link"] != "") {
           dtoMusic["key"] = key;
         }
-        musicRow = await Music.create(dtoMusic);
+        musicRow = new Music(dtoMusic);
+        await musicRow.save();
+        await musicRow.reload();
       }
-      musics.push(musicRow); //
+      dto.deckMusics.push(
+        new DeckMusic({
+          music: musicRow,
+          second: dtoMusic.second
+        })
+      );
     }
-    dto.musics = [];
+    delete dto.musics;
 
-    const createdDeck = await Deck.create(dto, {
-      include: [DeckHashtag]
-    });
-    await createdDeck.$set("musics", musics);
+    // make foreignKey to object
+    if (dto.userId !== undefined) {
+      dto.user = new User({ id: dto.userId });
+      delete dto.userId;
+    }
 
-    const savedDeck: Deck = await Deck.findByPk(createdDeck.id, {
-      include: [DeckHashtag, Music]
-    });
-
-    const result = savedDeck.get({ plain: true });
-    result["musics"] = savedDeck.musics?.map((music) =>
-      music.get({ plain: true })
-    );
-    result["hashtags"] = savedDeck.hashtags?.map((hashtag) =>
-      hashtag.get({ plain: true })
-    );
-
-    return result;
+    return this.create(dto);
   }
 }

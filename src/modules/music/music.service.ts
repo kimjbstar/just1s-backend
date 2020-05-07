@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { MusicScopes, Music } from "@src/models/music.model";
 import { UtilService } from "@src/services/util.service";
 import {
   MissingParameterIDException,
@@ -7,86 +6,70 @@ import {
   MissingBodyToUpdateException,
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
-  MissingBodyToCreateException
+  MissingBodyToCreateException,
+  WrongIdException
 } from "@src/common/http-exception";
 import { MusicCreateDto } from "./music.controller";
+import { UpdateResult, DeleteResult } from "typeorm";
+import { Music } from "@src/entities/music.entity";
+import { classToPlain } from "class-transformer";
 
 @Injectable()
 export class MusicsService {
   constructor(private readonly utilService: UtilService) {}
 
   async find(query): Promise<object[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
-      query,
-      Object.keys(MusicScopes())
-    );
-    const music: Music[] = await Music.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
+    const decks: Music[] = await Music.find({
+      relations: []
     });
-    return music.map((music) => music.get({ plain: true }));
+    let result = decks.map((deck) => {
+      return classToPlain(deck);
+    });
+
+    return Promise.resolve(result);
   }
 
   async findByPk(id): Promise<object> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
-    }
-    const row: Music = await Music.findByPk(id);
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
-    return row;
+    const deck: Music = await Music.findOne(id, {
+      relations: []
+    });
+    let result = classToPlain(deck);
+
+    return Promise.resolve(result);
   }
 
   async create(dto): Promise<object> {
-    if (dto === undefined) {
-      throw new MissingBodyToCreateException();
-    }
-    if (dto.link != "") {
-      dto.key = this.getKey(dto.link);
-    }
-    const row = await Music.create(dto, {
-      include: []
-    });
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
+    const deck: Music = new Music(dto);
+    await deck.save();
 
-    return row.get({ plain: true });
+    let result = await this.findByPk(deck.id);
+    result = classToPlain(result);
+
+    return Promise.resolve(result);
   }
 
   async update(id, dto): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: UpdateResult = await Music.update(id, dto);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-    if (dto === undefined) {
-      throw new MissingBodyToUpdateException();
-    }
-    const [affectedRowCount] = await Music.update(dto, {
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedUpdateResultException();
     }
-    return affectedRowCount;
+
+    const deck = await this.findByPk(id);
+    return Promise.resolve(deck);
   }
 
   async destroy(id): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: DeleteResult = await Music.delete(id);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-
-    const affectedRowCount = await Music.destroy({
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedDeleteResultException();
     }
-    return affectedRowCount;
+    return Promise.resolve();
   }
 
   getKey(link): string {

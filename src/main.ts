@@ -5,18 +5,20 @@ declare const module: any;
 
 import { NestFactory, Reflector } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { INestApplication } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 // import { F9HttpExceptionFilter } from "@src/f9-base/f9-http-exception.filter";
 // import { initCurrentApp } from "@src/middlewares/init-current-app.middleware";
 // import { PublicAuthGuard } from "@src/middlewares/public-auth.guard";
 
 async function bootstrap() {
-  const app = await NestFactory.create(RootModule);
+  const app: INestApplication = await NestFactory.create(RootModule);
   // app.setGlobalPrefix("/api/*");
-  //   app.use(initCurrentApp);
-  //   app.useGlobalFilters(new F9HttpExceptionFilter());
+  // app.use(initCurrentApp);
+  // app.useGlobalFilters(new F9HttpExceptionFilter());
   // app.useGlobalPipes(new ValidationPipe());
-  //   app.useGlobalGuards(new PublicAuthGuard(new Reflector()));
+  // app.useGlobalGuards(new PublicAuthGuard(new Reflector()));
 
   const options = new DocumentBuilder()
     .setTitle("just1s")
@@ -27,7 +29,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("doc", app, document);
 
-  await child_process.execSync(`npx sequelize db:migrate --env local`);
+  // await child_process.execSync(`npx sequelize db:migrate --env local`);
+  // this.connection.runMigrations()
 
   await app.listen(3000);
 

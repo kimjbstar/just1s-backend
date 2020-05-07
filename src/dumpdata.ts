@@ -9,8 +9,6 @@ import {
   Model as NativeSequelizeModel,
   QueryTypes
 } from "sequelize";
-import { User } from "./models/user.model";
-import { Music } from "./models/music.model";
 
 export type SequelizeModelCtor = ModelCtor<Model<any, any>>;
 
@@ -62,27 +60,27 @@ const bootstrap = async () => {
     fkModelMap[_model.tableName] = fkModelMapRow;
   }
 
-  const res = await getModelAndPks(User, [1, 2, 3], fkModelMap);
-  res.forEach(async (row) => {
-    const sql = `SELECT * FROM ${
-      row.modelClass.tableName
-    } WHERE id IN(${row.ids.join(",")})`;
-    const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
-    const filePath = path.join(fixtureDir, row.modelClass.tableName);
-    await fs.writeFileSync(filePath, JSON.stringify(rows));
-    console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
-  });
+  // const res = await getModelAndPks(User, [1, 2, 3], fkModelMap);
+  // res.forEach(async (row) => {
+  //   const sql = `SELECT * FROM ${
+  //     row.modelClass.tableName
+  //   } WHERE id IN(${row.ids.join(",")})`;
+  //   const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
+  //   const filePath = path.join(fixtureDir, row.modelClass.tableName);
+  //   await fs.writeFileSync(filePath, JSON.stringify(rows));
+  //   console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
+  // });
 
-  const res1 = await getModelAndPks(Music, [1], fkModelMap);
-  res1.forEach(async (row) => {
-    const sql = `SELECT * FROM ${
-      row.modelClass.tableName
-    } WHERE id IN(${row.ids.join(",")})`;
-    const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
-    const filePath = path.join(fixtureDir, row.modelClass.tableName);
-    await fs.writeFileSync(filePath, JSON.stringify(rows));
-    console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
-  });
+  // const res1 = await getModelAndPks(Music, [1], fkModelMap);
+  // res1.forEach(async (row) => {
+  //   const sql = `SELECT * FROM ${
+  //     row.modelClass.tableName
+  //   } WHERE id IN(${row.ids.join(",")})`;
+  //   const rows = await sequelize.query(sql, { type: QueryTypes.SELECT });
+  //   const filePath = path.join(fixtureDir, row.modelClass.tableName);
+  //   await fs.writeFileSync(filePath, JSON.stringify(rows));
+  //   console.log(`saved ${rows.length} fixture rows to ${filePath}.`);
+  // });
 };
 
 const getModelAndPks = async (

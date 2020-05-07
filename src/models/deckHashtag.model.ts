@@ -1,15 +1,15 @@
-import { Table, Column, Model, ForeignKey } from "sequelize-typescript";
-import { Deck } from "./deck.model";
+// import { Table, Column, Model, ForeignKey } from "sequelize-typescript";
+// import { Deck } from "./deck.model";
 
-@Table
-export class DeckHashtag extends Model<DeckHashtag> {
-  @ForeignKey(() => Deck)
-  @Column
-  deckId: number;
+// @Table
+// export class DeckHashtag extends Model<DeckHashtag> {
+//   @ForeignKey(() => Deck)
+//   @Column
+//   deckId: number;
 
-  @Column({
-    allowNull: false,
-    defaultValue: ""
-  })
-  hashtag: string;
-}
+//   @Column({
+//     allowNull: false,
+//     defaultValue: ""
+//   })
+//   hashtag: string;
+// }

@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { UserScopes, User } from "../../models/user.model";
 import { UtilService } from "@src/services/util.service";
 import {
   MissingParameterIDException,
@@ -7,8 +6,12 @@ import {
   MissingBodyToUpdateException,
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
-  MissingBodyToCreateException
+  MissingBodyToCreateException,
+  WrongIdException
 } from "@src/common/http-exception";
+import { classToPlain } from "class-transformer";
+import { User } from "@src/entities/user.entity";
+import { UpdateResult, DeleteResult } from "typeorm";
 
 @Injectable()
 export class UsersService {
@@ -23,71 +26,56 @@ export class UsersService {
   // }
 
   async find(query): Promise<object[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
-      query,
-      Object.keys(UserScopes())
-    );
-    const users: User[] = await User.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
+    const decks: User[] = await User.find({
+      relations: []
     });
-    return users.map((user) => user.get({ plain: true }));
+    let result = decks.map((deck) => {
+      return classToPlain(deck);
+    });
+
+    return Promise.resolve(result);
   }
 
   async findByPk(id): Promise<object> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
-    }
-    const row: User = await User.findByPk(id);
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
-    return row;
+    const deck: User = await User.findOne(id, {
+      relations: []
+    });
+    let result = classToPlain(deck);
+
+    return Promise.resolve(result);
   }
 
   async create(dto): Promise<object> {
-    if (dto === undefined) {
-      throw new MissingBodyToCreateException();
-    }
-    const row = await User.create(dto);
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
+    const deck: User = new User(dto);
+    await deck.save();
 
-    return row.get({ plain: true });
+    let result = await this.findByPk(deck.id);
+    result = classToPlain(result);
+
+    return Promise.resolve(result);
   }
 
   async update(id, dto): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: UpdateResult = await User.update(id, dto);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-    if (dto === undefined) {
-      throw new MissingBodyToUpdateException();
-    }
-    const [affectedRowCount] = await User.update(dto, {
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedUpdateResultException();
     }
-    return affectedRowCount;
+
+    const deck = await this.findByPk(id);
+    return Promise.resolve(deck);
   }
 
   async destroy(id): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: DeleteResult = await User.delete(id);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-
-    const affectedRowCount = await User.destroy({
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedDeleteResultException();
     }
-    return affectedRowCount;
+    return Promise.resolve();
   }
 }
