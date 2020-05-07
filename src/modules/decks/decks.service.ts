@@ -16,12 +16,14 @@ import { Music } from "@src/entities/music.entity";
 import { classToPlain } from "class-transformer";
 import { User } from "@src/entities/user.entity";
 import { DeckMusic } from "@src/entities/deckMusic.entity";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class DecksService {
   constructor(
     private readonly utilService: UtilService,
-    private readonly musicsService: MusicsService
+    private readonly musicsService: MusicsService,
+    private readonly usersService: UsersService
   ) {}
 
   async find(query): Promise<object[]> {

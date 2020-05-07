@@ -1,85 +1,37 @@
-// import { Sequelize, ModelCtor, Model } from "sequelize-typescript";
-// import * as fs from "fs";
-// import * as path from "path";
-// import * as inflection from "inflection";
-// import * as child_process from "child_process";
-// import { UtilService } from "@src/services/util.service";
-// import { Test } from "@nestjs/testing";
-// import { expect, should } from "chai";
-// import { User } from "@src/models/user.model";
-// import { UsersService } from "@src/modules/users/users.service";
-// import { MusicsService } from "@src/modules/music/music.service";
-// import { Music } from "@src/models/music.model";
+import { Test } from "@nestjs/testing";
+import { expect } from "chai";
+import { DecksService } from "@src/modules/decks/decks.service";
+import { UsersService } from "@src/modules/users/users.service";
+import { MusicsService } from "@src/modules/music/music.service";
+import { Connection } from "typeorm";
+import { UtilService } from "@src/services/util.service";
+import { importAndGetConn } from "./common";
 
-// export type SequelizeModelCtor = ModelCtor<Model<any, any>>;
+describe("music.service.ts", () => {
+  let musicsService: MusicsService;
+  let conn: Connection;
 
-// export interface SequelizeModelCtorMap {
-//   [key: string]: ModelCtor<Model<any, any>>;
-// }
+  before(async () => {
+    conn = await importAndGetConn();
+    const moduleRef = await Test.createTestingModule({
+      controllers: [],
+      providers: [DecksService, UsersService, MusicsService, UtilService]
+    }).compile();
+    musicsService = moduleRef.get<MusicsService>(MusicsService);
+  });
 
-// describe("MusicsService", () => {
-//   let sequelize: Sequelize;
-//   let musicsService: MusicsService;
-//   let usersService: UsersService;
+  beforeEach(async () => {});
 
-//   before(async () => {
-//     // set test db
-//     const moduleRef = await Test.createTestingModule({
-//       controllers: [],
-//       providers: [MusicsService, UtilService, UsersService]
-//     }).compile();
-//     musicsService = moduleRef.get<MusicsService>(MusicsService);
-//     usersService = moduleRef.get<UsersService>(UsersService);
-//     process.env.NODE_ENV = "test";
-//     sequelize = new Sequelize({
-//       storage: path.join(
-//         process.cwd(),
-//         "tests",
-//         process.env.SEQUELIZE_DATABASE + "_test.db"
-//       ),
-//       host: "localhost",
-//       dialect: "sqlite",
-//       models: [path.join(process.cwd(), "src", "models")],
-//       modelMatch: (_filename, _member) => {
-//         const filename = inflection.camelize(_filename.replace(".model", ""));
-//         const member = _member;
-//         return filename === member;
-//       },
-//       logging: true
-//     });
-//     await sequelize.authenticate();
-//     expect(sequelize).exist;
+  it("create - Music 추가", async () => {
+    const music = await musicsService.create({
+      title: "먹구름",
+      artist: "윤하",
+      link: "https://www.youtube.com/watch?v=hrO-BgLjJ-Q"
+    });
+    // console.log(music);
+  });
 
-//     // truncate
-//     await child_process.execSync(`npx sequelize db:migrate --env test`);
-//   });
-
-//   beforeEach(async () => {
-//     await sequelize.truncate();
-//     await sequelize.query(`UPDATE SQLITE_SEQUENCE SET seq = 0`);
-
-//     // bulkCreate
-//     const fixtureDir = path.join(process.cwd(), "/tests/fixtures");
-//     const models: SequelizeModelCtor[] = [User];
-//     for (let modelCtor of models) {
-//       const fixtureJSON = await fs.readFileSync(
-//         path.join(fixtureDir, modelCtor.tableName)
-//       );
-//       const rows = JSON.parse(fixtureJSON.toString());
-//       await modelCtor.bulkCreate(rows);
-//     }
-//   });
-
-//   it("create", async () => {
-//     const music = await musicsService.create({
-//       title: "먹구름",
-//       artist: "윤하",
-//       link: "https://www.youtube.com/watch?v=hrO-BgLjJ-Q"
-//     });
-//   });
-
-//   after((done) => {
-//     // sequelize.close();
-//     done();
-//   });
-// });
+  after(async () => {
+    await conn.close();
+  });
+});

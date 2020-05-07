@@ -19,7 +19,7 @@
     "docker:push": "docker push kimjbstar/just1s-backend",
     "aws:deploy": "aws ecs update-service --cluster=ecs-cluster-01 --service=ecs-service-web --force-new-deployment",
     "old:serve": "node -r ts-node/register -r tsconfig-paths/register dist/src/index.js",
-    "test": "mocha --debug -r ts-node/register -r tsconfig-paths/register ./**/*.test.ts --timeout 20000",
+    "test": "mocha --debug -r ts-node/register -r tsconfig-paths/register ./**/*.test.ts --timeout 20000 --exit",
     "dumpdata": "ts-node -T -r tsconfig-paths/register src/dumpdata.ts",
     "sequelize:scaffold": "ts-node -T -r tsconfig-paths/register src/scaffold/index.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
