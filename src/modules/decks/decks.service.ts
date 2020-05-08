@@ -7,16 +7,45 @@ import {
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
   MissingBodyToCreateException,
-  WrongIdException
+  WrongIdException,
+  WrongRequestBody,
+  CustomException
 } from "@src/common/http-exception";
 import { MusicsService } from "../music/music.service";
 import { Deck } from "@src/entities/deck.entity";
 import { Connection, UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
-import { classToPlain } from "class-transformer";
+import { classToPlain, Expose, Type, plainToClass } from "class-transformer";
 import { User } from "@src/entities/user.entity";
 import { DeckMusic } from "@src/entities/deckMusic.entity";
 import { UsersService } from "../users/users.service";
+import { IsNotEmpty, validate, ValidationError } from "class-validator";
+import { Answer } from "@src/entities/answer.entity";
+import { Perform } from "@src/entities/perform.entity";
+
+export class DeckPerformDto {
+  @Expose()
+  @IsNotEmpty()
+  deckId: number;
+
+  @IsNotEmpty()
+  @Expose()
+  userId: number;
+
+  @Expose()
+  @IsNotEmpty()
+  @Type(() => DeckPerformAnswerDto)
+  answers: DeckPerformAnswerDto[];
+}
+export class DeckPerformAnswerDto {
+  @Expose()
+  @IsNotEmpty()
+  deckMusicId: number;
+
+  @Expose()
+  @IsNotEmpty()
+  answer: string;
+}
 
 @Injectable()
 export class DecksService {
@@ -120,67 +149,65 @@ export class DecksService {
   }
 
   async perform(dto): Promise<object> {
-    if (!dto.userId || !dto.user) {
-      throw new MissingBodyToCreateException();
+    const dtoClass: DeckPerformDto = plainToClass(DeckPerformDto, dto, {
+      excludeExtraneousValues: true
+    });
+    const errors: ValidationError[] = await validate(dtoClass);
+    if (errors.length > 0) {
+      console.log(errors);
+      throw new WrongRequestBody();
     }
-    if (!dto.deckId || !dto.deck) {
-      throw new MissingBodyToCreateException();
+
+    const deck = await Deck.findOneOrFail(dtoClass.deckId, {
+      relations: ["deckMusics"]
+    });
+    if (!deck) {
+      throw new WrongIdException();
     }
-    if (!dto.answers || !Array.isArray(dto.answers)) {
-      throw new MissingBodyToCreateException();
+
+    const user = await User.findOneOrFail(dtoClass.userId, {});
+    if (!user) {
+      throw new WrongIdException();
     }
-    if (dto.userId !== undefined) {
-      dto.user = new User({ id: dto.userId });
-      if (!dto.user) {
-        throw new WrongIdException();
+
+    const answers: Answer[] = [];
+    for (const _answer of dtoClass.answers) {
+      const deckMusic: DeckMusic = await DeckMusic.findOneOrFail(
+        _answer.deckMusicId,
+        { relations: ["deck", "music"] }
+      );
+      if (deckMusic.deck.id != deck.id) {
+        throw new CustomException("답에 연결된 음악 정보가 잘못됨");
       }
-      delete dto.userId;
+      const answer = new Answer({
+        deckMusic: deckMusic,
+        answer: _answer.answer,
+        isCorrect: deckMusic.music.title === _answer.answer
+      });
+      answers.push(answer);
     }
-    if (dto.deckId !== undefined) {
-      dto.deck = new Deck({ id: dto.deckId });
-      if (!dto.deck) {
-        throw new WrongIdException();
-      }
-      delete dto.deckId;
+    if (answers.length != deck.deckMusics.length) {
+      throw new CustomException("답 갯수가 다름");
     }
-    return Promise.resolve({});
-    // 복잡한 dto 인터페이스로 체크 가능한지
-    // answers 돌면서 answers 개체 생성
-    // 돌면서 꼴도 체크
-    // answers 길이랑 deck music 길이랑 같은지 체크
-    // 임시 채점
 
-    // TODO : 비동기 reduce 처리
-    // dto.deckMusics = [];
-    // for (const dtoMusic of dto.musics) {
-    //   const key: string = this.musicsService.getKey(dtoMusic["link"]);
-    //   let musicRow: Music = await Music.findOne({
-    //     where: { key: key }
-    //   });
+    const perform: Perform = await new Perform({
+      deck: deck,
+      user: user,
+      answers: answers
+    });
 
-    //   if (!musicRow) {
-    //     if (dtoMusic["link"] != "") {
-    //       dtoMusic["key"] = key;
-    //     }
-    //     musicRow = new Music(dtoMusic);
-    //     await musicRow.save();
-    //     await musicRow.reload();
-    //   }
-    //   dto.deckMusics.push(
-    //     new DeckMusic({
-    //       music: musicRow,
-    //       second: dtoMusic.second
-    //     })
-    //   );
-    // }
-    // delete dto.musics;
+    const oldOne: Perform = await Perform.findOne({
+      where: {
+        deckId: deck.id,
+        userId: user.id
+      },
+      relations: ["deck", "user", "answers", "answers.deckMusic"]
+    });
+    if (oldOne === undefined) {
+      await perform.save();
+    }
+    const result = oldOne !== undefined ? oldOne : await perform.save();
 
-    // // make foreignKey to object
-    // if (dto.userId !== undefined) {
-    //   dto.user = new User({ id: dto.userId });
-    //   delete dto.userId;
-    // }
-
-    // return this.create(dto);
+    return Promise.resolve(result);
   }
 }

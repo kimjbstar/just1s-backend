@@ -73,3 +73,15 @@ export class AuthLoginFailException extends HttpException {
     super("로그인 정보가 잘못되었습니다.", HttpStatus.FORBIDDEN);
   }
 }
+
+export class WrongRequestBody extends HttpException {
+  constructor() {
+    super("요청 정보가 잘못되었습니다.", HttpStatus.FORBIDDEN);
+  }
+}
+
+export class CustomException extends HttpException {
+  constructor(str: string) {
+    super(str, HttpStatus.FORBIDDEN);
+  }
+}

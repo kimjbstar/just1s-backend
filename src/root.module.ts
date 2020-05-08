@@ -11,6 +11,7 @@ import { DecksModule } from "./modules/decks/decks.module";
 import { MusicModule } from "./modules/music/music.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Connection } from "typeorm";
+import { UsersService } from "./modules/users/users.service";
 
 // let sequelizeConfig: SequelizeModuleOptions;
 // try {
@@ -38,6 +39,7 @@ import { Connection } from "typeorm";
     FilesModule,
     DecksModule,
     MusicModule,
+    UsersService,
     // SequelizeModule.forRoot(sequelizeConfig),
     TypeOrmModule.forRoot(),
     MulterModule.register({

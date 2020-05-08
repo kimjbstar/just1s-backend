@@ -19,6 +19,9 @@ export class Perform extends NbaseEntity {
   @ManyToOne((type) => User, (user) => user.performs)
   user!: User;
 
-  @OneToMany((type) => Answer, (answer) => answer.perform)
+  @OneToMany((type) => Answer, (answer) => answer.perform, {
+    cascade: true,
+    onDelete: "CASCADE"
+  })
   answers: Answer[];
 }

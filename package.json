@@ -46,6 +46,7 @@
     "@types/passport-local": "^1.0.33",
     "aws-sdk": "^2.658.0",
     "class-transformer": "^0.2.3",
+    "class-validator": "^0.12.2",
     "commander": "^5.0.0",
     "deep-diff": "^1.0.2",
     "dotenv": "^8.2.0",

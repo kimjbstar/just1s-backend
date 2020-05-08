@@ -1,11 +1,13 @@
 import { Test } from "@nestjs/testing";
 import { expect } from "chai";
-import { DecksService } from "@src/modules/decks/decks.service";
+import { DecksService, DeckPerformDto } from "@src/modules/decks/decks.service";
 import { UsersService } from "@src/modules/users/users.service";
 import { MusicsService } from "@src/modules/music/music.service";
 import { Connection } from "typeorm";
 import { UtilService } from "@src/services/util.service";
 import { importAndGetConn } from "./common";
+import { plainToClass } from "class-transformer";
+import { validate, ValidationError } from "class-validator";
 
 describe("deck.service.ts", () => {
   let decksService: DecksService;
@@ -53,7 +55,6 @@ describe("deck.service.ts", () => {
         }
       ]
     });
-    console.log(deck);
 
     expect(deck["title"]).equal("윤하 1초 맞추기");
     expect(deck["deckMusics"]?.length).greaterThan(0);
@@ -61,7 +62,7 @@ describe("deck.service.ts", () => {
   });
 
   it("perform - 문제풀기", async () => {
-    const input = {
+    const dto = {
       userId: 1,
       deckId: 15,
       answers: [
@@ -73,9 +74,31 @@ describe("deck.service.ts", () => {
           deckMusicId: 6,
           answer: "정답2"
         }
-      ]
+      ],
+      foo: 1
     };
-    // decksService.perform(input)
+
+    const perform1 = await decksService.perform(dto);
+    console.log(perform1);
+
+    const dto2 = {
+      userId: 1,
+      deckId: 15,
+      answers: [
+        {
+          deckMusicId: 5,
+          answer: "리트"
+        },
+        {
+          deckMusicId: 6,
+          answer: "정답2"
+        }
+      ],
+      foo: 1
+    };
+
+    const perform2 = await decksService.perform(dto2);
+    console.log(perform2);
   });
 
   after(async () => {
