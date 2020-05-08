@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import { NbaseEntity } from "./common/types/nbase-entity";
-import { getConnectionManager } from "typeorm";
+import { getConnectionManager, Connection } from "typeorm";
 import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
 import { Deck } from "./entities/deck.entity";
 import { DeckMusic } from "./entities/deckMusic.entity";
@@ -28,7 +28,7 @@ const bootstrap = async () => {
     entities: [entityPath]
   });
 
-  const conn = await beforeConnection.connect();
+  const conn: Connection = await beforeConnection.connect();
   await conn.runMigrations();
 
   const resultEntityWithPks = await getModelAndPksTypeORM(Deck, [15]);
@@ -40,18 +40,20 @@ const bootstrap = async () => {
   );
   dump(conn, fixtureDir, resultEntityWithPks2);
 };
+// subtable도 가능하게
 
 const dump = async (conn, fixtureDir, resultEntityWithPks) => {
   resultEntityWithPks.forEach(async (resultEntityWithPk) => {
     const tableName = (resultEntityWithPk.modelClass as any).getRepository()
       .metadata.tableName;
 
-    const rows = await conn
-      .createQueryBuilder()
-      .select(tableName)
-      .from(resultEntityWithPk.modelClass, tableName)
-      .whereInIds(resultEntityWithPk.ids)
-      .getMany();
+    if (resultEntityWithPks.length < 1) {
+      return;
+    }
+    const sql = `SELECT * FROM ${tableName} WHERE ID IN (${resultEntityWithPk.ids.join(
+      ","
+    )})`;
+    const rows = await conn.createQueryRunner().query(sql);
 
     const filePath = path.join(fixtureDir, tableName);
     await fs.writeFileSync(filePath, JSON.stringify(rows));

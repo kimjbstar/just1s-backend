@@ -118,4 +118,69 @@ export class DecksService {
 
     return this.create(dto);
   }
+
+  async perform(dto): Promise<object> {
+    if (!dto.userId || !dto.user) {
+      throw new MissingBodyToCreateException();
+    }
+    if (!dto.deckId || !dto.deck) {
+      throw new MissingBodyToCreateException();
+    }
+    if (!dto.answers || !Array.isArray(dto.answers)) {
+      throw new MissingBodyToCreateException();
+    }
+    if (dto.userId !== undefined) {
+      dto.user = new User({ id: dto.userId });
+      if (!dto.user) {
+        throw new WrongIdException();
+      }
+      delete dto.userId;
+    }
+    if (dto.deckId !== undefined) {
+      dto.deck = new Deck({ id: dto.deckId });
+      if (!dto.deck) {
+        throw new WrongIdException();
+      }
+      delete dto.deckId;
+    }
+    return Promise.resolve({});
+    // 복잡한 dto 인터페이스로 체크 가능한지
+    // answers 돌면서 answers 개체 생성
+    // 돌면서 꼴도 체크
+    // answers 길이랑 deck music 길이랑 같은지 체크
+    // 임시 채점
+
+    // TODO : 비동기 reduce 처리
+    // dto.deckMusics = [];
+    // for (const dtoMusic of dto.musics) {
+    //   const key: string = this.musicsService.getKey(dtoMusic["link"]);
+    //   let musicRow: Music = await Music.findOne({
+    //     where: { key: key }
+    //   });
+
+    //   if (!musicRow) {
+    //     if (dtoMusic["link"] != "") {
+    //       dtoMusic["key"] = key;
+    //     }
+    //     musicRow = new Music(dtoMusic);
+    //     await musicRow.save();
+    //     await musicRow.reload();
+    //   }
+    //   dto.deckMusics.push(
+    //     new DeckMusic({
+    //       music: musicRow,
+    //       second: dtoMusic.second
+    //     })
+    //   );
+    // }
+    // delete dto.musics;
+
+    // // make foreignKey to object
+    // if (dto.userId !== undefined) {
+    //   dto.user = new User({ id: dto.userId });
+    //   delete dto.userId;
+    // }
+
+    // return this.create(dto);
+  }
 }

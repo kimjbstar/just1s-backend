@@ -9,7 +9,6 @@ import {
   MissingBodyToCreateException,
   WrongIdException
 } from "@src/common/http-exception";
-import { MusicCreateDto } from "./music.controller";
 import { UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
 import { classToPlain } from "class-transformer";

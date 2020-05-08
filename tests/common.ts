@@ -13,6 +13,7 @@ export const importAndGetConn = async () => {
     type: "sqlite",
     database: process.env.TYPEORM_DATABASE + "_test.db",
     entities: [entityPath]
+    // logging: true
   });
 
   const conn = await beforeConnection.connect();
@@ -20,7 +21,7 @@ export const importAndGetConn = async () => {
 
   // bulkCreate
   const fixtureDir = path.join(process.cwd(), "/tests/fixtures");
-  const models = [User, Music, DeckMusic, Deck];
+  const models = [User, Music, Deck, DeckMusic];
   for (let entityCtor of models) {
     const fixtureJSON = await fs.readFileSync(
       path.join(
@@ -28,13 +29,26 @@ export const importAndGetConn = async () => {
         (entityCtor as any).getRepository().metadata.tableName
       )
     );
+    const tableName = entityCtor.getRepository().metadata.tableName;
     const rows = JSON.parse(fixtureJSON.toString());
-    await conn
-      .createQueryBuilder()
-      .insert()
-      .into(entityCtor)
-      .values(rows)
-      .execute();
+    // console.log(rows);
+
+    // Raw INSERT Query
+    const fields = Object.keys(rows[0])
+      .map((field) => "'" + field + "'")
+      .join(",");
+    const datas = rows
+      .map(
+        (row) =>
+          `(${Object.values(row)
+            .map((value) => "'" + value + "'")
+            .join(",")})`
+      )
+      .join(",");
+
+    const sql = `INSERT INTO ${tableName} (${fields}) VALUES ${datas}`;
+    await conn.createQueryRunner().query(sql);
   }
+
   return conn;
 };

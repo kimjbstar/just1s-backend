@@ -53,10 +53,29 @@ describe("deck.service.ts", () => {
         }
       ]
     });
+    console.log(deck);
 
     expect(deck["title"]).equal("윤하 1초 맞추기");
     expect(deck["deckMusics"]?.length).greaterThan(0);
     expect(deck["hashtags"]?.length).greaterThan(0);
+  });
+
+  it("perform - 문제풀기", async () => {
+    const input = {
+      userId: 1,
+      deckId: 15,
+      answers: [
+        {
+          deckMusicId: 5,
+          answer: "정답1"
+        },
+        {
+          deckMusicId: 6,
+          answer: "정답2"
+        }
+      ]
+    };
+    // decksService.perform(input)
   });
 
   after(async () => {
