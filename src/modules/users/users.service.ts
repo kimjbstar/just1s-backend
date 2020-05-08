@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { UtilService } from "@src/services/util.service";
 import {
   MissingParameterIDException,
   DataNotFoundException,
@@ -15,7 +14,7 @@ import { UpdateResult, DeleteResult } from "typeorm";
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly utilService: UtilService) {}
+  constructor() {}
 
   // hashPw(pw: string): string {
   //   const salt = "f9dev-secret-salt-closedshops";
