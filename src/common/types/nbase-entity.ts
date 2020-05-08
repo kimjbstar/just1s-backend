@@ -4,7 +4,9 @@ import {
   ObjectType as OType,
   ObjectLiteral,
   OrderByCondition,
-  LessThan
+  LessThan,
+  CreateDateColumn,
+  UpdateDateColumn
 } from "typeorm";
 // const pluralize = require("pluralize");
 
@@ -18,6 +20,12 @@ export abstract class NbaseEntity extends BaseEntity {
   id: number;
 
   cursor?: number;
+
+  @CreateDateColumn()
+  createdAt: string;
+
+  @UpdateDateColumn()
+  updatedAt: number;
 
   // static findByIdWithInfo<T extends NbaseEntity>(
   //   this: OType<T>,
