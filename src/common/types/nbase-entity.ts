@@ -34,7 +34,7 @@ export abstract class NbaseEntity extends BaseEntity {
   static async createList<T extends NbaseEntity, U extends NbaseListResult>(
     this: OType<T>,
     resultClass: new (obj) => U,
-    config: F9CreateListConfig,
+    config: NBaseCreateListConfig,
     args
   ) {
     const { customize, argsResolver, orderByResolver } = config;
@@ -46,6 +46,20 @@ export abstract class NbaseEntity extends BaseEntity {
 
     // query builder
     let queryBuilder = (entityClass as any).createQueryBuilder(entityAlias);
+    // User.createQueryBuilder().leftJoinAndMapOne( );
+
+    // leftJoinAndMapOne(mapToProperty: string,
+    //   subQueryFactory: (qb: SelectQueryBuilder<any>) => SelectQueryBuilder<any>,
+    // alias: string,
+    // condition?: string,
+    // parameters?: ObjectLiteral): SelectQueryBuilder<User>
+
+    // LEFT JOINs given subquery, SELECTs the data returned by a join and MAPs all that data to some
+    //  entity's property. This is extremely useful when you want to select some data and map it to
+    //   some virtual property. It will assume that there is a single row of selecting data, and map
+    //   ped result will be a single selected value. Given entity property should be a relation. You
+    //    also need to specify an alias of the joined data. Optionally, you can add condition and par
+    //    ameters used in condition.
 
     // select, relations
     const relations: NBaseResolveRelationResult[] = resolveRelations(
@@ -66,9 +80,10 @@ export abstract class NbaseEntity extends BaseEntity {
     // where
     for (let key in argsResolver) {
       if (args[key] != undefined && argsResolver[key] != undefined) {
-        where = Object.assign(where, argsResolver[key](args));
+        where = Object.assign(where, argsResolver[key](args, queryBuilder));
       }
     }
+
     queryBuilder.where(where);
 
     // count, cursor, orderBy
@@ -112,13 +127,13 @@ export abstract class NbaseEntity extends BaseEntity {
   }
 }
 
-export interface F9CreateListConfig {
+export interface NBaseCreateListConfig {
   customize?: (builder) => void;
   /**
    *  Arguments Resolver
    */
   argsResolver?: {
-    [argsKey: string]: (args) => ObjectLiteral;
+    [argsKey: string]: (args, builder?) => ObjectLiteral;
   };
   /**
    *  OrderBy Filter Resolver

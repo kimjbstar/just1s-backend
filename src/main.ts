@@ -18,7 +18,7 @@ async function bootstrap() {
   // app.setGlobalPrefix("/api/*");
   // app.use(initCurrentApp);
   // app.useGlobalFilters(new F9HttpExceptionFilter());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   // app.useGlobalGuards(new PublicAuthGuard(new Reflector()));
 
   const options = new DocumentBuilder()

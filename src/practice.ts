@@ -5,7 +5,8 @@ import {
   createConnection,
   Column,
   Entity,
-  Equal
+  Equal,
+  Like
 } from "typeorm";
 import "reflect-metadata";
 import { Deck } from "./entities/deck.entity";
@@ -16,12 +17,15 @@ import { DeckHashtag } from "./entities/deckHashtag.entity";
 import { User } from "@src/entities/user.entity";
 // import { User } from "./entities/user.entity";
 
-import { NbaseEntity, F9CreateListConfig } from "./common/types/nbase-entity";
+import {
+  NbaseEntity,
+  NBaseCreateListConfig
+} from "./common/types/nbase-entity";
 import { UserListOrderBys, UserStatus } from "@src/modules/users/users.enum";
 import { NBaseListArgs } from "./common/types/nbase-list-args";
 import { UserListResult } from "./modules/users/args/user-list.result";
 
-const createListConfig: F9CreateListConfig = {
+const createUserListConfig: NBaseCreateListConfig = {
   // customize: builder => {
   //   return builder.innerJoin(
   //     'product_apps_app',
@@ -30,25 +34,26 @@ const createListConfig: F9CreateListConfig = {
   //   );
   // },
   argsResolver: {
+    snsType: (args) => {
+      return {
+        snsType: Equal(args.snsType)
+      };
+    },
     status: (args) => {
       return {
         status: Equal(args.status)
       };
+    },
+    email: (args) => {
+      return {
+        email: Equal(args.email)
+      };
+    },
+    name: (args) => {
+      return {
+        name: Like(args.name)
+      };
     }
-    // brandId: args => {
-    //   return {
-    //     brand: {
-    //       id: args.brandId,
-    //     },
-    //   };
-    // },
-    // categoryId: args => {
-    //   return {
-    //     category: {
-    //       id: In(childrenIds),
-    //     },
-    //   };
-    // },
   },
   orderByResolver: {
     [UserListOrderBys.ID__DESC]: {
@@ -82,7 +87,7 @@ const bootstrap = async () => {
     take: 10,
     orderBy: UserListOrderBys.ID__DESC
   });
-  const a = await User.createList(UserListResult, createListConfig, args);
+  const a = await User.createList(UserListResult, createUserListConfig, args);
   console.log(a);
   process.exit(0);
 };

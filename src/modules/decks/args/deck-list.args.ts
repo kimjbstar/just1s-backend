@@ -1,18 +1,22 @@
 import { IsNotEmpty } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { NBaseListArgs } from "@src/common/types/nbase-list-args";
+import { Type } from "class-transformer";
 
-export class DeckListArgs {
-  @IsNotEmpty()
+export class DeckListArgs extends NBaseListArgs {
   @ApiProperty({
     description: "제목을(를) 입력해주세요!"
   })
   title: string;
+
   @ApiProperty({
-    description: "hitsCount을(를) 입력해주세요!"
+    description: "제목을(를) 입력해주세요!"
   })
-  hitsCount: number;
+  @Type(() => Number)
+  userId: number;
+
   @ApiProperty({
-    description: "averageScore을(를) 입력해주세요!"
+    description: "제목을(를) 입력해주세요!"
   })
-  averageScore: number;
+  hashtag: string;
 }

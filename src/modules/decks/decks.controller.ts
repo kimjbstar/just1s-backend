@@ -16,16 +16,70 @@ import { Perform } from "@src/entities/perform.entity";
 import { DeckListArgs } from "./args/deck-list.args";
 import { DeckCreateDto } from "./dtos/deck-create.dto";
 import { DeckPerformDto } from "./dtos/deck-perform.dto";
+import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
+import { DeckListOrderBys } from "./deck.enum";
+import { Equal, Like } from "typeorm";
+import { DeckListResult } from "./args/deck-list.result";
+import { Deck } from "@src/entities/deck.entity";
+import { DeckHashtag } from "@src/entities/deckHashtag.entity";
+
+const createDeckListConfig: NBaseCreateListConfig = {
+  // customize: (builder) => {
+  //   // return builder.innerJoin("deck.hashtags", "deck_hashtag");
+  //   return builder.leftJoinAndSelect("deck.hashtags", "deck_hashtag");
+  // },
+  argsResolver: {
+    title: (args) => {
+      return {
+        title: Like(`%${args.title}%`)
+      };
+    },
+    userId: (args) => {
+      return {
+        user: {
+          id: Equal(args.userId)
+        }
+      };
+    },
+    has_hashtag: (args, builder) => {
+      return builder.leftJoinAndSelect("deck.hashtags", "deck_hashtag");
+    },
+    hashtag: (args, builder) => {
+      return builder.innerJoinAndMapMany(
+        "deck.hashtags",
+        DeckHashtag,
+        "hashtag",
+        `hashtag.deckId = deck.id AND hashtag.hashtag LIKE '%${args.hashtag}%'`
+      );
+    }
+  },
+  orderByResolver: {
+    [DeckListOrderBys.ID__DESC]: {
+      cursor: "deck.id",
+      orderBy: {
+        "deck.id": "DESC"
+      }
+    }
+  }
+};
 
 @Controller("decks")
 export class DecksController {
   constructor(private readonly decksService: DecksService) {}
 
   @Get()
-  async find(@Query() query: DeckListArgs): Promise<any> {
-    const decks: object[] = await this.decksService.find(query);
+  async find(@Query() args: DeckListArgs): Promise<any> {
+    console.log(args);
+    const listResult: DeckListResult = await Deck.createList(
+      DeckListResult,
+      createDeckListConfig,
+      args
+    );
+
     const result = {
-      decks: decks.map((deck) => {
+      totalCount: listResult.totalCount,
+      hasNext: listResult.hasNext,
+      decks: listResult.decks.map((deck) => {
         return classToPlain(deck);
       })
     };

@@ -20,16 +20,67 @@ import { UsersService } from "@src/modules/users/users.service";
 import { classToPlain } from "class-transformer";
 import { UserListArgs } from "./args/user-list.args";
 import { UserCreateDto } from "./dtos/user-create.dto";
+import { User } from "@src/entities/user.entity";
+import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
+import { Equal, Like } from "typeorm";
+import { UserListResult } from "./args/user-list.result";
+
+const createUserListConfig: NBaseCreateListConfig = {
+  // customize: builder => {
+  //   return builder.innerJoin(
+  //     'product_apps_app',
+  //     'pa',
+  //     `pa.productId = product.id and pa.appId = ${app.id}`,
+  //   );
+  // },
+  argsResolver: {
+    snsType: (args) => {
+      return {
+        snsType: Equal(args.snsType)
+      };
+    },
+    status: (args) => {
+      return {
+        status: Equal(args.status)
+      };
+    },
+    email: (args) => {
+      return {
+        email: Equal(args.email)
+      };
+    },
+    name: (args) => {
+      return {
+        name: Like(`%${args.name}%`)
+      };
+    }
+  },
+  orderByResolver: {
+    [UserListOrderBys.ID__DESC]: {
+      cursor: "user.id",
+      orderBy: {
+        "user.id": "DESC"
+      }
+    }
+  }
+};
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async find(@Query() query: UserListArgs): Promise<any> {
-    const users: object[] = await this.usersService.find(query);
+  async find(@Query() args: UserListArgs): Promise<any> {
+    const listResult: UserListResult = await User.createList(
+      UserListResult,
+      createUserListConfig,
+      args
+    );
+
     const result = {
-      users: users.map((user) => {
+      totalCount: listResult.totalCount,
+      hasNext: listResult.hasNext,
+      users: listResult.users.map((user) => {
         return classToPlain(user);
       })
     };
