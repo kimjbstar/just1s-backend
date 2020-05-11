@@ -11,6 +11,8 @@ import {
 import { DecksService } from "@src/modules/decks/decks.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { DeckOrderbys } from "@src/modules/decks/deck.enum";
+import { classToPlain, Expose, Type } from "class-transformer";
+import { IsNotEmpty } from "class-validator";
 
 export class DeckListQuery {
   @ApiProperty({
@@ -42,6 +44,30 @@ export class DeckCreateDto {
   averageScore: number;
 }
 
+export class DeckPerformDto {
+  @Expose()
+  @IsNotEmpty()
+  deckId: number;
+
+  @Expose()
+  @IsNotEmpty()
+  userId: number;
+
+  @Expose()
+  @IsNotEmpty()
+  @Type(() => DeckPerformAnswerDto)
+  answers: DeckPerformAnswerDto[];
+}
+export class DeckPerformAnswerDto {
+  @Expose()
+  @IsNotEmpty()
+  deckMusicId: number;
+
+  @Expose()
+  @IsNotEmpty()
+  answer: string;
+}
+
 @Controller("decks")
 export class DecksController {
   constructor(private readonly decksService: DecksService) {}
@@ -50,7 +76,9 @@ export class DecksController {
   async find(@Query() query: DeckListQuery): Promise<any> {
     const decks: object[] = await this.decksService.find(query);
     const result = {
-      decks: decks
+      decks: decks.map((deck) => {
+        return classToPlain(deck);
+      })
     };
     return result;
   }
@@ -60,7 +88,7 @@ export class DecksController {
   async get(@Param("id") id: Number): Promise<any> {
     const deck: Object = await this.decksService.findByPk(id);
     const result = {
-      deck: deck
+      deck: classToPlain(deck)
     };
     return result;
   }
@@ -69,7 +97,7 @@ export class DecksController {
   async create(@Body() dto: DeckCreateDto): Promise<any> {
     const deck: Object = await this.decksService.create(dto);
     const result = {
-      deck: deck
+      deck: classToPlain(deck)
     };
     return result;
   }
@@ -92,7 +120,7 @@ export class DecksController {
   async delete(@Param("id") id: Number): Promise<any> {
     const deck: Object = await this.decksService.destroy(id);
     const result = {
-      deck: deck
+      deck: classToPlain(deck)
     };
     return result;
   }
@@ -102,7 +130,7 @@ export class DecksController {
     console.log(dto);
     const deck: Object = await this.decksService.register(dto);
     const result = {
-      deck: deck
+      deck: classToPlain(deck)
     };
     return result;
   }

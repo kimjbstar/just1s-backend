@@ -8,7 +8,6 @@ import {
   MissingBodyToCreateException,
   WrongIdException
 } from "@src/common/http-exception";
-import { classToPlain } from "class-transformer";
 import { User } from "@src/entities/user.entity";
 import { UpdateResult, DeleteResult } from "typeorm";
 
@@ -25,33 +24,27 @@ export class UsersService {
   // }
 
   async find(query): Promise<object[]> {
-    const decks: User[] = await User.find({
+    const users: User[] = await User.find({
       relations: []
     });
-    let result = decks.map((deck) => {
-      return classToPlain(deck);
-    });
 
-    return Promise.resolve(result);
+    return Promise.resolve(users);
   }
 
   async findByPk(id): Promise<object> {
-    const deck: User = await User.findOne(id, {
+    const user: User = await User.findOne(id, {
       relations: []
     });
-    let result = classToPlain(deck);
 
-    return Promise.resolve(result);
+    return Promise.resolve(user);
   }
 
   async create(dto): Promise<object> {
-    const deck: User = new User(dto);
-    await deck.save();
+    const user: User = new User(dto);
+    await user.save();
+    await user.reload();
 
-    let result = await this.findByPk(deck.id);
-    result = classToPlain(result);
-
-    return Promise.resolve(result);
+    return this.findByPk(user.id);
   }
 
   async update(id, dto): Promise<any> {
@@ -63,8 +56,8 @@ export class UsersService {
       throw new UnexpectedUpdateResultException();
     }
 
-    const deck = await this.findByPk(id);
-    return Promise.resolve(deck);
+    const user = await this.findByPk(id);
+    return this.findByPk(id);
   }
 
   async destroy(id): Promise<any> {

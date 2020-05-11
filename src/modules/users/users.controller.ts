@@ -16,6 +16,7 @@ import {
   Body
 } from "@nestjs/common";
 import { UsersService } from "@src/modules/users/users.service";
+import { classToPlain } from "class-transformer";
 
 export class UserListQuery {
   @ApiProperty({
@@ -107,7 +108,9 @@ export class UsersController {
   async find(@Query() query: UserListQuery): Promise<any> {
     const users: object[] = await this.usersService.find(query);
     const result = {
-      users: users
+      users: users.map((user) => {
+        return classToPlain(user);
+      })
     };
     return result;
   }
@@ -117,7 +120,7 @@ export class UsersController {
   async get(@Param("id") id: Number): Promise<any> {
     const user: Object = await this.usersService.findByPk(id);
     const result = {
-      user: user
+      user: classToPlain(user)
     };
     return result;
   }
@@ -126,7 +129,7 @@ export class UsersController {
   async create(@Body() dto: UserCreateDto): Promise<any> {
     const user: Object = await this.usersService.create(dto);
     const result = {
-      user: user
+      user: classToPlain(user)
     };
     return result;
   }
@@ -139,7 +142,7 @@ export class UsersController {
   ): Promise<any> {
     const user: Object = await this.usersService.update(id, dto);
     const result = {
-      user: user
+      user: classToPlain(user)
     };
     return result;
   }
@@ -149,7 +152,7 @@ export class UsersController {
   async delete(@Param("id") id: Number): Promise<any> {
     const user: Object = await this.usersService.destroy(id);
     const result = {
-      user: user
+      user: classToPlain(user)
     };
     return result;
   }

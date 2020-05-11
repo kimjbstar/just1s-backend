@@ -15,37 +15,14 @@ import { MusicsService } from "../music/music.service";
 import { Deck } from "@src/entities/deck.entity";
 import { Connection, UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
-import { classToPlain, Expose, Type, plainToClass } from "class-transformer";
+import { Expose, Type, plainToClass } from "class-transformer";
 import { User } from "@src/entities/user.entity";
 import { DeckMusic } from "@src/entities/deckMusic.entity";
 import { UsersService } from "../users/users.service";
 import { IsNotEmpty, validate, ValidationError } from "class-validator";
 import { Answer } from "@src/entities/answer.entity";
 import { Perform } from "@src/entities/perform.entity";
-
-export class DeckPerformDto {
-  @Expose()
-  @IsNotEmpty()
-  deckId: number;
-
-  @IsNotEmpty()
-  @Expose()
-  userId: number;
-
-  @Expose()
-  @IsNotEmpty()
-  @Type(() => DeckPerformAnswerDto)
-  answers: DeckPerformAnswerDto[];
-}
-export class DeckPerformAnswerDto {
-  @Expose()
-  @IsNotEmpty()
-  deckMusicId: number;
-
-  @Expose()
-  @IsNotEmpty()
-  answer: string;
-}
+import { DeckPerformDto } from "./decks.controller";
 
 @Injectable()
 export class DecksService {
@@ -59,30 +36,22 @@ export class DecksService {
     const decks: Deck[] = await Deck.find({
       relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
     });
-    let result = decks.map((deck) => {
-      return classToPlain(deck);
-    });
-
-    return Promise.resolve(result);
+    return Promise.resolve(decks);
   }
 
   async findByPk(id): Promise<object> {
     const deck: Deck = await Deck.findOne(id, {
       relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
     });
-    let result = classToPlain(deck);
 
-    return Promise.resolve(result);
+    return Promise.resolve(deck);
   }
 
   async create(dto): Promise<object> {
     const deck: Deck = new Deck(dto);
     await deck.save();
-
-    let result = await this.findByPk(deck.id);
-    result = classToPlain(result);
-
-    return Promise.resolve(result);
+    await deck.reload();
+    return this.findByPk(deck.id);
   }
 
   async update(id, dto): Promise<any> {

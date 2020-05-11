@@ -11,40 +11,33 @@ import {
 } from "@src/common/http-exception";
 import { UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
-import { classToPlain } from "class-transformer";
 
 @Injectable()
 export class MusicsService {
   constructor(private readonly utilService: UtilService) {}
 
   async find(query): Promise<object[]> {
-    const decks: Music[] = await Music.find({
+    const musics: Music[] = await Music.find({
       relations: []
     });
-    let result = decks.map((deck) => {
-      return classToPlain(deck);
-    });
 
-    return Promise.resolve(result);
+    return Promise.resolve(musics);
   }
 
   async findByPk(id): Promise<object> {
-    const deck: Music = await Music.findOne(id, {
+    const music: Music = await Music.findOne(id, {
       relations: []
     });
-    let result = classToPlain(deck);
 
-    return Promise.resolve(result);
+    return Promise.resolve(music);
   }
 
   async create(dto): Promise<object> {
-    const deck: Music = new Music(dto);
-    await deck.save();
+    const music: Music = new Music(dto);
+    await music.save();
+    await music.reload();
 
-    let result = await this.findByPk(deck.id);
-    result = classToPlain(result);
-
-    return Promise.resolve(result);
+    return this.findByPk(music.id);
   }
 
   async update(id, dto): Promise<any> {
@@ -56,8 +49,8 @@ export class MusicsService {
       throw new UnexpectedUpdateResultException();
     }
 
-    const deck = await this.findByPk(id);
-    return Promise.resolve(deck);
+    const music = await this.findByPk(id);
+    return Promise.resolve(music);
   }
 
   async destroy(id): Promise<any> {

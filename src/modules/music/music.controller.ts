@@ -11,6 +11,7 @@ import {
 import { MusicsService } from "@src/modules/music/music.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { MusicOrderbys } from "@src/modules/music/music.enum";
+import { classToPlain } from "class-transformer";
 
 export class MusicListQuery {
   @ApiProperty({
@@ -60,9 +61,11 @@ export class MusicController {
 
   @Get()
   async find(@Query() query: MusicListQuery): Promise<any> {
-    const music: object[] = await this.musicService.find(query);
+    const musics: object[] = await this.musicService.find(query);
     const result = {
-      music: music
+      music: musics.map((music) => {
+        return classToPlain(music);
+      })
     };
     return result;
   }
@@ -72,7 +75,7 @@ export class MusicController {
   async get(@Param("id") id: Number): Promise<any> {
     const music: Object = await this.musicService.findByPk(id);
     const result = {
-      music: music
+      music: classToPlain(music)
     };
     return result;
   }
@@ -81,7 +84,7 @@ export class MusicController {
   async create(@Body() dto: MusicCreateDto): Promise<any> {
     const music: Object = await this.musicService.create(dto);
     const result = {
-      music: music
+      music: classToPlain(music)
     };
     return result;
   }
@@ -94,7 +97,7 @@ export class MusicController {
   ): Promise<any> {
     const music: Object = await this.musicService.update(id, dto);
     const result = {
-      music: music
+      music: classToPlain(music)
     };
     return result;
   }
@@ -104,7 +107,7 @@ export class MusicController {
   async delete(@Param("id") id: Number): Promise<any> {
     const music: Object = await this.musicService.destroy(id);
     const result = {
-      music: music
+      music: classToPlain(music)
     };
     return result;
   }
