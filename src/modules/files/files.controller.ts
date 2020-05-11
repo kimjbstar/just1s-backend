@@ -18,8 +18,6 @@ export class FileUploadQuery {
 
 @Controller("files")
 export class FilesController {
-  //   constructor(private readonly reviewsService: FilesService) {}
-
   @Post("image")
   @UseInterceptors(FileInterceptor("image"))
   // @UseInterceptors(

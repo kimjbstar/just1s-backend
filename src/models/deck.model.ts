@@ -14,7 +14,7 @@
 //   ScopesOptionsGetter,
 //   BelongsToMany
 // } from "sequelize-typescript";
-// import { DeckOrderbys } from "@src/modules/decks/deck.enum";
+// import { DeckListOrderBys } from "@src/modules/decks/deck.enum";
 // import { User } from "@src/models/user.model";
 // import { DeckHashtag } from "./deckHashtag.model";
 // import { Music } from "./music.model";
@@ -27,10 +27,10 @@
 //     }; //
 //   },
 //   order: (value) => {
-//     if (DeckOrderbys[value] == undefined) {
+//     if (DeckListOrderBys[value] == undefined) {
 //       return {};
 //     }
-//     const { cursor, orderBy } = DeckOrderbys[value];
+//     const { cursor, orderBy } = DeckListOrderBys[value];
 //     return {
 //       attributes: {
 //         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -39,10 +39,10 @@
 //     };
 //   },
 //   after: (value, orderbyKey) => {
-//     if (DeckOrderbys[orderbyKey] == undefined) {
+//     if (DeckListOrderBys[orderbyKey] == undefined) {
 //       return {};
 //     }
-//     const { cursor, orderBy } = DeckOrderbys[orderbyKey];
+//     const { cursor, orderBy } = DeckListOrderBys[orderbyKey];
 //     return {
 //       where: {
 //         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)

@@ -1,7 +1,6 @@
-
-export const MusicOrderbys = {
-  ID__DESC: {
-    cursor: "Music.id",
-    orderBy: [["id", "desc"]]
-  }
+export enum MusicListOrderBys {
+  ID__DESC = "ID__DESC"
+}
+export const MapMusicListOrderBys = {
+  [MusicListOrderBys.ID__DESC]: "최신순"
 };

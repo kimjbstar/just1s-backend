@@ -7,78 +7,22 @@ import {
   Query,
   Param,
   Body,
-  UsePipes,
-  ValidationPipe,
   ParseIntPipe
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
-import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import { DeckOrderbys } from "@src/modules/decks/deck.enum";
-import { classToPlain, Expose, Type } from "class-transformer";
-import { IsNotEmpty, IsString, IsOptional } from "class-validator";
+import { ApiQuery } from "@nestjs/swagger";
+import { classToPlain } from "class-transformer";
 import { Perform } from "@src/entities/perform.entity";
-
-export class DeckListQuery {
-  @IsNotEmpty()
-  @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
-  })
-  title: string;
-  @ApiProperty({
-    description: "hitsCount을(를) 입력해주세요!"
-  })
-  hitsCount: number;
-  @ApiProperty({
-    description: "averageScore을(를) 입력해주세요!"
-  })
-  averageScore: number;
-}
-
-export class DeckCreateDto {
-  @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
-  })
-  title: string;
-  @ApiProperty({
-    description: "hitsCount을(를) 입력해주세요!"
-  })
-  hitsCount: number;
-  @ApiProperty({
-    description: "averageScore을(를) 입력해주세요!"
-  })
-  averageScore: number;
-}
-
-export class DeckPerformDto {
-  @Expose()
-  @IsNotEmpty()
-  deckId: number;
-
-  @Expose()
-  @IsNotEmpty()
-  userId: number;
-
-  @Expose()
-  @IsNotEmpty()
-  @Type(() => DeckPerformAnswerDto)
-  answers: DeckPerformAnswerDto[];
-}
-export class DeckPerformAnswerDto {
-  @Expose()
-  @IsNotEmpty()
-  deckMusicId: number;
-
-  @Expose()
-  @IsNotEmpty()
-  answer: string;
-}
+import { DeckListArgs } from "./args/deck-list.args";
+import { DeckCreateDto } from "./dtos/deck-create.dto";
+import { DeckPerformDto } from "./dtos/deck-perform.dto";
 
 @Controller("decks")
 export class DecksController {
   constructor(private readonly decksService: DecksService) {}
 
   @Get()
-  async find(@Query() query: DeckListQuery): Promise<any> {
+  async find(@Query() query: DeckListArgs): Promise<any> {
     const decks: object[] = await this.decksService.find(query);
     const result = {
       decks: decks.map((deck) => {
@@ -143,7 +87,6 @@ export class DecksController {
 
   @Post("perform")
   async perform(@Body() dto: DeckPerformDto): Promise<any> {
-    console.log(dto);
     const perform: Perform = await this.decksService.perform(dto);
     const result = {
       perform: classToPlain(perform)

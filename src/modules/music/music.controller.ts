@@ -12,55 +12,15 @@ import {
 import { MusicsService } from "@src/modules/music/music.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { classToPlain } from "class-transformer";
-
-export class MusicListQuery {
-  @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
-  })
-  title: string;
-  @ApiProperty({
-    description: "artist을(를) 입력해주세요!"
-  })
-  artist: string;
-  @ApiProperty({
-    description: "link을(를) 입력해주세요!"
-  })
-  link: string;
-  @ApiProperty({
-    description: "averageScore을(를) 입력해주세요!"
-  })
-  averageScore: number;
-  @ApiProperty({
-    description: "belogsDecksCount을(를) 입력해주세요!"
-  })
-  belogsDecksCount: number;
-  @ApiProperty({
-    description: "performsCount을(를) 입력해주세요!"
-  })
-  performsCount: number;
-}
-
-export class MusicCreateDto {
-  @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
-  })
-  title: string;
-  @ApiProperty({
-    description: "artist을(를) 입력해주세요!"
-  })
-  artist: string;
-  @ApiProperty({
-    description: "link을(를) 입력해주세요!"
-  })
-  link: string;
-}
+import { MusicListArgs } from "./args/music-list.args";
+import { MusicCreateDto } from "./dtos/music-create.dto";
 
 @Controller("musics")
 export class MusicController {
   constructor(private readonly musicService: MusicsService) {}
 
   @Get()
-  async find(@Query() query: MusicListQuery): Promise<any> {
+  async find(@Query() query: MusicListArgs): Promise<any> {
     const musics: object[] = await this.musicService.find(query);
     const result = {
       music: musics.map((music) => {

@@ -72,14 +72,10 @@ const getModelAndPksTypeORM = async (
   let fkInfos = [];
   columns.forEach((column) => {
     if (column.referencedColumn !== undefined) {
-      const targetName = column.referencedColumn.entityMetadata.targetName;
-      // console.log(`${modelCtor.name} has ${targetName}`);
-
       fkInfos.push({
         columnName: column.propertyName,
         tableName: column.referencedColumn.entityMetadata.tableName,
         target: column.referencedColumn.entityMetadata.target
-        // targetName: column.referencedColumn.entityMetadata.targetName
       });
     }
   });

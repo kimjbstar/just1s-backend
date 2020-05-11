@@ -11,7 +11,7 @@
 //   Scopes
 // } from "sequelize-typescript";
 // import {
-//   UserOrderbys,
+//   UserListOrderBys,
 //   UserStatus,
 //   UserSNSType
 // } from "@src/modules/users/users.enum";
@@ -37,10 +37,10 @@
 //     };
 //   },
 //   order: (value) => {
-//     if (UserOrderbys[value] == undefined) {
+//     if (UserListOrderBys[value] == undefined) {
 //       return {};
 //     }
-//     const { cursor, orderBy } = UserOrderbys[value];
+//     const { cursor, orderBy } = UserListOrderBys[value];
 //     return {
 //       attributes: {
 //         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -49,10 +49,10 @@
 //     };
 //   },
 //   after: (value, orderbyKey) => {
-//     if (UserOrderbys[orderbyKey] == undefined) {
+//     if (UserListOrderBys[orderbyKey] == undefined) {
 //       return {};
 //     }
-//     const { cursor, orderBy } = UserOrderbys[orderbyKey];
+//     const { cursor, orderBy } = UserListOrderBys[orderbyKey];
 //     return {
 //       where: {
 //         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)

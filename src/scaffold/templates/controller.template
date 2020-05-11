@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { {{plucapitalize name}}Service } from "@src/modules/{{pluralize name}}/{{pluralize name}}.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}Orderbys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
+import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}ListOrderBys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
 
 export class {{capitalize name}}ListQuery {
 {{#each fields}}

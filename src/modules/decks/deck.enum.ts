@@ -1,7 +1,6 @@
-
-export const DeckOrderbys = {
-  ID__DESC: {
-    cursor: "Deck.id",
-    orderBy: [["id", "desc"]]
-  }
+export enum DeckListOrderBys {
+  ID__DESC = "ID__DESC"
+}
+export const MapDeckListOrderBys = {
+  [DeckListOrderBys.ID__DESC]: "최신순"
 };

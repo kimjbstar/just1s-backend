@@ -6,9 +6,9 @@ export enum {{name}} {
 }
 {{/each}}
 
-export const {{capitalize name}}Orderbys = {
-  ID__DESC: {
-    cursor: "{{capitalize name}}.id",
-    orderBy: [["id", "desc"]]
-  }
+export enum {{capitalize name}}ListOrderBys {
+  ID__DESC = "ID__DESC"
+}
+export const Map{{capitalize name}}ListOrderBys = {
+  [{{capitalize name}}ListOrderBys.ID__DESC]: "최신순"
 };

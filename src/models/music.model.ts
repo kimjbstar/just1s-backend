@@ -10,7 +10,7 @@
 //   BelongsToMany,
 //   BeforeCreate
 // } from "sequelize-typescript";
-// import { MusicOrderbys } from "@src/modules/music/music.enum";
+// import { MusicListOrderBys } from "@src/modules/music/music.enum";
 // import { Deck } from "./deck.model";
 // import { DeckMusic } from "./deckMusic.model";
 // import { Hook } from "mocha";
@@ -47,10 +47,10 @@
 //     };
 //   },
 //   order: (value) => {
-//     if (MusicOrderbys[value] == undefined) {
+//     if (MusicListOrderBys[value] == undefined) {
 //       return {};
 //     }
-//     const { cursor, orderBy } = MusicOrderbys[value];
+//     const { cursor, orderBy } = MusicListOrderBys[value];
 //     return {
 //       attributes: {
 //         include: [[Sequelize.literal(cursor), "cursor"]]
@@ -59,10 +59,10 @@
 //     };
 //   },
 //   after: (value, orderbyKey) => {
-//     if (MusicOrderbys[orderbyKey] == undefined) {
+//     if (MusicListOrderBys[orderbyKey] == undefined) {
 //       return {};
 //     }
-//     const { cursor, orderBy } = MusicOrderbys[orderbyKey];
+//     const { cursor, orderBy } = MusicListOrderBys[orderbyKey];
 //     return {
 //       where: {
 //         [Op.and]: Sequelize.literal(`${cursor} < ${value}`)

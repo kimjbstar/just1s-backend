@@ -1,8 +1,8 @@
-export const UserOrderbys = {
-  ID__DESC: {
-    cursor: "User.id",
-    orderBy: [["id", "desc"]]
-  }
+export enum UserListOrderBys {
+  ID__DESC = "ID__DESC"
+}
+export const MapUserListOrderBys = {
+  [UserListOrderBys.ID__DESC]: "최신순"
 };
 
 export enum UserSNSType {

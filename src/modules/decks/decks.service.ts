@@ -27,7 +27,7 @@ import { UsersService } from "../users/users.service";
 import { IsNotEmpty, validate, ValidationError } from "class-validator";
 import { Answer } from "@src/entities/answer.entity";
 import { Perform } from "@src/entities/perform.entity";
-import { DeckPerformDto } from "./decks.controller";
+import { DeckPerformDto } from "./dtos/deck-perform.dto";
 
 @Injectable()
 export class DecksService {
