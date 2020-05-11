@@ -13,7 +13,12 @@ import {
 } from "@src/common/http-exception";
 import { MusicsService } from "../music/music.service";
 import { Deck } from "@src/entities/deck.entity";
-import { Connection, UpdateResult, DeleteResult } from "typeorm";
+import {
+  Connection,
+  UpdateResult,
+  DeleteResult,
+  MoreThanOrEqual
+} from "typeorm";
 import { Music } from "@src/entities/music.entity";
 import { Expose, Type, plainToClass } from "class-transformer";
 import { User } from "@src/entities/user.entity";
@@ -32,14 +37,14 @@ export class DecksService {
     private readonly usersService: UsersService
   ) {}
 
-  async find(query): Promise<object[]> {
+  async find(query): Promise<Deck[]> {
     const decks: Deck[] = await Deck.find({
       relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
     });
     return Promise.resolve(decks);
   }
 
-  async findByPk(id): Promise<object> {
+  async findByPk(id): Promise<Deck> {
     const deck: Deck = await Deck.findOne(id, {
       relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
     });
@@ -47,7 +52,7 @@ export class DecksService {
     return Promise.resolve(deck);
   }
 
-  async create(dto): Promise<object> {
+  async create(dto): Promise<Deck> {
     const deck: Deck = new Deck(dto);
     await deck.save();
     await deck.reload();
@@ -78,7 +83,7 @@ export class DecksService {
     return Promise.resolve();
   }
 
-  async register(dto): Promise<object> {
+  async register(dto): Promise<Deck> {
     if (!dto.musics || !Array.isArray(dto.musics)) {
       throw new MissingBodyToCreateException();
     }
@@ -117,7 +122,7 @@ export class DecksService {
     return this.create(dto);
   }
 
-  async perform(dto): Promise<object> {
+  async perform(dto): Promise<Perform> {
     const dtoClass: DeckPerformDto = plainToClass(DeckPerformDto, dto, {
       excludeExtraneousValues: true
     });
@@ -148,6 +153,7 @@ export class DecksService {
       if (deckMusic.deck.id != deck.id) {
         throw new CustomException("답에 연결된 음악 정보가 잘못됨");
       }
+      // console.log(deckMusic.music.title, _answer.answer);
       const answer = new Answer({
         deckMusic: deckMusic,
         answer: _answer.answer,
@@ -174,6 +180,27 @@ export class DecksService {
     });
     if (oldOne === undefined) {
       await perform.save();
+      const userPerformCount = await Perform.createQueryBuilder()
+        .innerJoin(User, "user")
+        .where("perform.userId = :userId", { userId: perform.user.id })
+        .getCount();
+      const userAnswerCount = await Answer.createQueryBuilder()
+        .innerJoin(Perform, "perform")
+        .innerJoin(User, "user")
+        .where("perform.userId = :userId", { userId: perform.user.id })
+        .getCount();
+
+      await User.update(perform.user.id, {
+        performedDecksCount: userPerformCount,
+        performedMusicsCount: userAnswerCount
+      });
+
+      //deck average score
+
+      // const deckAverageScopre = await Perform.
+      // await Deck.update(perform.deck.id, {
+      //   averageScore: 0
+      // })
     }
     const result = oldOne !== undefined ? oldOne : await perform.save();
 

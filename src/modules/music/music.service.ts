@@ -16,7 +16,7 @@ import { Music } from "@src/entities/music.entity";
 export class MusicsService {
   constructor(private readonly utilService: UtilService) {}
 
-  async find(query): Promise<object[]> {
+  async find(query): Promise<Music[]> {
     const musics: Music[] = await Music.find({
       relations: []
     });
@@ -24,7 +24,7 @@ export class MusicsService {
     return Promise.resolve(musics);
   }
 
-  async findByPk(id): Promise<object> {
+  async findByPk(id): Promise<Music> {
     const music: Music = await Music.findOne(id, {
       relations: []
     });
@@ -32,7 +32,7 @@ export class MusicsService {
     return Promise.resolve(music);
   }
 
-  async create(dto): Promise<object> {
+  async create(dto): Promise<Music> {
     const music: Music = new Music(dto);
     await music.save();
     await music.reload();

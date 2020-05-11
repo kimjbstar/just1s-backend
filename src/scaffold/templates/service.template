@@ -17,7 +17,7 @@ import { {{camelize this.name}} } from "@src/models/{{underscore this.name}}.mod
 export class {{plucapitalize name}}Service {
   constructor(private readonly utilService: UtilService) {}
 
-  async find(query): Promise<object[]> {
+  async find(query): Promise<{{capitalize name}}[]> {
     const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
       query,
       Object.keys({{capitalize name}}Scopes())
@@ -29,7 +29,7 @@ export class {{plucapitalize name}}Service {
     return {{pluralize name}}.map({{name}} => {{name}}.get({ plain: true }));
   }
 
-  async findByPk(id): Promise<object> {
+  async findByPk(id): Promise<{{capitalize name}}> {
     if (id === undefined) {
       throw new MissingParameterIDException();
     }
@@ -40,7 +40,7 @@ export class {{plucapitalize name}}Service {
     return row;
   }
 
-  async create(dto): Promise<object> {
+  async create(dto): Promise<{{capitalize name}}> {
     if (dto === undefined) {
       throw new MissingBodyToCreateException();
     }

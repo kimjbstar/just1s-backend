@@ -27,34 +27,6 @@ export abstract class NbaseEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: number;
 
-  // static findByIdWithInfo<T extends NbaseEntity>(
-  //   this: OType<T>,
-  //   entityId: number,
-  //   info
-  // ) {
-  //   return (this as any).findOneWithInfo(d
-  //     {
-  //       id: entityId
-  //     },
-  //     info
-  //   );
-  // }
-
-  // static findOneWithInfo<T extends NbaseEntity>(
-  //   this: OType<T>,
-  //   where,
-  //   info
-  // ): Promise<T> {
-  //   const { select, relations } = resolveGqlInfo(info, this);
-  //   return (this as any).getRepository().findOne({
-  //     where,
-  //     select: select,
-  //     relations: relations.map(([property, alias]) =>
-  //       property.replace(this.name.toString().toLowerCase() + ".", "")
-  //     )
-  //   });
-  // }
-
   // static async createList<T extends NbaseEntity, U extends F9BaseListResult>(
   //   this: OType<T>,
   //   resultClass: new (obj) => U,

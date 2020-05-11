@@ -16,6 +16,7 @@ import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { DeckOrderbys } from "@src/modules/decks/deck.enum";
 import { classToPlain, Expose, Type } from "class-transformer";
 import { IsNotEmpty, IsString, IsOptional } from "class-validator";
+import { Perform } from "@src/entities/perform.entity";
 
 export class DeckListQuery {
   @IsNotEmpty()
@@ -136,6 +137,16 @@ export class DecksController {
     const deck: Object = await this.decksService.register(dto);
     const result = {
       deck: classToPlain(deck)
+    };
+    return result;
+  }
+
+  @Post("perform")
+  async perform(@Body() dto: DeckPerformDto): Promise<any> {
+    console.log(dto);
+    const perform: Perform = await this.decksService.perform(dto);
+    const result = {
+      perform: classToPlain(perform)
     };
     return result;
   }

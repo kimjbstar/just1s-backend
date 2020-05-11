@@ -8,9 +8,12 @@ import { UtilService } from "@src/services/util.service";
 import { importAndGetConn } from "./common";
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
+import { Perform } from "@src/entities/perform.entity";
+import { User } from "@src/entities/user.entity";
 
 describe("deck.service.ts", () => {
   let decksService: DecksService;
+  let usersService: UsersService;
   let conn: Connection;
 
   before(async () => {
@@ -20,6 +23,7 @@ describe("deck.service.ts", () => {
       providers: [DecksService, UsersService, MusicsService, UtilService]
     }).compile();
     decksService = moduleRef.get<DecksService>(DecksService);
+    usersService = moduleRef.get<UsersService>(UsersService);
   });
 
   it("register - Deck 등록", async () => {
@@ -68,18 +72,23 @@ describe("deck.service.ts", () => {
       answers: [
         {
           deckMusicId: 5,
-          answer: "정답1"
+          answer: "노래제3"
         },
         {
           deckMusicId: 6,
-          answer: "정답2"
+          answer: "오답"
         }
-      ],
-      foo: 1
+      ]
     };
 
-    const perform1 = await decksService.perform(dto);
-    console.log(perform1);
+    // before
+    let user: User = await usersService.findByPk(dto.userId);
+    expect(user.performedDecksCount).equal(0);
+    expect(user.performedMusicsCount).equal(0);
+
+    const perform1: Perform = await decksService.perform(dto);
+    expect(perform1.answers[0].isCorrect).true;
+    expect(perform1.answers[1].isCorrect).false;
 
     const dto2 = {
       userId: 1,
@@ -91,14 +100,20 @@ describe("deck.service.ts", () => {
         },
         {
           deckMusicId: 6,
-          answer: "정답2"
+          answer: "오답2"
         }
-      ],
-      foo: 1
+      ]
     };
 
+    // 이미 수행됬을 경우 기록에 영향을 안줌
     const perform2 = await decksService.perform(dto2);
-    console.log(perform2);
+    expect(perform2.answers[0].isCorrect).true;
+    expect(perform2.answers[1].isCorrect).false;
+
+    user = await usersService.findByPk(dto.userId);
+    console.log(user);
+    expect(user.performedDecksCount).not.equal(0);
+    expect(user.performedMusicsCount).not.equal(0);
   });
 
   after(async () => {

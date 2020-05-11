@@ -23,7 +23,7 @@ export class UsersService {
   //     .digest("hex");
   // }
 
-  async find(query): Promise<object[]> {
+  async find(query): Promise<User[]> {
     const users: User[] = await User.find({
       relations: []
     });
@@ -31,7 +31,7 @@ export class UsersService {
     return Promise.resolve(users);
   }
 
-  async findByPk(id): Promise<object> {
+  async findByPk(id): Promise<User> {
     const user: User = await User.findOne(id, {
       relations: []
     });
@@ -39,7 +39,7 @@ export class UsersService {
     return Promise.resolve(user);
   }
 
-  async create(dto): Promise<object> {
+  async create(dto): Promise<User> {
     const user: User = new User(dto);
     await user.save();
     await user.reload();
