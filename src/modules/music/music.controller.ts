@@ -6,11 +6,11 @@ import {
   Delete,
   Query,
   Param,
-  Body
+  Body,
+  ParseIntPipe
 } from "@nestjs/common";
 import { MusicsService } from "@src/modules/music/music.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import { MusicOrderbys } from "@src/modules/music/music.enum";
 import { classToPlain } from "class-transformer";
 
 export class MusicListQuery {
@@ -72,7 +72,7 @@ export class MusicController {
 
   @Get(":id")
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
-  async get(@Param("id") id: Number): Promise<any> {
+  async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     const music: Object = await this.musicService.findByPk(id);
     const result = {
       music: classToPlain(music)
@@ -92,7 +92,7 @@ export class MusicController {
   @Put(":id")
   @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
   async update(
-    @Param("id") id: Number,
+    @Param("id", ParseIntPipe) id: Number,
     @Body() dto: MusicCreateDto
   ): Promise<any> {
     const music: Object = await this.musicService.update(id, dto);
@@ -104,7 +104,7 @@ export class MusicController {
 
   @Delete(":id")
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
-  async delete(@Param("id") id: Number): Promise<any> {
+  async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     const music: Object = await this.musicService.destroy(id);
     const result = {
       music: classToPlain(music)

@@ -6,15 +6,19 @@ import {
   Delete,
   Query,
   Param,
-  Body
+  Body,
+  UsePipes,
+  ValidationPipe,
+  ParseIntPipe
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { DeckOrderbys } from "@src/modules/decks/deck.enum";
 import { classToPlain, Expose, Type } from "class-transformer";
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class DeckListQuery {
+  @IsNotEmpty()
   @ApiProperty({
     description: "제목을(를) 입력해주세요!"
   })
@@ -85,7 +89,8 @@ export class DecksController {
 
   @Get(":id")
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
-  async get(@Param("id") id: Number): Promise<any> {
+  async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
+    console.log(id);
     const deck: Object = await this.decksService.findByPk(id);
     const result = {
       deck: classToPlain(deck)
@@ -105,7 +110,7 @@ export class DecksController {
   @Put(":id")
   @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
   async update(
-    @Param("id") id: Number,
+    @Param("id", ParseIntPipe) id: Number,
     @Body() dto: DeckCreateDto
   ): Promise<any> {
     const deck: Object = await this.decksService.update(id, dto);
@@ -117,7 +122,7 @@ export class DecksController {
 
   @Delete(":id")
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
-  async delete(@Param("id") id: Number): Promise<any> {
+  async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     const deck: Object = await this.decksService.destroy(id);
     const result = {
       deck: classToPlain(deck)

@@ -7,6 +7,7 @@ import {
   Query,
   Param,
   Body,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { {{plucapitalize name}}Service } from "@src/modules/{{pluralize name}}/{{pluralize name}}.service";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
@@ -53,7 +54,7 @@ export class {{plucapitalize name}}Controller {
 
   @Get(":id")
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
-  async get(@Param("id") id: Number): Promise<any> {
+  async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     const {{name}}: Object = await this.{{pluralize name}}Service.findByPk(id);
     const result = {
       {{name}}: {{name}},
@@ -73,7 +74,7 @@ export class {{plucapitalize name}}Controller {
   @Put(":id")
   @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
   async update(
-    @Param("id") id: Number,
+    @Param("id", ParseIntPipe) id: Number,
     @Body() dto: {{capitalize name}}CreateDto
   ): Promise<any> {
     const {{name}}: Object = await this.{{pluralize name}}Service.update(id, dto);
@@ -85,7 +86,7 @@ export class {{plucapitalize name}}Controller {
 
   @Delete(":id")
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
-  async delete(@Param("id") id: Number): Promise<any> {
+  async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     const {{name}}: Object = await this.{{pluralize name}}Service.destroy(id);
     const result = {
       {{name}}: {{name}},

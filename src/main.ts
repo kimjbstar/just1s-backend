@@ -5,7 +5,7 @@ declare const module: any;
 
 import { NestFactory, Reflector } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 // import { F9HttpExceptionFilter } from "@src/f9-base/f9-http-exception.filter";
@@ -14,10 +14,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 async function bootstrap() {
   const app: INestApplication = await NestFactory.create(RootModule);
+
   // app.setGlobalPrefix("/api/*");
   // app.use(initCurrentApp);
   // app.useGlobalFilters(new F9HttpExceptionFilter());
-  // app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
   // app.useGlobalGuards(new PublicAuthGuard(new Reflector()));
 
   const options = new DocumentBuilder()

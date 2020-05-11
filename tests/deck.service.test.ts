@@ -1,6 +1,6 @@
 import { Test } from "@nestjs/testing";
 import { expect } from "chai";
-import { DecksService, DeckPerformDto } from "@src/modules/decks/decks.service";
+import { DecksService } from "@src/modules/decks/decks.service";
 import { UsersService } from "@src/modules/users/users.service";
 import { MusicsService } from "@src/modules/music/music.service";
 import { Connection } from "typeorm";
