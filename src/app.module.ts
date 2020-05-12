@@ -2,6 +2,8 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { JwtModule } from "@nestjs/jwt";
 import { UsersService } from "./modules/users/users.service";
+import { DecksService } from "./modules/decks/decks.service";
+import { MusicsService } from "./modules/music/music.service";
 
 @Module({
   imports: [
@@ -11,6 +13,6 @@ import { UsersService } from "./modules/users/users.service";
     })
   ],
   controllers: [AppController],
-  providers: [UsersService]
+  providers: [UsersService, DecksService, MusicsService]
 })
 export class AppModule {}

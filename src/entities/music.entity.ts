@@ -7,41 +7,49 @@ import {
 } from "typeorm";
 import { DeckMusic } from "./deckMusic.entity";
 import { NbaseEntity } from "@src/common/types/nbase-entity";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
 export class Music extends NbaseEntity {
+  @ApiProperty()
   @Column({
     default: ""
   })
   title: string;
 
+  @ApiProperty()
   @Column({
     default: ""
   })
   artist: string;
 
+  @ApiProperty()
   @Column({
     default: ""
   })
   link: string;
 
+  @ApiProperty()
   @Column({
     default: ""
   })
   key: string;
 
+  @ApiProperty()
   @Column({
     type: "int",
     default: 0
   })
   averageScore: number;
 
+  @ApiProperty()
   @Column({
     type: "int",
     default: 0
   })
   belogsDecksCount: number;
 
+  @ApiProperty()
   @Column({
     type: "int",
     default: 0

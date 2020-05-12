@@ -49,7 +49,7 @@ export class UsersService {
     return this.findByPk(user.id);
   }
 
-  async update(id, dto): Promise<any> {
+  async update(id, dto): Promise<User> {
     const result: UpdateResult = await User.update(id, dto);
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
@@ -58,7 +58,6 @@ export class UsersService {
       throw new UnexpectedUpdateResultException();
     }
 
-    const user = await this.findByPk(id);
     return this.findByPk(id);
   }
 

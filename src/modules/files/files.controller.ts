@@ -11,7 +11,12 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { S3 } from "aws-sdk";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiTags, ApiBody, ApiProperty, ApiConsumes } from "@nestjs/swagger";
+
+class FileUploadDto {
+  @ApiProperty({ type: "string", format: "binary" })
+  file: any;
+}
 
 export class FileUploadQuery {
   type: "s3" | "temp" | "fake";
@@ -19,6 +24,11 @@ export class FileUploadQuery {
 @ApiTags("files")
 @Controller("files")
 export class FilesController {
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    description: "이미지를 업로드 합니다.",
+    type: FileUploadDto
+  })
   @Post("image")
   @UseInterceptors(FileInterceptor("image"))
   // @UseInterceptors(
@@ -91,6 +101,11 @@ export class FilesController {
     }
   }
 
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    description: "복수의 이미지를 업로드 합니다.",
+    type: FileUploadDto
+  })
   @Post("image/multiple")
   @UseInterceptors(
     FilesInterceptor("image", 20, {

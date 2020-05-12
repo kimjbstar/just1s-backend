@@ -32,7 +32,6 @@ import { DeckPerformDto } from "./dtos/deck-perform.dto";
 @Injectable()
 export class DecksService {
   constructor(
-    private readonly utilService: UtilService,
     private readonly musicsService: MusicsService,
     private readonly usersService: UsersService
   ) {}
@@ -59,7 +58,7 @@ export class DecksService {
     return this.findByPk(deck.id);
   }
 
-  async update(id, dto): Promise<any> {
+  async update(id, dto): Promise<Deck> {
     const result: UpdateResult = await Deck.update(id, dto);
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
@@ -68,8 +67,7 @@ export class DecksService {
       throw new UnexpectedUpdateResultException();
     }
 
-    const deck = await this.findByPk(id);
-    return Promise.resolve(deck);
+    return this.findByPk(id);
   }
 
   async destroy(id): Promise<any> {
@@ -91,20 +89,7 @@ export class DecksService {
     // TODO : 비동기 reduce 처리
     dto.deckMusics = [];
     for (const dtoMusic of dto.musics) {
-      const musicRow = this.musicsService.register(dtoMusic);
-      // const key: string = this.musicsService.getKey(dtoMusic["link"]);
-      // let musicRow: Music = await Music.findOne({
-      //   where: { key: key }
-      // });
-
-      // if (!musicRow) {
-      //   if (dtoMusic["link"] != "") {
-      //     dtoMusic["key"] = key;
-      //   }
-      //   musicRow = new Music(dtoMusic);
-      //   await musicRow.save();
-      //   await musicRow.reload();
-      // }
+      const musicRow = await this.musicsService.register(dtoMusic);
       dto.deckMusics.push(
         new DeckMusic({
           music: musicRow,
@@ -114,7 +99,6 @@ export class DecksService {
     }
     delete dto.musics;
 
-    // make foreignKey to object
     if (dto.userId !== undefined) {
       dto.user = new User({ id: dto.userId });
       delete dto.userId;

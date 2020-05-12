@@ -10,7 +10,12 @@ import {
   ParseIntPipe
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
-import { ApiQuery, ApiTags, ApiResponseProperty } from "@nestjs/swagger";
+import {
+  ApiQuery,
+  ApiTags,
+  ApiResponseProperty,
+  ApiResponse
+} from "@nestjs/swagger";
 import { classToPlain } from "class-transformer";
 import { Perform } from "@src/entities/perform.entity";
 import { DeckListArgs } from "./args/deck-list.args";
@@ -69,83 +74,70 @@ export class DecksController {
   constructor(private readonly decksService: DecksService) {}
 
   @Get()
+  @ApiResponse({
+    description: "Deck의 리스트를 가져옵니다.",
+    type: DeckListResult
+  })
   async find(@Query() args: DeckListArgs): Promise<any> {
-    console.log(args);
-    const listResult: DeckListResult = await Deck.createList(
-      DeckListResult,
-      createDeckListConfig,
-      args
-    );
-
-    const result = {
-      totalCount: listResult.totalCount,
-      hasNext: listResult.hasNext,
-      decks: listResult.decks.map((deck) => {
-        return classToPlain(deck);
-      })
-    };
-    return result;
+    return await Deck.createList(DeckListResult, createDeckListConfig, args);
   }
 
   @Get(":id")
+  @ApiResponse({
+    description: "id에 해당하는 Deck을 출력합니다.",
+    type: Deck
+  })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    console.log(id);
-    const deck: Object = await this.decksService.findByPk(id);
-    const result = {
-      deck: classToPlain(deck)
-    };
-    return result;
+    return await this.decksService.findByPk(id);
   }
 
   @Post()
+  @ApiResponse({
+    description: "dto에 해당하는 Deck을 생성하여 출력합니다.",
+    type: Deck
+  })
   async create(@Body() dto: DeckCreateDto): Promise<any> {
-    const deck: Object = await this.decksService.create(dto);
-    const result = {
-      deck: classToPlain(deck)
-    };
-    return result;
+    return await this.decksService.create(dto);
   }
 
   @Put(":id")
-  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
+  @ApiResponse({
+    description: "id에 해당하는 Deck을 dto를 통해 업데이트하여 출력합니다.",
+    type: Deck
+  })
+  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요." })
   async update(
     @Param("id", ParseIntPipe) id: Number,
     @Body() dto: DeckCreateDto
   ): Promise<any> {
-    const deck: Object = await this.decksService.update(id, dto);
-    const result = {
-      deck: deck
-    };
-    return result;
+    return await this.decksService.update(id, dto);
   }
 
   @Delete(":id")
+  @ApiResponse({
+    description: "id에 해당하는 Deck을 삭제합니다."
+  })
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const deck: Object = await this.decksService.destroy(id);
-    const result = {
-      deck: classToPlain(deck)
-    };
-    return result;
+    return await this.decksService.destroy(id);
   }
 
   @Post("register")
-  async register(@Body() dto: DeckRegisterDto): Promise<any> {
-    console.log(dto);
-    const deck: Object = await this.decksService.register(dto);
-    const result = {
-      deck: classToPlain(deck)
-    };
-    return result;
+  @ApiResponse({
+    description: "music들의 정보를 통해 새로운 deck을 등록합니다",
+    type: Deck
+  })
+  async register(@Body() dto: DeckRegisterDto): Promise<Deck> {
+    return await this.decksService.register(dto);
   }
 
   @Post("perform")
-  async perform(@Body() dto: DeckPerformDto): Promise<any> {
-    const perform: Perform = await this.decksService.perform(dto);
-    const result = {
-      perform: classToPlain(perform)
-    };
-    return result;
+  @ApiResponse({
+    description: "해당하는 deck을 수행하고 그에 해당하는 perform을 돌려줍니다.",
+    type: Perform
+  })
+  async perform(@Body() dto: DeckPerformDto): Promise<Perform> {
+    return await this.decksService.perform(dto);
   }
 }

@@ -10,65 +10,104 @@ import {
   ParseIntPipe
 } from "@nestjs/common";
 import { MusicsService } from "@src/modules/music/music.service";
-import { ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { classToPlain } from "class-transformer";
+import { ApiProperty, ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
 import { MusicListArgs } from "./args/music-list.args";
 import { MusicCreateDto } from "./dtos/music-create.dto";
+import { MusicListResult } from "./args/music-list.result";
+import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
+import { Equal, Like } from "typeorm";
+import { DeckListOrderBys } from "../decks/deck.enum";
+import { Music } from "@src/entities/music.entity";
+
+const createMusicListConfig: NBaseCreateListConfig = {
+  argsResolver: {
+    title: (args) => {
+      return {
+        title: Equal(args.title)
+      };
+    },
+    artist: (args) => {
+      return {
+        artist: Equal(args.artist)
+      };
+    },
+    artist__like: (args) => {
+      return {
+        artist: Like(`%${args.name}%`)
+      };
+    },
+    email: (args) => {
+      return {
+        email: Equal(args.email)
+      };
+    },
+    name: (args) => {
+      return {
+        name: Like(`%${args.name}%`)
+      };
+    }
+  },
+  orderByResolver: {
+    [DeckListOrderBys.ID__DESC]: {
+      cursor: "deck.id",
+      orderBy: {
+        "deck.id": "DESC"
+      }
+    }
+  }
+};
 @ApiTags("musics")
 @Controller("musics")
 export class MusicController {
   constructor(private readonly musicService: MusicsService) {}
 
   @Get()
-  async find(@Query() query: MusicListArgs): Promise<any> {
-    const musics: object[] = await this.musicService.find(query);
-    const result = {
-      music: musics.map((music) => {
-        return classToPlain(music);
-      })
-    };
-    return result;
+  @ApiResponse({
+    description: "Music의 리스트를 가져옵니다.",
+    type: MusicListResult
+  })
+  async find(@Query() args: MusicListArgs): Promise<any> {
+    return await Music.createList(MusicListResult, createMusicListConfig, args);
   }
 
   @Get(":id")
+  @ApiResponse({
+    description: "id에 해당하는 Music을 출력합니다.",
+    type: Music
+  })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const music: Object = await this.musicService.findByPk(id);
-    const result = {
-      music: classToPlain(music)
-    };
-    return result;
+    return await this.musicService.findByPk(id);
   }
 
   @Post()
+  @ApiResponse({
+    description: "dto에 해당하는 Music을 생성하여 출력합니다.",
+    type: Music
+  })
   async create(@Body() dto: MusicCreateDto): Promise<any> {
-    const music: Object = await this.musicService.create(dto);
-    const result = {
-      music: classToPlain(music)
-    };
-    return result;
+    return await this.musicService.create(dto);
   }
 
   @Put(":id")
-  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
+  @ApiResponse({
+    description: "id에 해당하는 Music을 dto를 통해 업데이트하여 출력합니다.",
+    type: Music
+  })
+  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요." })
   async update(
     @Param("id", ParseIntPipe) id: Number,
     @Body() dto: MusicCreateDto
   ): Promise<any> {
-    const music: Object = await this.musicService.update(id, dto);
-    const result = {
-      music: classToPlain(music)
-    };
-    return result;
+    return this.musicService.update(id, dto);
   }
 
   @Delete(":id")
+  @ApiResponse({
+    description: "id에 해당하는 Music을 삭제합니다."
+  })
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const music: Object = await this.musicService.destroy(id);
-    const result = {
-      music: classToPlain(music)
-    };
-    return result;
+    return await this.musicService.destroy(id);
   }
 }

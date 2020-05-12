@@ -11,13 +11,11 @@ import {
 } from "@src/common/http-exception";
 import { UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
-import { Perform } from "@src/entities/perform.entity";
 import { Answer } from "@src/entities/answer.entity";
-import { DeckMusic } from "@src/entities/deckMusic.entity";
 
 @Injectable()
 export class MusicsService {
-  constructor(private readonly utilService: UtilService) {}
+  constructor() {}
 
   async find(query): Promise<Music[]> {
     const musics: Music[] = await Music.find({
@@ -43,7 +41,7 @@ export class MusicsService {
     return this.findByPk(music.id);
   }
 
-  async update(id, dto): Promise<any> {
+  async update(id, dto): Promise<Music> {
     const result: UpdateResult = await Music.update(id, dto);
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
@@ -52,8 +50,7 @@ export class MusicsService {
       throw new UnexpectedUpdateResultException();
     }
 
-    const music = await this.findByPk(id);
-    return Promise.resolve(music);
+    return this.findByPk(id);
   }
 
   async destroy(id): Promise<any> {

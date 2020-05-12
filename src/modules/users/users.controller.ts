@@ -3,7 +3,7 @@ import {
   UserListOrderBys,
   UserSNSType
 } from "@src/modules/users/users.enum";
-import { ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiProperty, ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
 import {
   Controller,
   Get,
@@ -26,13 +26,6 @@ import { Equal, Like } from "typeorm";
 import { UserListResult } from "./args/user-list.result";
 
 const createUserListConfig: NBaseCreateListConfig = {
-  // customize: builder => {
-  //   return builder.innerJoin(
-  //     'product_apps_app',
-  //     'pa',
-  //     `pa.productId = product.id and pa.appId = ${app.id}`,
-  //   );
-  // },
   argsResolver: {
     snsType: (args) => {
       return {
@@ -70,62 +63,52 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @ApiResponse({
+    description: "User의 리스트를 가져옵니다.",
+    type: UserListResult
+  })
   async find(@Query() args: UserListArgs): Promise<any> {
-    const listResult: UserListResult = await User.createList(
-      UserListResult,
-      createUserListConfig,
-      args
-    );
-
-    const result = {
-      totalCount: listResult.totalCount,
-      hasNext: listResult.hasNext,
-      users: listResult.users.map((user) => {
-        return classToPlain(user);
-      })
-    };
-    return result;
+    return await User.createList(UserListResult, createUserListConfig, args);
   }
 
   @Get(":id")
+  @ApiResponse({
+    description: "id에 해당하는 User을 출력합니다.",
+    type: User
+  })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const user: Object = await this.usersService.findByPk(id);
-    const result = {
-      user: classToPlain(user)
-    };
-    return result;
+    return await this.usersService.findByPk(id);
   }
 
   @Post()
+  @ApiResponse({
+    description: "dto에 해당하는 User을 생성하여 출력합니다.",
+    type: User
+  })
   async create(@Body() dto: UserCreateDto): Promise<any> {
-    const user: Object = await this.usersService.create(dto);
-    const result = {
-      user: classToPlain(user)
-    };
-    return result;
+    return await this.usersService.create(dto);
   }
 
   @Put(":id")
-  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
+  @ApiResponse({
+    description: "id에 해당하는 User을 dto를 통해 업데이트하여 출력합니다.",
+    type: User
+  })
+  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요." })
   async update(
     @Param("id", ParseIntPipe) id: Number,
     @Body() dto: UserCreateDto
   ): Promise<any> {
-    const user: Object = await this.usersService.update(id, dto);
-    const result = {
-      user: classToPlain(user)
-    };
-    return result;
+    return await this.usersService.update(id, dto);
   }
 
   @Delete(":id")
+  @ApiResponse({
+    description: "id에 해당하는 User을 삭제합니다."
+  })
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const user: Object = await this.usersService.destroy(id);
-    const result = {
-      user: classToPlain(user)
-    };
-    return result;
+    return await this.usersService.destroy(id);
   }
 }

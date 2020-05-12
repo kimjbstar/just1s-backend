@@ -25,6 +25,7 @@ async function bootstrap() {
     .setTitle("just1s")
     .setDescription("단1초(just1s) API 문서 페이지입니다.")
     .setVersion("0.0.1")
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("doc", app, document);
