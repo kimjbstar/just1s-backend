@@ -8,7 +8,8 @@ export class NBaseListArgs {
   }
 
   @ApiProperty({
-    description: "after을(를) 입력해주세요!"
+    description: "after을(를) 입력해주세요!",
+    required: false
   })
   @IsNumber()
   @IsOptional()
@@ -16,14 +17,16 @@ export class NBaseListArgs {
   after?: number;
 
   @ApiProperty({
-    description: "take을(를) 입력해주세요!"
+    description: "take을(를) 입력해주세요!",
+    required: false
   })
   @IsNumber()
   @Type(() => Number)
   take?: number = 24;
 
   @ApiProperty({
-    description: "offset을(를) 입력해주세요!"
+    description: "offset을(를) 입력해주세요!",
+    required: false
   })
   @IsNumber()
   @Type(() => Number)

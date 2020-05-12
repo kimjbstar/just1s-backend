@@ -10,11 +10,11 @@ import {
   ParseIntPipe
 } from "@nestjs/common";
 import { MusicsService } from "@src/modules/music/music.service";
-import { ApiProperty, ApiQuery } from "@nestjs/swagger";
+import { ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { classToPlain } from "class-transformer";
 import { MusicListArgs } from "./args/music-list.args";
 import { MusicCreateDto } from "./dtos/music-create.dto";
-
+@ApiTags("musics")
 @Controller("musics")
 export class MusicController {
   constructor(private readonly musicService: MusicsService) {}

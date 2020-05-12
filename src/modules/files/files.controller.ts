@@ -11,11 +11,12 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { S3 } from "aws-sdk";
+import { ApiTags } from "@nestjs/swagger";
 
 export class FileUploadQuery {
   type: "s3" | "temp" | "fake";
 }
-
+@ApiTags("files")
 @Controller("files")
 export class FilesController {
   @Post("image")

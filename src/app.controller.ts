@@ -2,7 +2,9 @@ import { Controller, Get, UseGuards, Req } from "@nestjs/common";
 import { JwtAuthGuard } from "./modules/auth/jwt-auth.guard";
 import { Request } from "express";
 import { CurrentUser } from "./common/current-user.decorator";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("app")
 @Controller()
 export class AppController {
   constructor() {}

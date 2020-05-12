@@ -5,18 +5,21 @@ import { Type } from "class-transformer";
 
 export class DeckListArgs extends NBaseListArgs {
   @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
+    description: "제목을(를) 입력해주세요!",
+    required: false
   })
   title: string;
 
   @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
+    description: "제목을(를) 입력해주세요!",
+    required: false
   })
   @Type(() => Number)
   userId: number;
 
   @ApiProperty({
-    description: "제목을(를) 입력해주세요!"
+    description: "제목을(를) 입력해주세요!",
+    required: false
   })
   hashtag: string;
 }

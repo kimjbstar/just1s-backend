@@ -3,7 +3,7 @@ import {
   UserListOrderBys,
   UserSNSType
 } from "@src/modules/users/users.enum";
-import { ApiProperty, ApiQuery } from "@nestjs/swagger";
+import { ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
 import {
   Controller,
   Get,
@@ -64,7 +64,7 @@ const createUserListConfig: NBaseCreateListConfig = {
     }
   }
 };
-
+@ApiTags("users")
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

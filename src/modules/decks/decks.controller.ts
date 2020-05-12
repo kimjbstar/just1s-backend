@@ -10,7 +10,7 @@ import {
   ParseIntPipe
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
-import { ApiQuery } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { classToPlain } from "class-transformer";
 import { Perform } from "@src/entities/perform.entity";
 import { DeckListArgs } from "./args/deck-list.args";
@@ -63,7 +63,7 @@ const createDeckListConfig: NBaseCreateListConfig = {
     }
   }
 };
-
+@ApiTags("decks")
 @Controller("decks")
 export class DecksController {
   constructor(private readonly decksService: DecksService) {}
