@@ -27,11 +27,6 @@ services:
         target: /usr/src/app/src
     environment:
       NODE_ENV: local
-      SEQUELIZE_USERNAME: kimjbstar
-      SEQUELIZE_PASSWORD: n!12091457
-      SEQUELIZE_DATABASE: just1s
-      SEQUELIZE_HOST: localdb
-      SEQUELIZE_PORT: 3306
       TYPEORM_DATABASE: just1s
       TYPEORM_USERNAME: kimjbstar
       TYPEORM_PASSWORD: n!12091457

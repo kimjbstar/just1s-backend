@@ -30,9 +30,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("doc", app, document);
 
-  // await child_process.execSync(`npx sequelize db:migrate --env local`);
-  // this.connection.runMigrations()
-
   await app.listen(3000);
 
   // if (module.hot) {
