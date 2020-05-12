@@ -10,6 +10,8 @@ import {
 } from "@src/common/http-exception";
 import { User } from "@src/entities/user.entity";
 import { UpdateResult, DeleteResult } from "typeorm";
+import { Perform } from "@src/entities/perform.entity";
+import { Answer } from "@src/entities/answer.entity";
 
 @Injectable()
 export class UsersService {
@@ -69,5 +71,23 @@ export class UsersService {
       throw new UnexpectedDeleteResultException();
     }
     return Promise.resolve();
+  }
+
+  async updateCount(id: number): Promise<void> {
+    const userPerformCount = await Perform.createQueryBuilder()
+      .innerJoin(User, "user")
+      .where("perform.userId = :userId", { userId: id })
+      .getCount();
+    const userAnswerCount = await Answer.createQueryBuilder()
+      .innerJoin(Perform, "perform")
+      .innerJoin(User, "user")
+      .where("perform.userId = :userId", { userId: id })
+      .getCount();
+
+    await User.update(id, {
+      performedDecksCount: userPerformCount,
+      performedMusicsCount: userAnswerCount
+    });
+    // TODO : 카운트 정책 정리, 정답률 필드 추가
   }
 }

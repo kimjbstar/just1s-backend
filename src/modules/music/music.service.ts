@@ -11,6 +11,9 @@ import {
 } from "@src/common/http-exception";
 import { UpdateResult, DeleteResult } from "typeorm";
 import { Music } from "@src/entities/music.entity";
+import { Perform } from "@src/entities/perform.entity";
+import { Answer } from "@src/entities/answer.entity";
+import { DeckMusic } from "@src/entities/deckMusic.entity";
 
 @Injectable()
 export class MusicsService {
@@ -71,5 +74,41 @@ export class MusicsService {
       result = link.match(youtubeLinkRegex)[1];
     }
     return result;
+  }
+
+  async recheck(id): Promise<any> {
+    const answersToUpdate: Answer[] = [];
+    const answers: Answer[] = await Answer.createQueryBuilder("answer")
+      .innerJoinAndSelect("answer.deckMusic", "deck_music")
+      .innerJoinAndSelect("deck_music.music", "music")
+      .where("music.id = :id", { id: id })
+      .getMany();
+
+    answers.forEach((answer) => {
+      const newIsCorrect = answer.deckMusic.music.checkCorrect(answer.answer);
+      if (newIsCorrect != answer.isCorrect) {
+        answer.isCorrect = newIsCorrect;
+        answersToUpdate.push(answer);
+      }
+    });
+    await Answer.save(answersToUpdate);
+    // TODO : count
+  }
+
+  async register(dto) {
+    const key: string = this.getKey(dto["link"]);
+    let musicRow: Music = await Music.findOne({
+      where: { key: key }
+    });
+
+    if (!musicRow) {
+      if (dto["link"] != "") {
+        dto["key"] = key;
+      }
+      musicRow = new Music(dto);
+      await musicRow.save();
+      await musicRow.reload();
+    }
+    return musicRow;
   }
 }

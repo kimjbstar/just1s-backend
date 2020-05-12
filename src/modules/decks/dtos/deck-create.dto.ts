@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty } from "class-validator";
 
 export class DeckCreateDto {
+  @IsNotEmpty()
   @ApiProperty({
     description: "제목을(를) 입력해주세요!"
   })

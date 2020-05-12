@@ -6,14 +6,13 @@ import { MusicsService } from "@src/modules/music/music.service";
 import { Connection } from "typeorm";
 import { UtilService } from "@src/services/util.service";
 import { importAndGetConn } from "./common";
-import { plainToClass } from "class-transformer";
-import { validate, ValidationError } from "class-validator";
 import { Perform } from "@src/entities/perform.entity";
 import { User } from "@src/entities/user.entity";
 
 describe("deck.service.ts", () => {
   let decksService: DecksService;
   let usersService: UsersService;
+  let musicsService: MusicsService;
   let conn: Connection;
 
   before(async () => {
@@ -24,6 +23,7 @@ describe("deck.service.ts", () => {
     }).compile();
     decksService = moduleRef.get<DecksService>(DecksService);
     usersService = moduleRef.get<UsersService>(UsersService);
+    musicsService = moduleRef.get<MusicsService>(MusicsService);
   });
 
   it("register - Deck 등록", async () => {
@@ -111,9 +111,11 @@ describe("deck.service.ts", () => {
     expect(perform2.answers[1].isCorrect).false;
 
     user = await usersService.findByPk(dto.userId);
-    console.log(user);
+
     expect(user.performedDecksCount).not.equal(0);
     expect(user.performedMusicsCount).not.equal(0);
+
+    await musicsService.recheck(2);
   });
 
   after(async () => {

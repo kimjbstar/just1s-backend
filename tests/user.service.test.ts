@@ -33,7 +33,6 @@ describe("user.service.ts", () => {
       snsType: "FACEBOOK",
       name: "아으"
     });
-    console.log(user);
   });
 
   after(async () => {

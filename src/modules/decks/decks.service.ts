@@ -91,19 +91,20 @@ export class DecksService {
     // TODO : 비동기 reduce 처리
     dto.deckMusics = [];
     for (const dtoMusic of dto.musics) {
-      const key: string = this.musicsService.getKey(dtoMusic["link"]);
-      let musicRow: Music = await Music.findOne({
-        where: { key: key }
-      });
+      const musicRow = this.musicsService.register(dtoMusic);
+      // const key: string = this.musicsService.getKey(dtoMusic["link"]);
+      // let musicRow: Music = await Music.findOne({
+      //   where: { key: key }
+      // });
 
-      if (!musicRow) {
-        if (dtoMusic["link"] != "") {
-          dtoMusic["key"] = key;
-        }
-        musicRow = new Music(dtoMusic);
-        await musicRow.save();
-        await musicRow.reload();
-      }
+      // if (!musicRow) {
+      //   if (dtoMusic["link"] != "") {
+      //     dtoMusic["key"] = key;
+      //   }
+      //   musicRow = new Music(dtoMusic);
+      //   await musicRow.save();
+      //   await musicRow.reload();
+      // }
       dto.deckMusics.push(
         new DeckMusic({
           music: musicRow,
@@ -153,11 +154,10 @@ export class DecksService {
       if (deckMusic.deck.id != deck.id) {
         throw new CustomException("답에 연결된 음악 정보가 잘못됨");
       }
-      // console.log(deckMusic.music.title, _answer.answer);
       const answer = new Answer({
         deckMusic: deckMusic,
         answer: _answer.answer,
-        isCorrect: deckMusic.music.title === _answer.answer
+        isCorrect: deckMusic.music.checkCorrect(_answer.answer)
       });
       answers.push(answer);
     }
@@ -165,44 +165,33 @@ export class DecksService {
       throw new CustomException("답 갯수가 다름");
     }
 
-    const perform: Perform = await new Perform({
-      deck: deck,
-      user: user,
-      answers: answers
-    });
-
+    let result;
     const oldOne: Perform = await Perform.findOne({
       where: {
         deckId: deck.id,
         userId: user.id
       },
-      relations: ["deck", "user", "answers", "answers.deckMusic"]
+      relations: [
+        "deck",
+        "user",
+        "answers",
+        "answers.deckMusic",
+        "answers.deckMusic.music"
+      ]
     });
     if (oldOne === undefined) {
-      await perform.save();
-      const userPerformCount = await Perform.createQueryBuilder()
-        .innerJoin(User, "user")
-        .where("perform.userId = :userId", { userId: perform.user.id })
-        .getCount();
-      const userAnswerCount = await Answer.createQueryBuilder()
-        .innerJoin(Perform, "perform")
-        .innerJoin(User, "user")
-        .where("perform.userId = :userId", { userId: perform.user.id })
-        .getCount();
-
-      await User.update(perform.user.id, {
-        performedDecksCount: userPerformCount,
-        performedMusicsCount: userAnswerCount
+      const perform: Perform = await new Perform({
+        deck: deck,
+        user: user,
+        answers: answers
       });
-
-      //deck average score
-
-      // const deckAverageScopre = await Perform.
-      // await Deck.update(perform.deck.id, {
-      //   averageScore: 0
-      // })
+      await perform.save();
+      await this.usersService.updateCount(perform.user.id);
+      result = perform;
+      //TODO :deck average score
+    } else {
+      result = oldOne;
     }
-    const result = oldOne !== undefined ? oldOne : await perform.save();
 
     return Promise.resolve(result);
   }

@@ -50,4 +50,10 @@ export class Music extends NbaseEntity {
 
   @OneToMany((type) => DeckMusic, (deckMusic) => deckMusic.music)
   deckMusics: DeckMusic[];
+
+  checkCorrect = (answer: string) => {
+    let left = this.title.replace(/[^A-Za-z가-힣0-9]/g, "");
+    let right = answer.replace(/[^A-Za-z가-힣0-9]/g, "");
+    return left === right;
+  };
 }
