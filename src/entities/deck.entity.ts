@@ -53,7 +53,4 @@ export class Deck extends NbaseEntity {
     onDelete: "CASCADE"
   })
   performs: Perform[];
-
-  // for mapping
-  mappedDeckHashtag: DeckHashtag;
 }

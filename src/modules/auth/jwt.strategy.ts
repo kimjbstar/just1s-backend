@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    console.log("payload !!!!!!!", payload);
+    // console.log("JWT PAYLOAD", payload);
     return payload;
   }
 }

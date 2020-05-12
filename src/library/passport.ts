@@ -1,8 +1,8 @@
-// import { Op } from "sequelize";
-// import { Sequelize } from "sequelize-typescript";
 // import * as passportJWT from "passport-jwt";
 // import * as passportLocal from "passport-local";
 // import { PassportStatic } from "passport";
+// import { User } from "@src/entities/user.entity";
+// import { classToPlain } from "class-transformer";
 // export const setPassportConfig = async (passport: PassportStatic) => {
 //   const JWTStrategy = passportJWT.Strategy;
 //   const ExtractJWT = passportJWT.ExtractJwt;
@@ -17,12 +17,7 @@
 //       async (email, password, done) => {
 //         const _user = await User.findOne({
 //           where: {
-//             email: email,
-//             [Op.and]: [
-//               Sequelize.literal(
-//                 `pw = CONCAT("*", UPPER(SHA1(UNHEX(SHA1(SHA1("${password}"))))))`
-//               )
-//             ]
+//             email: email
 //           }
 //         });
 //         if (_user == null) {
@@ -30,7 +25,7 @@
 //             message: "Incorrect email or password."
 //           });
 //         }
-//         const user = _user.get({ plain: true });
+//         const user = classToPlain(_user);
 //         console.log(user);
 
 //         return done(null, user, { message: "Logged In Successfully" });

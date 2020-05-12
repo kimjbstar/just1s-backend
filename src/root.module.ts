@@ -12,6 +12,7 @@ import { MusicModule } from "./modules/music/music.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Connection } from "typeorm";
 import { UsersService } from "./modules/users/users.service";
+import { JwtModule, JwtService } from "@nestjs/jwt";
 
 // let sequelizeConfig: SequelizeModuleOptions;
 // try {

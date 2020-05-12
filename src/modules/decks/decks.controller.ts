@@ -22,6 +22,7 @@ import { Equal, Like } from "typeorm";
 import { DeckListResult } from "./args/deck-list.result";
 import { Deck } from "@src/entities/deck.entity";
 import { DeckHashtag } from "@src/entities/deckHashtag.entity";
+import { DeckRegisterDto } from "./dtos/deck-register.dto";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -130,7 +131,7 @@ export class DecksController {
   }
 
   @Post("register")
-  async register(@Body() dto: DeckCreateDto): Promise<any> {
+  async register(@Body() dto: DeckRegisterDto): Promise<any> {
     console.log(dto);
     const deck: Object = await this.decksService.register(dto);
     const result = {

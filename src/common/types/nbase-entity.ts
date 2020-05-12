@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
   SelectQueryBuilder
 } from "typeorm";
-import { User } from "@src/entities/user.entity";
 import { NBaseResolveRelationResult, resolveRelations } from "./nbase-resolver";
 import { NbaseListResult } from "./nbase-list-result";
 const pluralize = require("pluralize");
@@ -46,20 +45,6 @@ export abstract class NbaseEntity extends BaseEntity {
 
     // query builder
     let queryBuilder = (entityClass as any).createQueryBuilder(entityAlias);
-    // User.createQueryBuilder().leftJoinAndMapOne( );
-
-    // leftJoinAndMapOne(mapToProperty: string,
-    //   subQueryFactory: (qb: SelectQueryBuilder<any>) => SelectQueryBuilder<any>,
-    // alias: string,
-    // condition?: string,
-    // parameters?: ObjectLiteral): SelectQueryBuilder<User>
-
-    // LEFT JOINs given subquery, SELECTs the data returned by a join and MAPs all that data to some
-    //  entity's property. This is extremely useful when you want to select some data and map it to
-    //   some virtual property. It will assume that there is a single row of selecting data, and map
-    //   ped result will be a single selected value. Given entity property should be a relation. You
-    //    also need to specify an alias of the joined data. Optionally, you can add condition and par
-    //    ameters used in condition.
 
     // select, relations
     const relations: NBaseResolveRelationResult[] = resolveRelations(
