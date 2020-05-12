@@ -119,7 +119,7 @@ export class UsersController {
     return result;
   }
 
-  @Delete()
+  @Delete(":id")
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     const user: Object = await this.usersService.destroy(id);
