@@ -8,6 +8,7 @@ import { UtilService } from "@src/services/util.service";
 import { importAndGetConn } from "./common";
 import { Perform } from "@src/entities/perform.entity";
 import { User } from "@src/entities/user.entity";
+import { DeckHashtag } from "@src/entities/deckHashtag.entity";
 
 describe("deck.service.ts", () => {
   let decksService: DecksService;
@@ -26,44 +27,79 @@ describe("deck.service.ts", () => {
     musicsService = moduleRef.get<MusicsService>(MusicsService);
   });
 
-  it("register - Deck 등록", async () => {
-    const deck = await decksService.register({
-      title: "윤하 1초 맞추기",
-      userId: 1,
-      musics: [
-        {
-          link: "https://www.youtube.com/watch?v=hrO-BgLjJ-Q",
-          artist: "뭔지모르겠다",
-          title: "머지",
-          second: 1
-        },
-        {
-          link: "https://www.youtube.com/watch?v=r5MM2iI8-58",
-          artist: "윤하",
-          title: "4885",
-          second: 60
-        },
-        {
-          link: "https://www.youtube.com/watch?v=aaa",
-          artist: "이건또몰까",
-          title: "응",
-          second: 70
-        }
-      ],
-      hashtags: [
-        {
-          name: "20-30대"
-        },
-        {
-          name: "ㅇㅇ"
-        }
-      ]
-    });
+  it("save hashtag", async () => {
+    let deck;
+    deck = await decksService.findByPk(15);
+    console.log(deck.hashtags);
 
-    expect(deck["title"]).equal("윤하 1초 맞추기");
-    expect(deck["deckMusics"]?.length).greaterThan(0);
-    expect(deck["hashtags"]?.length).greaterThan(0);
+    // 추가 후 세이브
+    deck.hashtags.push(
+      new DeckHashtag({
+        hashtag: "new1"
+      })
+    );
+    deck.hashtags.push(
+      new DeckHashtag({
+        hashtag: "new2"
+      })
+    );
+    await deck.save();
+    deck = await decksService.findByPk(15);
+    console.log(deck.hashtags);
+
+    const newHashtags = [
+      {
+        id: 1,
+        hashtag: "new1->updated1"
+      },
+      {
+        hashtag: "new3"
+      }
+    ];
+    deck.hashtags = newHashtags;
+    await deck.save();
+    deck = await decksService.findByPk(15);
+    console.log(deck.hashtags);
   });
+
+  // it("register - Deck 등록", async () => {
+  //   const deck = await decksService.register({
+  //     title: "윤하 1초 맞추기",
+  //     userId: 1,
+  //     musics: [
+  //       {
+  //         link: "https://www.youtube.com/watch?v=hrO-BgLjJ-Q",
+  //         artist: "뭔지모르겠다",
+  //         title: "머지",
+  //         second: 1
+  //       },
+  //       {
+  //         link: "https://www.youtube.com/watch?v=r5MM2iI8-58",
+  //         artist: "윤하",
+  //         title: "4885",
+  //         second: 60
+  //       },
+  //       {
+  //         link: "https://www.youtube.com/watch?v=aaa",
+  //         artist: "이건또몰까",
+  //         title: "응",
+  //         second: 70
+  //       }
+  //     ],
+  //     hashtags: [
+  //       {
+  //         name: "20-30대"
+  //       },
+  //       {
+  //         name: "ㅇㅇ"
+  //       }
+  //     ]
+  //   });
+
+  //   expect(deck["title"]).equal("윤하 1초 맞추기");
+  //   expect(deck["deckMusics"]?.length).greaterThan(0);
+  //   expect(deck["hashtags"]?.length).greaterThan(0);
+  // });
 
   it("perform - 문제풀기", async () => {
     const dto = {

@@ -28,6 +28,7 @@ import { DeckListResult } from "./args/deck-list.result";
 import { Deck } from "@src/entities/deck.entity";
 import { DeckHashtag } from "@src/entities/deckHashtag.entity";
 import { DeckRegisterDto } from "./dtos/deck-register.dto";
+import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -121,6 +122,19 @@ export class DecksController {
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     return await this.decksService.destroy(id);
+  }
+
+  // inline form
+  @Post(":id/hashtags")
+  @ApiResponse({
+    description: "dto에 해당하는 Deck을 생성하여 출력합니다.",
+    type: Deck
+  })
+  async saveHashtags(
+    @Param("id", ParseIntPipe) id: Number,
+    @Body() dto: DeckHashtagSaveDto[]
+  ): Promise<any> {
+    return await this.decksService.saveHashtags(id, dto);
   }
 
   @Post("register")

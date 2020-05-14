@@ -7,6 +7,7 @@ import { NestFactory, Reflector } from "@nestjs/core";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import * as helmet from "helmet";
 
 // import { F9HttpExceptionFilter } from "@src/f9-base/f9-http-exception.filter";
 // import { initCurrentApp } from "@src/middlewares/init-current-app.middleware";
@@ -29,6 +30,9 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("doc", app, document);
+
+  app.use(helmet());
+  app.enableCors();
 
   await app.listen(3000);
 

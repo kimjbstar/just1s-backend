@@ -28,6 +28,8 @@ import { IsNotEmpty, validate, ValidationError } from "class-validator";
 import { Answer } from "@src/entities/answer.entity";
 import { Perform } from "@src/entities/perform.entity";
 import { DeckPerformDto } from "./dtos/deck-perform.dto";
+import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
+import { DeckHashtag } from "@src/entities/deckHashtag.entity";
 
 @Injectable()
 export class DecksService {
@@ -178,5 +180,24 @@ export class DecksService {
     }
 
     return Promise.resolve(result);
+  }
+
+  async saveHashtags(id, dto: DeckHashtagSaveDto[]): Promise<Deck> {
+    const deck: Deck = await this.findByPk(id);
+
+    deck.hashtags = dto
+      .filter(
+        (dtoRow) =>
+          (dtoRow.id !== undefined && dtoRow.toDelete == false) ||
+          dtoRow.id === undefined
+      )
+      .map((dtoRow) => {
+        delete dtoRow.toDelete;
+        return new DeckHashtag(dtoRow);
+      });
+
+    await deck.save();
+    await deck.reload();
+    return Promise.resolve(deck);
   }
 }
