@@ -30,6 +30,8 @@ import { Perform } from "@src/entities/perform.entity";
 import { DeckPerformDto } from "./dtos/deck-perform.dto";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckHashtag } from "@src/entities/deckHashtag.entity";
+import { DeckRegisterMusicDto } from "./dtos/deck-register.dto";
+import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
 
 @Injectable()
 export class DecksService {
@@ -188,13 +190,54 @@ export class DecksService {
     deck.hashtags = dto
       .filter(
         (dtoRow) =>
-          (dtoRow.id !== undefined && dtoRow.toDelete == false) ||
+          (dtoRow.id !== undefined && dtoRow.toDelete !== true) ||
           dtoRow.id === undefined
       )
       .map((dtoRow) => {
         delete dtoRow.toDelete;
         return new DeckHashtag(dtoRow);
       });
+
+    await deck.save();
+    await deck.reload();
+    return Promise.resolve(deck);
+  }
+
+  async saveMusics(id, dto: DeckMusicSaveDto[]): Promise<Deck> {
+    const deck: Deck = await this.findByPk(id);
+    const newDeckMusics: DeckMusic[] = [];
+
+    const oldKeys = deck.deckMusics.map((deckMusic) => deckMusic.music.key);
+
+    // insert 목록에 추가되거나, 아예 무시되거나
+    const newDeckMusicDtos = dto.filter((dtoRow) => dtoRow.id === undefined);
+    for (const newDeckMusicDto of newDeckMusicDtos) {
+      const musicRow = await this.musicsService.register(newDeckMusicDto);
+      if (!oldKeys.includes(musicRow.key)) {
+        newDeckMusics.push(
+          new DeckMusic({
+            music: musicRow,
+            second: newDeckMusicDto.second
+          })
+        );
+      }
+    }
+
+    let deckMusics = dto
+      .filter((dtoRow) => dtoRow.id !== undefined && dtoRow.toDelete !== true)
+      .map((dtoRow) => {
+        delete dtoRow.toDelete;
+        return new DeckMusic(dtoRow);
+      });
+
+    deckMusics = [...deckMusics, ...newDeckMusics];
+
+    console.log("BEFORE SAVE !!!");
+    console.log(deckMusics);
+
+    deck.deckMusics = deckMusics;
+
+    // return Promise.resolve(null);
 
     await deck.save();
     await deck.reload();

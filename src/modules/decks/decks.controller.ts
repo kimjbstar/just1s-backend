@@ -27,8 +27,12 @@ import { Equal, Like } from "typeorm";
 import { DeckListResult } from "./args/deck-list.result";
 import { Deck } from "@src/entities/deck.entity";
 import { DeckHashtag } from "@src/entities/deckHashtag.entity";
-import { DeckRegisterDto } from "./dtos/deck-register.dto";
+import {
+  DeckRegisterDto,
+  DeckRegisterMusicDto
+} from "./dtos/deck-register.dto";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
+import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -135,6 +139,18 @@ export class DecksController {
     @Body() dto: DeckHashtagSaveDto[]
   ): Promise<any> {
     return await this.decksService.saveHashtags(id, dto);
+  }
+
+  @Post(":id/musics")
+  @ApiResponse({
+    description: "dto에 해당하는 Deck을 생성하여 출력합니다.",
+    type: Deck
+  })
+  async saveMusics(
+    @Param("id", ParseIntPipe) id: Number,
+    @Body() dto: DeckMusicSaveDto[]
+  ): Promise<any> {
+    return await this.decksService.saveMusics(id, dto);
   }
 
   @Post("register")

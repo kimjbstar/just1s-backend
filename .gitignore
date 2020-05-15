@@ -107,4 +107,4 @@ dist
 
 .local/
 
-**/*._test.db
+**/*_test.db

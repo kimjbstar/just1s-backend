@@ -9,6 +9,8 @@ import { importAndGetConn } from "./common";
 import { Perform } from "@src/entities/perform.entity";
 import { User } from "@src/entities/user.entity";
 import { DeckHashtag } from "@src/entities/deckHashtag.entity";
+import { DeckMusic } from "@src/entities/deckMusic.entity";
+import { DeckMusicSaveDto } from "@src/modules/decks/dtos/deck-music-save.dto";
 
 describe("deck.service.ts", () => {
   let decksService: DecksService;
@@ -27,39 +29,64 @@ describe("deck.service.ts", () => {
     musicsService = moduleRef.get<MusicsService>(MusicsService);
   });
 
-  it("save hashtag", async () => {
+  // it("save hashtag", async () => {
+  //   let deck;
+  //   deck = await decksService.findByPk(15);
+  //   console.log(deck.hashtags);
+
+  //   // 추가 후 세이브
+  //   deck.hashtags.push(
+  //     new DeckHashtag({
+  //       hashtag: "new1"
+  //     })
+  //   );
+  //   deck.hashtags.push(
+  //     new DeckHashtag({
+  //       hashtag: "new2"
+  //     })
+  //   );
+  //   await deck.save();
+  //   deck = await decksService.findByPk(15);
+  //   console.log(deck.hashtags);
+
+  //   const newHashtags = [
+  //     {
+  //       id: 1,
+  //       hashtag: "new1->updated1"
+  //     },
+  //     {
+  //       hashtag: "new3"
+  //     }
+  //   ];
+  //   deck.hashtags = newHashtags;
+  //   await deck.save();
+  //   deck = await decksService.findByPk(15);
+  //   console.log(deck.hashtags);
+  // });
+
+  it("deck save music", async () => {
     let deck;
     deck = await decksService.findByPk(15);
-    console.log(deck.hashtags);
+    console.log(deck.deckMusics);
 
-    // 추가 후 세이브
-    deck.hashtags.push(
-      new DeckHashtag({
-        hashtag: "new1"
-      })
-    );
-    deck.hashtags.push(
-      new DeckHashtag({
-        hashtag: "new2"
-      })
-    );
-    await deck.save();
-    deck = await decksService.findByPk(15);
-    console.log(deck.hashtags);
+    let dto: DeckMusicSaveDto[] = [];
+    // dto.push(new DeckMusicSaveDto());
+    dto = [...deck.deckMusics];
+    dto.push(new DeckMusicSaveDto());
+    dto[1].toDelete = true;
+    dto[2].link = "https://www.youtube.com/watch?v=ccsdcsc";
+    dto[2].artist = "artist";
+    dto[2].title = "title";
+    dto[2].second = 1;
+    console.log("BEFORE");
+    console.log(dto);
+    // TODO :기존거 있다고 가정하고 수동으로 추가, id 파라미터 넣어서
+    // 없으면 무시해야 맞지 않나
 
-    const newHashtags = [
-      {
-        id: 1,
-        hashtag: "new1->updated1"
-      },
-      {
-        hashtag: "new3"
-      }
-    ];
-    deck.hashtags = newHashtags;
-    await deck.save();
+    const a = await decksService.saveMusics(15, dto);
     deck = await decksService.findByPk(15);
-    console.log(deck.hashtags);
+    console.log("AFTER");
+    console.log(deck.deckMusics);
   });
 
   // it("register - Deck 등록", async () => {
@@ -101,58 +128,58 @@ describe("deck.service.ts", () => {
   //   expect(deck["hashtags"]?.length).greaterThan(0);
   // });
 
-  it("perform - 문제풀기", async () => {
-    const dto = {
-      userId: 1,
-      deckId: 15,
-      answers: [
-        {
-          deckMusicId: 5,
-          answer: "노래제3"
-        },
-        {
-          deckMusicId: 6,
-          answer: "오답"
-        }
-      ]
-    };
+  // it("perform - 문제풀기", async () => {
+  //   const dto = {
+  //     userId: 1,
+  //     deckId: 15,
+  //     answers: [
+  //       {
+  //         deckMusicId: 5,
+  //         answer: "노래제3"
+  //       },
+  //       {
+  //         deckMusicId: 6,
+  //         answer: "오답"
+  //       }
+  //     ]
+  //   };
 
-    // before
-    let user: User = await usersService.findByPk(dto.userId);
-    expect(user.performedDecksCount).equal(0);
-    expect(user.performedMusicsCount).equal(0);
+  //   // before
+  //   let user: User = await usersService.findByPk(dto.userId);
+  //   expect(user.performedDecksCount).equal(0);
+  //   expect(user.performedMusicsCount).equal(0);
 
-    const perform1: Perform = await decksService.perform(dto);
-    expect(perform1.answers[0].isCorrect).true;
-    expect(perform1.answers[1].isCorrect).false;
+  //   const perform1: Perform = await decksService.perform(dto);
+  //   expect(perform1.answers[0].isCorrect).true;
+  //   expect(perform1.answers[1].isCorrect).false;
 
-    const dto2 = {
-      userId: 1,
-      deckId: 15,
-      answers: [
-        {
-          deckMusicId: 5,
-          answer: "리트"
-        },
-        {
-          deckMusicId: 6,
-          answer: "오답2"
-        }
-      ]
-    };
+  //   const dto2 = {
+  //     userId: 1,
+  //     deckId: 15,
+  //     answers: [
+  //       {
+  //         deckMusicId: 5,
+  //         answer: "리트"
+  //       },
+  //       {
+  //         deckMusicId: 6,
+  //         answer: "오답2"
+  //       }
+  //     ]
+  //   };
 
-    // 이미 수행됬을 경우 기록에 영향을 안줌
-    const perform2 = await decksService.perform(dto2);
-    expect(perform2.answers[0].isCorrect).true;
-    expect(perform2.answers[1].isCorrect).false;
+  //   // 이미 수행됬을 경우 기록에 영향을 안줌
+  //   const perform2 = await decksService.perform(dto2);
+  //   expect(perform2.answers[0].isCorrect).true;
+  //   expect(perform2.answers[1].isCorrect).false;
 
-    user = await usersService.findByPk(dto.userId);
+  //   user = await usersService.findByPk(dto.userId);
 
-    expect(user.performedDecksCount).not.equal(0);
-    expect(user.performedMusicsCount).not.equal(0);
+  //   expect(user.performedDecksCount).not.equal(0);
+  //   expect(user.performedMusicsCount).not.equal(0);
 
-    await musicsService.recheck(2);
-  });
+  //   await musicsService.recheck(2);
+  // });
 
   after(async () => {
     await conn.close();
