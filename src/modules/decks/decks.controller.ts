@@ -33,12 +33,17 @@ import {
 } from "./dtos/deck-register.dto";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
+import { DeckMusic } from "@src/entities/deckMusic.entity";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
   //   // return builder.innerJoin("deck.hashtags", "deck_hashtag");
   //   return builder.leftJoinAndSelect("deck.hashtags", "deck_hashtag");
   // },
+  exclusiveKeyLists: [
+    ["has_hashtag", "hashtag"],
+    ["has_music", "music_title"]
+  ],
   argsResolver: {
     title: (args) => {
       return {
@@ -53,15 +58,30 @@ const createDeckListConfig: NBaseCreateListConfig = {
       };
     },
     has_hashtag: (args, builder) => {
-      return builder.leftJoinAndSelect("deck.hashtags", "deck_hashtag");
+      return builder.innerJoinAndSelect("deck.hashtags", "deck_hashtag");
     },
     hashtag: (args, builder) => {
       return builder.innerJoinAndMapMany(
         "deck.hashtags",
-        DeckHashtag,
-        "hashtag",
-        `hashtag.deckId = deck.id AND hashtag.hashtag LIKE '%${args.hashtag}%'`
+        "deck_hashtag",
+        "hashtag_alias",
+        `hashtag_alias.deckId = deck.id AND hashtag_alias.hashtag LIKE '%${args.hashtag}%'`
       );
+    },
+    has_music: (args, builder) => {
+      return builder
+        .innerJoinAndSelect("deck.deckMusics", "deck_music")
+        .innerJoinAndSelect("deck_music.music", "music");
+    },
+    music_title: (args, builder) => {
+      return builder
+        .innerJoinAndSelect("deck.deckMusics", "deck_music")
+        .innerJoinAndSelect(
+          "deck_music.music",
+          "music",
+          "music.title = :title",
+          { title: args.music_title }
+        );
     }
   },
   orderByResolver: {
@@ -84,6 +104,7 @@ export class DecksController {
     type: DeckListResult
   })
   async find(@Query() args: DeckListArgs): Promise<any> {
+    console.log(args);
     return await Deck.createList(DeckListResult, createDeckListConfig, args);
   }
 

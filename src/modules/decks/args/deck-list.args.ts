@@ -10,13 +10,28 @@ export class DeckListArgs extends NBaseListArgs {
   title: string;
 
   @ApiPropertyOptional({
-    description: "제목을(를) 입력해주세요!"
+    description: "userId(를) 입력해주세요!"
   })
   @Type(() => Number)
   userId: number;
 
   @ApiPropertyOptional({
-    description: "제목을(를) 입력해주세요!"
+    description: "hashtag을(를) 입력해주세요!"
   })
   hashtag: string;
+
+  @ApiPropertyOptional({
+    description: "has_hashtag을(를) 입력해주세요!"
+  })
+  has_hashtag: boolean;
+
+  @ApiPropertyOptional({
+    description: "music_title을(를) 입력해주세요!"
+  })
+  music_title: string;
+
+  @ApiPropertyOptional({
+    description: "has_music을(를) 입력해주세요!"
+  })
+  has_music: boolean;
 }

@@ -11,8 +11,8 @@ const config = {
     entitiesDir: "src/entities",
     migrationsDir: "src/migration"
   },
-  synchronize: false
-  // logging: true
+  synchronize: false,
+  logging: true
 };
 
 module.exports = config;

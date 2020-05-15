@@ -36,7 +36,12 @@ export abstract class NbaseEntity extends BaseEntity {
     config: NBaseCreateListConfig,
     args
   ) {
-    const { customize, argsResolver, orderByResolver } = config;
+    const {
+      customize,
+      exclusiveKeyLists,
+      argsResolver,
+      orderByResolver
+    } = config;
 
     // alias
     const entityClass = this;
@@ -63,11 +68,25 @@ export abstract class NbaseEntity extends BaseEntity {
     }
 
     // where
+    const appliedKeys = [];
     for (let key in argsResolver) {
+      let found;
+      exclusiveKeyLists.forEach((exclusiveKeyList) => {
+        if (exclusiveKeyList.includes(key)) {
+          exclusiveKeyList.forEach((exclusiveKey) => {
+            if (appliedKeys.includes(exclusiveKey)) {
+              found = exclusiveKey;
+            }
+          });
+        }
+      });
+      if (found) continue;
       if (args[key] != undefined && argsResolver[key] != undefined) {
         where = Object.assign(where, argsResolver[key](args, queryBuilder));
+        appliedKeys.push(key);
       }
     }
+    console.log("appliedKeys", appliedKeys);
 
     queryBuilder.where(where);
 
@@ -114,6 +133,7 @@ export abstract class NbaseEntity extends BaseEntity {
 
 export interface NBaseCreateListConfig {
   customize?: (builder) => void;
+  exclusiveKeyLists?: string[][];
   /**
    *  Arguments Resolver
    */
