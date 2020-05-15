@@ -86,7 +86,6 @@ export abstract class NbaseEntity extends BaseEntity {
         appliedKeys.push(key);
       }
     }
-    console.log("appliedKeys", appliedKeys);
 
     queryBuilder.where(where);
 
@@ -94,8 +93,8 @@ export abstract class NbaseEntity extends BaseEntity {
     const cursorAlias = `${entityAlias}_cursor`;
     const totalCount = await queryBuilder.getCount();
 
-    if (args.orderBy != null) {
-      const { cursor, orderBy } = orderByResolver[args.orderBy];
+    if (args.orderby != null) {
+      const { cursor, orderBy } = orderByResolver[args.orderby];
       queryBuilder.addSelect(`(${cursor})`, cursorAlias);
       queryBuilder.orderBy(orderBy);
 

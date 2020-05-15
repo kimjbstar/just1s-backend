@@ -26,14 +26,9 @@ import { DeckListOrderBys } from "./deck.enum";
 import { Equal, Like } from "typeorm";
 import { DeckListResult } from "./args/deck-list.result";
 import { Deck } from "@src/entities/deck.entity";
-import { DeckHashtag } from "@src/entities/deckHashtag.entity";
-import {
-  DeckRegisterDto,
-  DeckRegisterMusicDto
-} from "./dtos/deck-register.dto";
+import { DeckRegisterDto } from "./dtos/deck-register.dto";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
-import { DeckMusic } from "@src/entities/deckMusic.entity";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
