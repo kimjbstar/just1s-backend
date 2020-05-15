@@ -71,15 +71,18 @@ export abstract class NbaseEntity extends BaseEntity {
     const appliedKeys = [];
     for (let key in argsResolver) {
       let found;
-      exclusiveKeyLists.forEach((exclusiveKeyList) => {
-        if (exclusiveKeyList.includes(key)) {
-          exclusiveKeyList.forEach((exclusiveKey) => {
-            if (appliedKeys.includes(exclusiveKey)) {
-              found = exclusiveKey;
-            }
-          });
-        }
-      });
+      if (exclusiveKeyLists) {
+        exclusiveKeyLists.forEach((exclusiveKeyList) => {
+          if (exclusiveKeyList.includes(key)) {
+            exclusiveKeyList.forEach((exclusiveKey) => {
+              if (appliedKeys.includes(exclusiveKey)) {
+                found = exclusiveKey;
+              }
+            });
+          }
+        });
+      }
+
       if (found) continue;
       if (args[key] != undefined && argsResolver[key] != undefined) {
         where = Object.assign(where, argsResolver[key](args, queryBuilder));
