@@ -8,7 +8,11 @@ import {
   OneToMany,
   Equal
 } from "typeorm";
-import { UserSNSType, UserStatus } from "@src/modules/users/users.enum";
+import {
+  UserSNSType,
+  UserStatus,
+  UserRole
+} from "@src/modules/users/users.enum";
 import { NbaseEntity } from "@src/common/types/nbase-entity";
 import { Perform } from "./perform.entity";
 import { Deck } from "./deck.entity";
@@ -34,6 +38,14 @@ export class User extends NbaseEntity {
 
   @ApiProperty()
   @Column({
+    type: "simple-enum",
+    enum: UserRole,
+    default: UserRole.NORMAL
+  })
+  role: UserRole;
+
+  @ApiProperty()
+  @Column({
     default: ""
   })
   snsKey: string;
@@ -43,6 +55,12 @@ export class User extends NbaseEntity {
     default: ""
   })
   email: string;
+
+  @ApiProperty()
+  @Column({
+    default: ""
+  })
+  pw: string;
 
   @ApiProperty()
   @Column({

@@ -8,7 +8,6 @@
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
     "start:prod": "node dist/src/main",
-    "makemigration": "ts-node -T -r tsconfig-paths/register src/scripts/makemigration.ts",
     "practice": "ts-node -r tsconfig-paths/register src/practice.ts",
     "tsc": "tsc -p ./tsconfig.json",
     "tsc:watch": "tsc -p ./tsconfig.json --watch",
@@ -21,6 +20,7 @@
     "old:serve": "node -r ts-node/register -r tsconfig-paths/register dist/src/index.js",
     "test": "mocha --debug -r ts-node/register -r tsconfig-paths/register ./**/*.test.ts --timeout 20000 --exit",
     "dumpdata": "ts-node -T -r tsconfig-paths/register src/dumpdata.ts",
+    "sequelize:makemigration": "ts-node -T -r tsconfig-paths/register src/scripts/makemigration.ts",
     "sequelize:scaffold": "ts-node -T -r tsconfig-paths/register src/scaffold/index.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },

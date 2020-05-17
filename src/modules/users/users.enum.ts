@@ -15,3 +15,9 @@ export enum UserStatus {
   NORMAL = "NORMAL",
   WITHDRAWN = "WITHDRAWN"
 }
+
+export enum UserRole {
+  NORMAL = "NORMAL",
+  STAFF = "STAFF",
+  MASTER = "MASTER"
+}
