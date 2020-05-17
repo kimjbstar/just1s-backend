@@ -1,6 +1,13 @@
 import { JwtAuthGuard } from "@src/modules/auth/jwt-auth.guard";
 import { AuthService } from "@src/modules/auth/auth.service";
-import { Controller, Post, UseGuards, Request, Get } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Get,
+  Body
+} from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiTags, ApiResponse } from "@nestjs/swagger";
@@ -13,7 +20,7 @@ export class AuthController {
     description: "email, password를 통해 인증 후, access_token을 발급힙니다."
   })
   @UseGuards(LocalAuthGuard)
-  @Get("login")
+  @Post("login")
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
