@@ -6,7 +6,11 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
-  Equal
+  Equal,
+  BeforeUpdate,
+  BeforeInsert,
+  AfterLoad,
+  AfterUpdate
 } from "typeorm";
 import {
   UserSNSType,
@@ -17,6 +21,7 @@ import { NbaseEntity } from "@src/common/types/nbase-entity";
 import { Perform } from "./perform.entity";
 import { Deck } from "./deck.entity";
 import { ApiProperty } from "@nestjs/swagger";
+// import * as crypto from 'crypto';
 
 @Entity()
 export class User extends NbaseEntity {
@@ -110,4 +115,13 @@ export class User extends NbaseEntity {
   })
   @OneToMany((type) => Perform, (perform) => perform.deck)
   performs?: Perform[];
+
+  static getHashedPw(pw: string): string {
+    return pw + "_AAA";
+    // const salt = "f9dev-secret-salt-closedshops";
+    // return crypto
+    //   .createHash("sha512")
+    //   .update(pw + salt)
+    //   .digest("hex");
+  }
 }

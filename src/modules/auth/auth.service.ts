@@ -16,6 +16,10 @@ export class AuthService {
     if (user === undefined || user === null) {
       return null;
     }
+    // TODO : snsType, role 등 추가 체크
+    if (user.pw !== User.getHashedPw(password)) {
+      return null;
+    }
     return user;
   }
 

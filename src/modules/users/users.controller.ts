@@ -22,7 +22,7 @@ import { UserListArgs } from "./args/user-list.args";
 import { UserCreateDto } from "./dtos/user-create.dto";
 import { User } from "@src/entities/user.entity";
 import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
-import { Equal, Like } from "typeorm";
+import { Equal, Like, BeforeUpdate } from "typeorm";
 import { UserListResult } from "./args/user-list.result";
 
 const createUserListConfig: NBaseCreateListConfig = {

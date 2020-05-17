@@ -7,6 +7,7 @@ const config = {
   database: process.env.TYPEORM_DATABASE,
   entities: ["dist/src/entities/**/*.js", "src/entities/**/*.ts"],
   migrations: ["dist/src/migration/*.js"],
+  subscribers: ["dist/src/subscribers/*.js"],
   cli: {
     entitiesDir: "src/entities",
     migrationsDir: "src/migration"

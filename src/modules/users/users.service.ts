@@ -17,14 +17,6 @@ import { Answer } from "@src/entities/answer.entity";
 export class UsersService {
   constructor() {}
 
-  // hashPw(pw: string): string {
-  //   const salt = "f9dev-secret-salt-closedshops";
-  //   return crypto
-  //     .createHash("sha512")
-  //     .update(pw + salt)
-  //     .digest("hex");
-  // }
-
   async find(query): Promise<User[]> {
     const users: User[] = await User.find({
       relations: []

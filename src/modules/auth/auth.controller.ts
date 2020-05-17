@@ -31,6 +31,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get("whoami")
   withToken(@Request() req) {
-    return req.user;
+    return req.user ? req.user : {};
   }
 }
