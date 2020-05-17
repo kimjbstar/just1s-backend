@@ -6,6 +6,7 @@ import { AuthService } from "@src/modules/auth/auth.service";
 import { UsersModule } from "@src/modules/users/users.module";
 import { JwtStrategy } from "@src/modules/auth/jwt.strategy";
 import { LocalStrategy } from "./local.strategy";
+import { UsersService } from "@src/modules/users/users.service";
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { LocalStrategy } from "./local.strategy";
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy, UsersService],
   exports: [AuthService]
 })
 export class AuthModule {}

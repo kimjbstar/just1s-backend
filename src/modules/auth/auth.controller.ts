@@ -9,7 +9,7 @@ import {
   Body
 } from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
-import { AuthGuard } from "@nestjs/passport";
+import { UsersService } from "@src/modules/users/users.service";
 import { ApiTags, ApiResponse } from "@nestjs/swagger";
 @ApiTags("auth")
 @Controller("auth")
@@ -31,6 +31,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get("whoami")
   withToken(@Request() req) {
-    return req.user ? req.user : {};
+    return req.currentUser ? req.currentUser : {};
   }
 }
