@@ -99,7 +99,6 @@ export class DecksController {
     type: DeckListResult
   })
   async find(@Query() args: DeckListArgs): Promise<any> {
-    console.log(args);
     return await Deck.createList(DeckListResult, createDeckListConfig, args);
   }
 
@@ -110,6 +109,7 @@ export class DecksController {
   })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
+    console.log(222); //
     return await this.decksService.findByPk(id);
   }
 

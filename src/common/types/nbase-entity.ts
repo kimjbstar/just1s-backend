@@ -109,6 +109,7 @@ export abstract class NbaseEntity extends BaseEntity {
     }
 
     // take, raw, assign each of cursors
+    args.take = args.take ? args.take : 24;
 
     queryBuilder.take(args.take + 1);
     if (args.offset) {

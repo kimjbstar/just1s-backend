@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsNumber, IsOptional } from "class-validator";
-import { Type } from "class-transformer";
+import { Type, Transform } from "class-transformer";
 
 export class NBaseListArgs {
   constructor(obj?: object) {
@@ -18,13 +18,15 @@ export class NBaseListArgs {
   @ApiPropertyOptional({
     description: "take을(를) 입력해주세요!"
   })
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  take?: number = 24;
+  take?: number;
 
   @ApiPropertyOptional({
     description: "offset을(를) 입력해주세요!"
   })
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   offset?: number = 0;
