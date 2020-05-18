@@ -7,4 +7,4 @@ COPY cert ./cert
 COPY package.json package-lock.json tsconfig.json nodemon.json nodemon-debug.json tsconfig.build.json ormconfig.js ./ 
 RUN npm install && npm run tsc
 CMD ["npm", "run", "start"]
-EXPOSE 3000
+EXPOSE 3000 443
