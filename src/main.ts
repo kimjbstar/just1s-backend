@@ -42,8 +42,8 @@ async function bootstrap() {
 
   app.use(helmet());
 
-  // http.createServer(server).listen(3000);
-  https.createServer(httpsOptions, server).listen(3000);
+  http.createServer(server).listen(3000);
+  // https.createServer(httpsOptions, server).listen(3000);
 
   // const httpsOptions = {
   //   key: fs.readFileSync("./cert/privkey.pem"),
