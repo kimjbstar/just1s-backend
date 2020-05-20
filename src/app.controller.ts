@@ -12,14 +12,14 @@ export class AppController {
   constructor(private readonly decksService: DecksService) {}
   @Get()
   async getHello(@Req() req: Request, @CurrentUser() currentUser) {
-    return "hello2";
+    return "hello21";
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get("i_need_token")
   async iNeedToken(@CurrentUser() currentUser) {
-    return "hello2";
+    return "hello21";
   }
 
   @Get("response_test")

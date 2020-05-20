@@ -27,4 +27,4 @@ jobs:
           aws-region: ap-northeast-2
       - name: force update ecs
         run: |
-          aws ecs update-service --cluster=ecs-cluster-01 --service=ecs-service-web --force-new-deployment
+          aws ecs update-service --cluster=ecs-cluster-01 --service=service-back-1 --force-new-deployment
