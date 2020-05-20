@@ -12,7 +12,7 @@ jobs:
           name: kimjbstar/just1s-backend
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          dockerfile: Dockerfile-web
+          dockerfile: Dockerfile
   update-service:
     name: Update AWS ESC Service
     needs: build_docker
