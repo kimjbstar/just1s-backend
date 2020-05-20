@@ -41,7 +41,10 @@ async function bootstrap() {
   SwaggerModule.setup("doc", app, document);
 
   app.use(helmet());
-  app.enableCors({});
+  app.enableCors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
+  });
 
   http.createServer(server).listen(3000);
   // https.createServer(httpsOptions, server).listen(3000);
