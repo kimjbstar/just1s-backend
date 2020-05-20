@@ -43,7 +43,8 @@ async function bootstrap() {
   app.use(helmet());
   app.enableCors({
     origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true
   });
 
   http.createServer(server).listen(3000);
