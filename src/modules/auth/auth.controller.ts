@@ -11,6 +11,7 @@ import {
 import { LocalAuthGuard } from "./local-auth.guard";
 import { UsersService } from "@src/modules/users/users.service";
 import { ApiTags, ApiResponse } from "@nestjs/swagger";
+import { AuthGuard } from "@nestjs/passport";
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
@@ -32,5 +33,10 @@ export class AuthController {
   @Get("whoami")
   withToken(@Request() req) {
     return req.currentUser ? req.currentUser : {};
+  }
+
+  @UseGuards(AuthGuard("facebook"))
+  async facebook(@Request() req) {
+    return this.authService.login(req.user);
   }
 }

@@ -12,6 +12,7 @@ import { User } from "@src/entities/user.entity";
 import { UpdateResult, DeleteResult } from "typeorm";
 import { Perform } from "@src/entities/perform.entity";
 import { Answer } from "@src/entities/answer.entity";
+import { UserSNSType } from "./users.enum";
 
 @Injectable()
 export class UsersService {
@@ -80,5 +81,22 @@ export class UsersService {
       performedMusicsCount: userAnswerCount
     });
     // TODO : 카운트 정책 정리, 정답률 필드 추가
+  }
+
+  async findOrCreateByFacebook(profile: any): Promise<User> {
+    const oldOne = await User.findOneOrFail({
+      snsKey: profile.id
+    });
+    if (oldOne) {
+      return oldOne;
+    }
+    const newOne = new User({
+      email: profile.emails[0].value,
+      name: profile.name.givenName,
+      snsKey: profile.id,
+      imgUrl: profile.photos[0].value,
+      snsType: UserSNSType.FACEBOOK
+    });
+    return newOne.save();
   }
 }
