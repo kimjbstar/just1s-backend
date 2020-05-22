@@ -13,6 +13,7 @@ import { UpdateResult, DeleteResult } from "typeorm";
 import { Perform } from "@src/entities/perform.entity";
 import { Answer } from "@src/entities/answer.entity";
 import { UserSNSType } from "./users.enum";
+import { SNSLoginDto } from "../auth/dto/sns-login.dto";
 
 @Injectable()
 export class UsersService {
@@ -83,20 +84,22 @@ export class UsersService {
     // TODO : 카운트 정책 정리, 정답률 필드 추가
   }
 
-  async findOrCreateByFacebook(profile: any): Promise<User> {
-    const oldOne = await User.findOneOrFail({
-      snsKey: profile.id
+  async findOrCreateBySNSProfile(profile: SNSLoginDto): Promise<User> {
+    const oldOne = await User.findOne({
+      snsKey: profile.id,
+      snsType: profile.type
     });
+    console.log(oldOne);
     if (oldOne) {
       return oldOne;
     }
     const newOne = new User({
-      email: profile.emails[0].value,
-      name: profile.name.givenName,
+      snsType: profile.type,
+      name: profile.name,
       snsKey: profile.id,
-      imgUrl: profile.photos[0].value,
-      snsType: UserSNSType.FACEBOOK
+      imgUrl: profile.imgUrl
     });
+    console.log(newOne);
     return newOne.save();
   }
 }

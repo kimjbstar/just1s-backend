@@ -21,7 +21,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any
   ) {
-    const user = await this.userService.findOrCreateByFacebook(profile);
-    return user;
+    // const user = await this.userService.findOrCreateByFacebook(profile);
+    // return user;
+    return null;
   }
 }

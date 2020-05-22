@@ -9,7 +9,8 @@ export enum UserSNSType {
   EMAIL = "EMAIL",
   FACEBOOK = "FACEBOOK",
   INSTAGRAM = "INSTAGRAM",
-  NAVER = "NAVER"
+  NAVER = "NAVER",
+  KAKAO = "KAKAO"
 }
 export enum UserStatus {
   NORMAL = "NORMAL",

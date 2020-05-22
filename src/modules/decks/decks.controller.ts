@@ -95,13 +95,6 @@ export class DecksController {
   constructor(private readonly decksService: DecksService) {}
 
   @Get()
-  @Header("Access-Control-Allow-Origin", "*")
-  @Header("access-control-allow-credentials", "true")
-  @Header(
-    "access-control-allow-headers",
-    "Content-Type, X-Requested-With, Authorization, Accept"
-  )
-  @Header("access-control-allow-methods", "POST, GET, PUT, DELETE, OPTIONS")
   @ApiResponse({
     description: "Deck의 리스트를 가져옵니다.",
     type: DeckListResult
