@@ -57,7 +57,7 @@ export class AuthController {
 
   @Post("sns_login")
   @ApiResponse({
-    description: "sns로그인",
+    description: "sns 로그인",
     type: User
   })
   async snsLogin(@Body() dto: SNSLoginDto): Promise<any> {
