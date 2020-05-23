@@ -178,7 +178,7 @@ describe("deck.service.ts", () => {
   //   expect(user.performedDecksCount).not.equal(0);
   //   expect(user.performedMusicsCount).not.equal(0);
 
-  //   await musicsService.recheck(2);
+  //   await musicsService.recheckAllAnswers(2);
   // });
 
   after(async () => {

@@ -110,4 +110,23 @@ export class MusicController {
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
     return await this.musicService.destroy(id);
   }
+
+  @Post(":id/check_correct")
+  @ApiResponse({
+    description: "해당하는 answer가 correct 한지 check"
+  })
+  async checkCorrect(
+    @Param("id", ParseIntPipe) id: Number,
+    @Body("answer") answer: string
+  ): Promise<any> {
+    return await this.musicService.checkCorrect(id, answer);
+  }
+
+  @Post(":id/foo")
+  async foo(@Param("id", ParseIntPipe) id: Number): Promise<any> {
+    console.log(id);
+    return {
+      foo: "bar"
+    };
+  }
 }

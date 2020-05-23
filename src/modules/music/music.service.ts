@@ -73,7 +73,19 @@ export class MusicsService {
     return result;
   }
 
-  async recheck(id): Promise<any> {
+  async checkCorrect(id, answer) {
+    const music: Music = await Music.findOne(id, {
+      relations: []
+    });
+    console.log(music);
+    const isCorrect = music.checkCorrect(answer);
+    return {
+      music: music,
+      isCorrect: isCorrect
+    };
+  }
+
+  async recheckAllAnswers(id): Promise<any> {
     const answersToUpdate: Answer[] = [];
     const answers: Answer[] = await Answer.createQueryBuilder("answer")
       .innerJoinAndSelect("answer.deckMusic", "deck_music")
