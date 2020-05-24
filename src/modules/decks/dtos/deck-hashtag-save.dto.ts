@@ -11,10 +11,10 @@ export class DeckHashtagSaveDto {
   @ApiProperty({
     description: "hashtag을(를) 입력해주세요!"
   })
-  hashtag: number;
+  hashtag?: string;
 
   @ApiProperty({
-    description: "hashtag을(를) 입력해주세요!"
+    description: "toDelete을(를) 입력해주세요!"
   })
-  toDelete: boolean;
+  toDelete?: boolean;
 }

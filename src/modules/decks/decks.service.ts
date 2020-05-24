@@ -20,7 +20,7 @@ import {
   MoreThanOrEqual
 } from "typeorm";
 import { Music } from "@src/entities/music.entity";
-import { Expose, Type, plainToClass } from "class-transformer";
+import { Expose, Type, plainToClass, classToPlain } from "class-transformer";
 import { User } from "@src/entities/user.entity";
 import { DeckMusic } from "@src/entities/deckMusic.entity";
 import { UsersService } from "../users/users.service";
@@ -30,8 +30,9 @@ import { Perform } from "@src/entities/perform.entity";
 import { DeckPerformDto } from "./dtos/deck-perform.dto";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckHashtag } from "@src/entities/deckHashtag.entity";
-import { DeckRegisterMusicDto } from "./dtos/deck-register.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
+import { DeckCreateDto } from "./dtos/deck-create.dto";
+import { DeckUpdateDto } from "./dtos/deck-update.dto";
 
 @Injectable()
 export class DecksService {
@@ -47,7 +48,7 @@ export class DecksService {
     return Promise.resolve(decks);
   }
 
-  async findByPk(id): Promise<Deck> {
+  async findByPk(id: number): Promise<Deck> {
     const deck: Deck = await Deck.findOne(id, {
       relations: ["user", "hashtags", "deckMusics", "deckMusics.music"]
     });
@@ -55,15 +56,41 @@ export class DecksService {
     return Promise.resolve(deck);
   }
 
-  async create(dto): Promise<Deck> {
-    const deck: Deck = new Deck(dto);
-    await deck.save();
-    await deck.reload();
+  async create(dto: DeckCreateDto): Promise<Deck> {
+    if (dto.userId !== undefined) {
+      dto["user"] = await User.findOneOrFail(dto.userId);
+      delete dto.userId;
+    }
+    const hashtags = dto.hashtags ? dto.hashtags : [];
+    if (dto.hashtags) {
+      delete dto.hashtags;
+    }
+    const musics = dto.musics ? dto.musics : [];
+    if (dto.musics) {
+      delete dto.musics;
+    }
+
+    const deck: Deck = await new Deck(classToPlain(dto)).save();
+    await this.saveHashtags(deck.id, hashtags);
+    await this.saveMusics(deck.id, musics);
     return this.findByPk(deck.id);
   }
 
-  async update(id, dto): Promise<Deck> {
-    const result: UpdateResult = await Deck.update(id, dto);
+  async update(id: number, dto: DeckUpdateDto): Promise<Deck> {
+    if (dto.userId !== undefined) {
+      dto["user"] = await User.findOneOrFail(dto.userId);
+      delete dto.userId;
+    }
+    const hashtags = dto.hashtags ? dto.hashtags : [];
+    if (dto.hashtags) {
+      delete dto.hashtags;
+    }
+    const musics = dto.musics ? dto.musics : [];
+    if (dto.musics) {
+      delete dto.musics;
+    }
+
+    const result: UpdateResult = await Deck.update(id, classToPlain(dto));
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
     }
@@ -71,10 +98,12 @@ export class DecksService {
       throw new UnexpectedUpdateResultException();
     }
 
+    await this.saveHashtags(id, hashtags);
+    await this.saveMusics(id, musics);
     return this.findByPk(id);
   }
 
-  async destroy(id): Promise<any> {
+  async destroy(id: number): Promise<any> {
     const result: DeleteResult = await Deck.delete(id);
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
@@ -83,32 +112,6 @@ export class DecksService {
       throw new UnexpectedDeleteResultException();
     }
     return Promise.resolve();
-  }
-
-  async register(dto): Promise<Deck> {
-    if (!dto.musics || !Array.isArray(dto.musics)) {
-      throw new MissingBodyToCreateException();
-    }
-
-    // TODO : 비동기 reduce 처리
-    dto.deckMusics = [];
-    for (const dtoMusic of dto.musics) {
-      const musicRow = await this.musicsService.register(dtoMusic);
-      dto.deckMusics.push(
-        new DeckMusic({
-          music: musicRow,
-          second: dtoMusic.second
-        })
-      );
-    }
-    delete dto.musics;
-
-    if (dto.userId !== undefined) {
-      dto.user = new User({ id: dto.userId });
-      delete dto.userId;
-    }
-
-    return this.create(dto);
   }
 
   async perform(dto): Promise<Perform> {
@@ -184,63 +187,101 @@ export class DecksService {
     return Promise.resolve(result);
   }
 
-  async saveHashtags(id, dto: DeckHashtagSaveDto[]): Promise<Deck> {
-    const deck: Deck = await this.findByPk(id);
+  async saveHashtags(id, dtos: DeckHashtagSaveDto[]): Promise<Deck> {
+    const oldOne: Deck = await this.findByPk(id);
+    const newItems: DeckHashtag[] = [];
 
-    deck.hashtags = dto
-      .filter(
-        (dtoRow) =>
-          (dtoRow.id !== undefined && dtoRow.toDelete !== true) ||
-          dtoRow.id === undefined
-      )
-      .map((dtoRow) => {
-        delete dtoRow.toDelete;
-        return new DeckHashtag(dtoRow);
-      });
+    if (dtos === undefined || dtos.length == 0) {
+      return Promise.resolve(oldOne);
+    }
 
-    await deck.save();
-    await deck.reload();
+    const newDto = dtos.filter((dto) => dto.id === undefined);
+    for (const newDtoRow of newDto) {
+      newItems.push(
+        new DeckHashtag({
+          hashtag: newDtoRow.hashtag
+        })
+      );
+    }
+
+    const dtoIDMap = dtos.reduce((result, dto) => {
+      if (dto.id) {
+        result[dto.id] = dto;
+      }
+      return result;
+    }, {});
+    const oldItems: DeckHashtag[] = oldOne.hashtags.reduce(
+      (result, oldItem) => {
+        // 명시 안됨 -> 변화 없음
+        if (dtoIDMap[oldItem.id] === undefined) {
+          result.push(oldItem);
+          return result;
+        }
+        // 삭제 요청 체크된 항목 삭제 -> reduce 계산에 제외
+        if (dtoIDMap[oldItem.id].toDelete) {
+          return result;
+        }
+        // dto 기반 업데이트
+        result.push(new DeckHashtag(dtoIDMap[oldItem.id]));
+        return result;
+      },
+      []
+    );
+    oldOne.hashtags = [...oldItems, ...newItems];
+
+    const deck: Deck = await oldOne.save();
     return Promise.resolve(deck);
   }
 
-  async saveMusics(id, dto: DeckMusicSaveDto[]): Promise<Deck> {
-    const deck: Deck = await this.findByPk(id);
-    const newDeckMusics: DeckMusic[] = [];
+  async saveMusics(id, dtos: DeckMusicSaveDto[]): Promise<Deck> {
+    const oldOne: Deck = await this.findByPk(id);
+    const newItems: DeckMusic[] = [];
 
-    const oldKeys = deck.deckMusics.map((deckMusic) => deckMusic.music.key);
+    if (dtos === undefined || dtos.length == 0) {
+      return Promise.resolve(oldOne);
+    }
 
     // insert 목록에 추가되거나, 아예 무시되거나
-    const newDeckMusicDtos = dto.filter((dtoRow) => dtoRow.id === undefined);
-    for (const newDeckMusicDto of newDeckMusicDtos) {
-      const musicRow = await this.musicsService.register(newDeckMusicDto);
+    const oldKeys = oldOne.deckMusics.map((deckMusic) => deckMusic.music.key);
+    const newDto = dtos.filter((dto) => dto.id === undefined);
+    for (const newDtoRow of newDto) {
+      const musicRow = await this.musicsService.register(newDtoRow);
       if (!oldKeys.includes(musicRow.key)) {
-        newDeckMusics.push(
+        newItems.push(
           new DeckMusic({
             music: musicRow,
-            second: newDeckMusicDto.second
+            second: newDtoRow.second
           })
         );
       }
     }
 
-    let deckMusics = dto
-      .filter((dtoRow) => dtoRow.id !== undefined && dtoRow.toDelete !== true)
-      .map((dtoRow) => {
-        delete dtoRow.toDelete;
-        return new DeckMusic(dtoRow);
-      });
+    const dtoIDMap = dtos.reduce((result, dto) => {
+      if (dto.id) {
+        result[dto.id] = dto;
+      }
+      return result;
+    }, {});
+    const oldItems: DeckMusic[] = oldOne.deckMusics.reduce(
+      (result, oldItem) => {
+        // 명시 안됨 -> 변화 없음
+        if (dtoIDMap[oldItem.id] === undefined) {
+          result.push(oldItem);
+          return result;
+        }
+        // 삭제 요청 체크된 항목 삭제 -> reduce 계산에 제외
+        if (dtoIDMap[oldItem.id].toDelete) {
+          return result;
+        }
+        // dto 기반 업데이트
+        result.push(new DeckMusic(dtoIDMap[oldItem.id]));
+        return result;
+      },
+      []
+    );
+    oldOne.deckMusics = [...oldItems, ...newItems];
 
-    deckMusics = [...deckMusics, ...newDeckMusics];
-
-    console.log("BEFORE SAVE !!!");
-    console.log(deckMusics);
-
-    deck.deckMusics = deckMusics;
-
-    // return Promise.resolve(null);
-
-    await deck.save();
-    await deck.reload();
+    const deck = await oldOne.save();
     return Promise.resolve(deck);
   }
 }

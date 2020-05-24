@@ -17,7 +17,6 @@ import {
   ApiResponseProperty,
   ApiResponse
 } from "@nestjs/swagger";
-import { classToPlain } from "class-transformer";
 import { Perform } from "@src/entities/perform.entity";
 import { DeckListArgs } from "./args/deck-list.args";
 import { DeckCreateDto } from "./dtos/deck-create.dto";
@@ -27,9 +26,9 @@ import { DeckListOrderBys } from "./deck.enum";
 import { Equal, Like } from "typeorm";
 import { DeckListResult } from "./args/deck-list.result";
 import { Deck } from "@src/entities/deck.entity";
-import { DeckRegisterDto } from "./dtos/deck-register.dto";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
+import { DeckUpdateDto } from "./dtos/deck-update.dto";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -37,7 +36,7 @@ const createDeckListConfig: NBaseCreateListConfig = {
   //   return builder.leftJoinAndSelect("deck.hashtags", "deck_hashtag");
   // },
   exclusiveKeyLists: [
-    ["has_hashtag", "hashtag"],
+    ["has_hashtag", "hashtag", "with_hashtag"],
     ["has_music", "music_title"]
   ],
   argsResolver: {
@@ -55,6 +54,9 @@ const createDeckListConfig: NBaseCreateListConfig = {
     },
     has_hashtag: (args, builder) => {
       return builder.innerJoinAndSelect("deck.hashtags", "deck_hashtag");
+    },
+    with_hashtag: (args, builder) => {
+      return builder.leftJoinAndSelect("deck.hashtags", "deck_hashtag");
     },
     hashtag: (args, builder) => {
       return builder.innerJoinAndMapMany(
@@ -109,8 +111,7 @@ export class DecksController {
     type: Deck
   })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
-  async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    console.log(222); //
+  async get(@Param("id", ParseIntPipe) id: number): Promise<any> {
     return await this.decksService.findByPk(id);
   }
 
@@ -130,8 +131,8 @@ export class DecksController {
   })
   @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요." })
   async update(
-    @Param("id", ParseIntPipe) id: Number,
-    @Body() dto: DeckCreateDto
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: DeckUpdateDto
   ): Promise<any> {
     return await this.decksService.update(id, dto);
   }
@@ -141,7 +142,7 @@ export class DecksController {
     description: "id에 해당하는 Deck을 삭제합니다."
   })
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
-  async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
+  async delete(@Param("id", ParseIntPipe) id: number): Promise<any> {
     return await this.decksService.destroy(id);
   }
 
@@ -152,7 +153,7 @@ export class DecksController {
     type: Deck
   })
   async saveHashtags(
-    @Param("id", ParseIntPipe) id: Number,
+    @Param("id", ParseIntPipe) id: number,
     @Body() dto: DeckHashtagSaveDto[]
   ): Promise<any> {
     return await this.decksService.saveHashtags(id, dto);
@@ -164,19 +165,10 @@ export class DecksController {
     type: Deck
   })
   async saveMusics(
-    @Param("id", ParseIntPipe) id: Number,
+    @Param("id", ParseIntPipe) id: number,
     @Body() dto: DeckMusicSaveDto[]
   ): Promise<any> {
     return await this.decksService.saveMusics(id, dto);
-  }
-
-  @Post("register")
-  @ApiResponse({
-    description: "music들의 정보를 통해 새로운 deck을 등록합니다",
-    type: Deck
-  })
-  async register(@Body() dto: DeckRegisterDto): Promise<Deck> {
-    return await this.decksService.register(dto);
   }
 
   @Post("perform")

@@ -69,15 +69,21 @@ describe("deck.service.ts", () => {
     deck = await decksService.findByPk(15);
     console.log(deck.deckMusics);
 
-    let dto: DeckMusicSaveDto[] = [];
-    // dto.push(new DeckMusicSaveDto());
-    dto = [...deck.deckMusics];
-    dto.push(new DeckMusicSaveDto());
-    dto[1].toDelete = true;
-    dto[2].link = "https://www.youtube.com/watch?v=ccsdcsc";
-    dto[2].artist = "artist";
-    dto[2].title = "title";
-    dto[2].second = 1;
+    let dto = [
+      new DeckMusic({
+        id: 50
+      }),
+      new DeckMusic({
+        id: 6,
+        toDelete: true
+      }),
+      new DeckMusic({
+        link: "https://www.youtube.com/watch?v=ccsdcsc",
+        artist: "artist",
+        title: "title",
+        second: 1
+      })
+    ];
     console.log("BEFORE");
     console.log(dto);
     // TODO :기존거 있다고 가정하고 수동으로 추가, id 파라미터 넣어서
@@ -90,7 +96,7 @@ describe("deck.service.ts", () => {
   });
 
   // it("register - Deck 등록", async () => {
-  //   const deck = await decksService.register({
+  //   const deck = await decksService.create({
   //     title: "윤하 1초 맞추기",
   //     userId: 1,
   //     musics: [
@@ -115,10 +121,10 @@ describe("deck.service.ts", () => {
   //     ],
   //     hashtags: [
   //       {
-  //         name: "20-30대"
+  //         hashtag: "20-30대"
   //       },
   //       {
-  //         name: "ㅇㅇ"
+  //         hashtag: "ㅇㅇ"
   //       }
   //     ]
   //   });
