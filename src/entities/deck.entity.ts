@@ -25,6 +25,12 @@ export class Deck extends NbaseEntity {
 
   @ApiProperty()
   @Column({
+    default: ""
+  })
+  repImgUrl!: string;
+
+  @ApiProperty()
+  @Column({
     type: "int",
     default: 0
   })

@@ -9,6 +9,11 @@ export class DeckRegisterDto {
   })
   title: string;
 
+  @ApiProperty({
+    description: "repImgUrl을(를) 입력해주세요!"
+  })
+  repImgUrl: string;
+
   @IsNotEmpty()
   @ApiProperty({
     description: "userId(를) 입력해주세요!"
