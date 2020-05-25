@@ -189,20 +189,16 @@ export class DecksService {
 
   async saveHashtags(id, dtos: DeckHashtagSaveDto[]): Promise<Deck> {
     const oldOne: Deck = await this.findByPk(id);
-    const newItems: DeckHashtag[] = [];
 
     if (dtos === undefined || dtos.length == 0) {
       return Promise.resolve(oldOne);
     }
 
-    const newDto = dtos.filter((dto) => dto.id === undefined);
-    for (const newDtoRow of newDto) {
-      newItems.push(
-        new DeckHashtag({
-          hashtag: newDtoRow.hashtag
-        })
-      );
-    }
+    const newItems: DeckHashtag[] = dtos
+      .filter((dto) => dto.id === undefined)
+      .map((newDto) => {
+        return new DeckHashtag(newDto);
+      });
 
     const dtoIDMap = dtos.reduce((result, dto) => {
       if (dto.id) {
@@ -235,26 +231,30 @@ export class DecksService {
 
   async saveMusics(id, dtos: DeckMusicSaveDto[]): Promise<Deck> {
     const oldOne: Deck = await this.findByPk(id);
-    const newItems: DeckMusic[] = [];
 
     if (dtos === undefined || dtos.length == 0) {
       return Promise.resolve(oldOne);
     }
 
-    // insert 목록에 추가되거나, 아예 무시되거나
-    const oldKeys = oldOne.deckMusics.map((deckMusic) => deckMusic.music.key);
-    const newDto = dtos.filter((dto) => dto.id === undefined);
-    for (const newDtoRow of newDto) {
-      const musicRow = await this.musicsService.register(newDtoRow);
-      if (!oldKeys.includes(musicRow.key)) {
-        newItems.push(
-          new DeckMusic({
-            music: musicRow,
-            second: newDtoRow.second
-          })
-        );
+    // step 1 : dtos의 key기반 등록 및 중복 체크, 중복 발견 시 종료 ( 중복되는 음악이 있습니다.)
+    // step 2 : step 1을 돌면서 dto에 musicRow 추가 ( insert/update만 해당됨 )
+
+    const keys = [];
+    for (const [index, dto] of dtos.entries()) {
+      const musicRow = await this.musicsService.register(dto);
+      if (keys.includes(musicRow.key)) {
+        throw Error("중복된 음악이 있습니다.");
       }
+      keys.push(musicRow.key);
+      dtos[index]["music"] = musicRow;
     }
+
+    // step 3 : 기존 업데이트 로직
+    const newItems: DeckMusic[] = dtos
+      .filter((dto) => dto.id === undefined)
+      .map((newDto) => {
+        return new DeckMusic(newDto);
+      });
 
     const dtoIDMap = dtos.reduce((result, dto) => {
       if (dto.id) {
