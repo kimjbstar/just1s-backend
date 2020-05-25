@@ -24,7 +24,8 @@ export class DeckCreateDto {
   @ApiProperty({
     description: "musics을(를) 입력해주세요!"
   })
-  musics?: DeckMusicSaveDto[];
+  deckMusics?: DeckMusicSaveDto[];
+
   @ApiProperty({
     description: "hashtags을(를) 입력해주세요!"
   })

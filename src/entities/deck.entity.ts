@@ -63,7 +63,8 @@ export class Deck extends NbaseEntity {
   })
   @OneToMany((type) => DeckMusic, (deckMusic) => deckMusic.deck, {
     cascade: true,
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE"
   })
   deckMusics: DeckMusic[];
 

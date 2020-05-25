@@ -77,7 +77,6 @@ export class MusicsService {
     const music: Music = await Music.findOne(id, {
       relations: []
     });
-    console.log(music);
     const isCorrect = music.checkCorrect(answer);
     return {
       music: music,

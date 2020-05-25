@@ -24,7 +24,7 @@ export class DeckMusic extends NbaseEntity {
     type: () => Music
   })
   @ManyToOne((type) => Music, (music) => music.deckMusics)
-  music!: Music;
+  music: Music;
 
   @ApiProperty({
     type: () => Answer
