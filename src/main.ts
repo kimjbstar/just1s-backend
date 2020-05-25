@@ -42,6 +42,8 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use((req, res, next) => {
+    console.log("origin");
+    console.log(req.headers.origin);
     const origin = req.headers.origin ? req.headers.origin : "*";
     res.header("Access-Control-Allow-Origin", origin);
     res.header(
