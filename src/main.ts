@@ -45,6 +45,15 @@ async function bootstrap() {
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: true,
+    allowedHeaders: [
+      "Origin",
+      "Accept",
+      "X-Requested-With",
+      "Content-Type",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers",
+      "Authorization"
+    ],
     optionsSuccessStatus: 204
   });
   // app.use((req, res, next) => {
