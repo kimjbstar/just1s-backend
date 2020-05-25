@@ -89,7 +89,7 @@ describe("deck.service.ts", () => {
     // TODO :기존거 있다고 가정하고 수동으로 추가, id 파라미터 넣어서
     // 없으면 무시해야 맞지 않나
 
-    const a = await decksService.saveMusics(15, dto);
+    const a = await decksService.saveDeckMusics(15, dto);
     deck = await decksService.findByPk(15);
     console.log("AFTER");
     console.log(deck.deckMusics);

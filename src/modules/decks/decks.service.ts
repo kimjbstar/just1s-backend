@@ -196,9 +196,7 @@ export class DecksService {
 
     const newItems: DeckHashtag[] = dtos
       .filter((dto) => dto.id === undefined)
-      .map((newDto) => {
-        return new DeckHashtag(newDto);
-      });
+      .map((newDto) => new DeckHashtag(newDto));
 
     const dtoIDMap = dtos.reduce((result, dto) => {
       if (dto.id) {
@@ -206,15 +204,19 @@ export class DecksService {
       }
       return result;
     }, {});
+    console.log(dtoIDMap);
     const oldItems: DeckHashtag[] = oldOne.hashtags.reduce(
       (result, oldItem) => {
         // 명시 안됨 -> 변화 없음
         if (dtoIDMap[oldItem.id] === undefined) {
-          result.push(oldItem);
+          result.push(new DeckHashtag({ id: oldItem.id }));
           return result;
         }
         // 삭제 요청 체크된 항목 삭제 -> reduce 계산에 제외
-        if (dtoIDMap[oldItem.id].toDelete) {
+        if (
+          dtoIDMap[oldItem.id].toDelete === true ||
+          dtoIDMap[oldItem.id].toDelete === "true"
+        ) {
           return result;
         }
         // dto 기반 업데이트
@@ -271,11 +273,7 @@ export class DecksService {
     // step 3 : 기존 업데이트 로직
     const newItems: DeckMusic[] = dtos
       .filter((dto) => dto.id === undefined)
-      .map((newDto) => {
-        const newItem: DeckMusic = new DeckMusic(newDto);
-
-        return newItem;
-      });
+      .map((newDto) => new DeckMusic(newDto));
 
     const dtoIDMap = dtos.reduce((result, dto) => {
       if (dto.id) {
@@ -283,6 +281,7 @@ export class DecksService {
       }
       return result;
     }, {});
+
     const oldItems: DeckMusic[] = oldOne.deckMusics.reduce(
       (result, oldItem) => {
         // 명시 안됨 -> 변화 없음
@@ -291,35 +290,22 @@ export class DecksService {
           return result;
         }
         // 삭제 요청 체크된 항목 삭제 -> reduce 계산에 제외
-        if (dtoIDMap[oldItem.id].toDelete) {
+        if (
+          dtoIDMap[oldItem.id].toDelete === true ||
+          dtoIDMap[oldItem.id].toDelete === "true"
+        ) {
           return result;
         }
         // dto 기반 업데이트
-        // 케이스 체크 music이 변할때, 안변할때
-        const updateDto = dtoIDMap[oldItem.id];
-        updateDto.id = parseInt(updateDto.id);
-        let toUpdate: any = new DeckMusic(updateDto);
-        // console.log("FFFFFUUUUU");
-        // console.log(toUpdate);
-        result.push(toUpdate);
+        result.push(new DeckMusic(dtoIDMap[oldItem.id]));
         return result;
       },
       []
     );
-    console.log(111);
-    console.log(oldOne.deckMusics);
 
     oldOne.deckMusics = [...oldItems, ...newItems];
 
-    // const newOne = await Deck.findOne(oldOne.id);
-    // newOne.deckMusics = [...oldItems, ...newItems];
-    // const what = Deck.merge(oldOne, newOne);
-    // console.log(newOne);
-    // console.log(oldOne);
-    // console.log(what);
-
     const deck = await oldOne.save();
     return Promise.resolve(deck);
-    // return Promise.resolve(null);
   }
 }

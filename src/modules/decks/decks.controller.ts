@@ -168,7 +168,7 @@ export class DecksController {
     @Param("id", ParseIntPipe) id: number,
     @Body() dto: DeckMusicSaveDto[]
   ): Promise<any> {
-    return await this.decksService.saveMusics(id, dto);
+    return await this.decksService.saveDeckMusics(id, dto);
   }
 
   @Post("perform")

@@ -16,6 +16,9 @@ const pluralize = require("pluralize");
 export abstract class NbaseEntity extends BaseEntity {
   constructor(obj?: object) {
     super();
+    if (obj && obj["id"]) {
+      obj["id"] = Number(obj["id"]);
+    }
     Object.assign(this, obj);
   }
 
@@ -55,7 +58,8 @@ export abstract class NbaseEntity extends BaseEntity {
     const relations: NBaseResolveRelationResult[] = resolveRelations(
       entityClass
     );
-    console.log("relations", relations);
+    // TODO : recursive
+    // console.log("relations", relations);
     // queryBuilder.select("*");
     relations.forEach((relation) => {
       queryBuilder.leftJoinAndSelect(relation.property, relation.alias);
