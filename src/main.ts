@@ -42,19 +42,20 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use((req, res, next) => {
-    // console.log("origin : ", req.headers.origin);
-    // const origin = req.headers.origin ? req.headers.origin : "*";
-    // const origin = "https://www.just1s.xyz";
-    const origin = "*";
+    var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+    console.log("url", fullUrl);
+    const origin = req.headers.origin ? req.headers.origin : "*";
+    console.log("origin", origin);
     res.header("Access-Control-Allow-Origin", origin);
     res.header(
       "Access-Control-Allow-Methods",
-      "GET,HEAD,PUT,PATCH,POST,DELETE"
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
     );
     res.header(
       "Access-Control-Allow-Headers",
       "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
     );
+    res.header("Access-Control-Allow-Credentials", "true");
     next();
   });
 
