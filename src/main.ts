@@ -44,7 +44,8 @@ async function bootstrap() {
   app.use((req, res, next) => {
     // console.log("origin : ", req.headers.origin);
     // const origin = req.headers.origin ? req.headers.origin : "*";
-    const origin = "https://www.just1s.xyz";
+    // const origin = "https://www.just1s.xyz";
+    const origin = "*";
     res.header("Access-Control-Allow-Origin", origin);
     res.header(
       "Access-Control-Allow-Methods",
