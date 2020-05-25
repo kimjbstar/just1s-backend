@@ -42,9 +42,9 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use((req, res, next) => {
-    console.log("origin");
-    console.log(req.headers.origin);
-    const origin = req.headers.origin ? req.headers.origin : "*";
+    // console.log("origin : ", req.headers.origin);
+    // const origin = req.headers.origin ? req.headers.origin : "*";
+    const origin = "https://www.just1s.xyz";
     res.header("Access-Control-Allow-Origin", origin);
     res.header(
       "Access-Control-Allow-Methods",
