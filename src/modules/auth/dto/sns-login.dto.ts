@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UserSNSType } from "@src/modules/users/users.enum";
 
 export class SNSLoginDto {
-  @IsEnum(UserSNSType)
+  // @IsEnum(UserSNSType)
   @ApiProperty({
     description: "UserSNSType(를) 입력해주세요 !",
     enum: Object.values(UserSNSType),

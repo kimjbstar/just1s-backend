@@ -41,20 +41,6 @@ export class AuthController {
     return req.currentUser ? req.currentUser : {};
   }
 
-  // @UseGuards(AuthGuard("facebook"))
-  // async facebook(@Request() req) {
-  //   return this.authService.login(req.user);
-  // }
-
-  // @Get()
-  // @ApiResponse({
-  //   description: "Deck의 리스트를 가져옵니다.",
-  //   type: DeckListResult
-  // })
-  // async find(@Query() args: DeckListArgs): Promise<any> {
-  //   return await Deck.createList(DeckListResult, createDeckListConfig, args);
-  // }
-
   @Post("sns_login")
   @ApiResponse({
     description: "sns 로그인",
