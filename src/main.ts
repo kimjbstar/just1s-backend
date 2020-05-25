@@ -41,31 +41,37 @@ async function bootstrap() {
   SwaggerModule.setup("doc", app, document);
 
   app.use(helmet());
-  app.use((req, res, next) => {
-    var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-    console.log("url", fullUrl);
-    const origin = req.headers.origin ? req.headers.origin : "*";
-    console.log("origin", origin);
-
-    if (req.method === "OPTIONS") {
-      console.log("!OPTIONS");
-      var headers = {};
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header(
-        "Access-Control-Allow-Methods",
-        "POST, GET, PUT, DELETE, OPTIONS"
-      );
-      res.header("Access-Control-Allow-Credentials", false);
-      res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
-      );
-      res.writeHead(200, headers);
-      res.end();
-    } else {
-      next();
-    }
+  app.enableCors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: true,
+    optionsSuccessStatus: 204
   });
+  // app.use((req, res, next) => {
+  //   var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+  //   console.log("url", fullUrl);
+  //   const origin = req.headers.origin ? req.headers.origin : "*";
+  //   console.log("origin", origin);
+
+  //   if (req.method === "OPTIONS") {
+  //     console.log("!OPTIONS");
+  //     var headers = {};
+  //     res.header("Access-Control-Allow-Origin", "*");
+  //     res.header(
+  //       "Access-Control-Allow-Methods",
+  //       "POST, GET, PUT, DELETE, OPTIONS"
+  //     );
+  //     res.header("Access-Control-Allow-Credentials", false);
+  //     res.header(
+  //       "Access-Control-Allow-Headers",
+  //       "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
+  //     );
+  //     res.writeHead(200, headers);
+  //     res.end();
+  //   } else {
+  //     next();
+  //   }
+  // });
 
   await app.listen(3000);
 }

@@ -180,3 +180,28 @@ export class DecksController {
     return await this.decksService.perform(dto);
   }
 }
+
+// curl \
+// --verbose \
+// --request OPTIONS \
+// 'https://api.just1s.xyz' \
+// --header 'Origin: https://www.just1s.xyz' \
+// --header 'Access-Control-Request-Headers: Origin, Accept, Content-Type' \
+// --header 'Access-Control-Request-Method: GET'
+
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header(
+//       "Access-Control-Allow-Methods",
+//       "POST, GET, PUT, DELETE, OPTIONS"
+//     );
+//     res.header("Access-Control-Allow-Credentials", false);
+//     res.header(
+//       "Access-Control-Allow-Headers",
+//       "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
+//     );
+
+//           headers["Access-Control-Allow-Origin"] = "*";
+//       headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+//       headers["Access-Control-Allow-Credentials"] = false;
+//       headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+//       headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
