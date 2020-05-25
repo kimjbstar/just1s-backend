@@ -46,17 +46,25 @@ async function bootstrap() {
     console.log("url", fullUrl);
     const origin = req.headers.origin ? req.headers.origin : "*";
     console.log("origin", origin);
-    res.header("Access-Control-Allow-Origin", origin);
-    res.header(
-      "Access-Control-Allow-Methods",
-      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
-    );
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
-    );
-    res.header("Access-Control-Allow-Credentials", "true");
-    next();
+
+    if (req.method === "OPTIONS") {
+      console.log("!OPTIONS");
+      var headers = {};
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header(
+        "Access-Control-Allow-Methods",
+        "POST, GET, PUT, DELETE, OPTIONS"
+      );
+      res.header("Access-Control-Allow-Credentials", false);
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
+      );
+      res.writeHead(200, headers);
+      res.end();
+    } else {
+      next();
+    }
   });
 
   await app.listen(3000);
