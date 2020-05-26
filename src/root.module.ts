@@ -9,6 +9,7 @@ import { MusicModule } from "./modules/music/music.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Connection } from "typeorm";
 import { UsersService } from "./modules/users/users.service";
+import { PerformModule } from "./modules/perform/perform.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersService } from "./modules/users/users.service";
     FilesModule,
     DecksModule,
     MusicModule,
+    PerformModule,
     UsersService,
     TypeOrmModule.forRoot(),
     MulterModule.register({

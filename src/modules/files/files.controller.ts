@@ -19,7 +19,7 @@ class FileUploadDto {
 }
 
 export class FileUploadQuery {
-  type: "s3" | "temp" | "fake";
+  type: "s3" | "fake";
 }
 @ApiTags("files")
 @Controller("files")
@@ -44,7 +44,7 @@ export class FilesController {
     const AWS_ACCESS_KEY = "AKIA6AVHWL3FX7GZTK2G";
     const AWS_SECRET_ACCESS_KEY = "rwQzxXj8Di7ZEmxWHWNjm04edY9MOSkXpJHSvBHr";
     const fileName = getHashFileName(file);
-    // 열화 처리
+
     if (q.type === "fake") {
       return {
         url:
@@ -52,19 +52,7 @@ export class FilesController {
       };
     }
 
-    if (q.type === "temp") {
-      const imageDir = path.resolve(process.cwd(), "./dist/src/static");
-      if ((await fs.existsSync(imageDir)) === false) {
-        await fs.mkdirSync(imageDir);
-      }
-      const imagePath = path.resolve(imageDir, fileName);
-      console.log(imagePath);
-      await fs.writeFileSync(imagePath, file.buffer);
-      return {
-        url: "http://localhost:3000/" + fileName
-      };
-    }
-
+    // 열화 처리
     const s3 = new S3({
       accessKeyId: AWS_ACCESS_KEY,
       secretAccessKey: AWS_SECRET_ACCESS_KEY,

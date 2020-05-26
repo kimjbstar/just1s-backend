@@ -31,7 +31,8 @@ export class Perform extends NbaseEntity {
   })
   @OneToMany((type) => Answer, (answer) => answer.perform, {
     cascade: true,
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE"
   })
   answers: Answer[];
 }
