@@ -10,28 +10,26 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Connection } from "typeorm";
 import { UsersService } from "./modules/users/users.service";
 import { PerformModule } from "./modules/perform/perform.module";
+import { JwtModule, JwtService } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
 
 @Module({
   imports: [
-    AppModule,
     UsersModule,
     AuthModule,
     FilesModule,
     DecksModule,
     MusicModule,
     PerformModule,
-    UsersService,
-    TypeOrmModule.forRoot(),
     MulterModule.register({
       dest: "./static"
     })
   ],
-  providers: []
+  providers: [],
+  exports: []
 })
 export class RootModule {
-  constructor(private connection: Connection) {
-    this.connection.runMigrations().then((migrations) => {
-      console.log(migrations);
-    });
+  constructor() {
+    console.debug("RootModule init");
   }
 }

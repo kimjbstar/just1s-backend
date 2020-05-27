@@ -9,7 +9,8 @@ import {
   Body,
   ParseIntPipe,
   Header,
-  Req
+  Req,
+  UseGuards
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
 import {
@@ -31,6 +32,8 @@ import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
 import { DeckUpdateDto } from "./dtos/deck-update.dto";
 import { Request } from "express";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { UsersService } from "../users/users.service";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -53,6 +56,28 @@ const createDeckListConfig: NBaseCreateListConfig = {
           id: Equal(args.userId)
         }
       };
+    },
+    with_performed_user_id: (args, builder) => {
+      return builder.leftJoinAndSelect(
+        "deck.performs",
+        "perform",
+        "perform.userId = :userId",
+        {
+          userId: args.with_performed_user_id
+        }
+      );
+    },
+    performed_user_id: (args, builder) => {
+      return builder
+        .leftJoinAndSelect("deck.performs", "perform")
+        .innerJoinAndSelect(
+          "perform.user",
+          "performed_user",
+          "performed_user.id = :id",
+          {
+            id: args.performed_user_id
+          }
+        );
     },
     has_hashtag: (args, builder) => {
       return builder.innerJoinAndSelect("deck.hashtags", "deck_hashtag");
@@ -96,14 +121,21 @@ const createDeckListConfig: NBaseCreateListConfig = {
 @ApiTags("decks")
 @Controller("decks")
 export class DecksController {
-  constructor(private readonly decksService: DecksService) {}
+  constructor(
+    private readonly decksService: DecksService,
+    private usersService: UsersService
+  ) {}
 
   @Get()
   @ApiResponse({
     description: "Deck의 리스트를 가져옵니다.",
     type: DeckListResult
   })
+  @UseGuards(JwtAuthGuard)
   async find(@Query() args: DeckListArgs, @Req() req: Request): Promise<any> {
+    if (req["currentUser"]) {
+      args["with_performed_user_id"] = req["currentUser"].id;
+    }
     return await Deck.createList(DeckListResult, createDeckListConfig, args);
   }
 
