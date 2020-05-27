@@ -114,10 +114,8 @@ export class DecksService {
     return Promise.resolve();
   }
 
-  async perform(dto): Promise<Perform> {
-    const dtoClass: DeckPerformDto = plainToClass(DeckPerformDto, dto, {
-      excludeExtraneousValues: true
-    });
+  async perform(dto: DeckPerformDto, ipAddress: string): Promise<Perform> {
+    const dtoClass: DeckPerformDto = plainToClass(DeckPerformDto, dto);
     const errors: ValidationError[] = await validate(dtoClass);
     if (errors.length > 0) {
       console.log(errors);
@@ -128,11 +126,6 @@ export class DecksService {
       relations: ["deckMusics"]
     });
     if (!deck) {
-      throw new WrongIdException();
-    }
-
-    const user = await User.findOneOrFail(dtoClass.userId, {});
-    if (!user) {
       throw new WrongIdException();
     }
 
@@ -156,34 +149,42 @@ export class DecksService {
       throw new CustomException("답 갯수가 다름");
     }
 
-    let result;
-    const oldOne: Perform = await Perform.findOne({
-      where: {
-        deckId: deck.id,
-        userId: user.id
-      },
-      relations: [
-        "deck",
-        "user",
-        "answers",
-        "answers.deckMusic",
-        "answers.deckMusic.music"
-      ]
-    });
-    if (oldOne === undefined) {
-      const perform: Perform = await new Perform({
-        deck: deck,
-        user: user,
-        answers: answers
+    let user: User = null;
+    if (dtoClass.userId) {
+      const user = await User.findOne(dtoClass.userId, {});
+      if (!user) {
+        throw new WrongIdException();
+      }
+      const oldOne: Perform = await Perform.findOne({
+        where: {
+          deckId: deck.id,
+          userId: user.id
+        },
+        relations: [
+          "deck",
+          "user",
+          "answers",
+          "answers.deckMusic",
+          "answers.deckMusic.music"
+        ]
       });
-      await perform.save();
-      await this.usersService.updateCount(perform.user.id);
-      result = perform;
-      //TODO :deck average score
-    } else {
-      result = oldOne;
+      if (oldOne) {
+        return Promise.resolve(oldOne);
+      }
     }
 
+    const perform: Perform = await new Perform({
+      deck: deck,
+      user: user,
+      ipAddress: ipAddress,
+      answers: answers
+    });
+    const result: Perform = await perform.save();
+    if (result.user) {
+      await this.usersService.updateCount(result.user.id);
+    }
+
+    //TODO :deck average score
     return Promise.resolve(result);
   }
 

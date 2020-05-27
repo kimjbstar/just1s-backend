@@ -8,7 +8,8 @@ import {
   Param,
   Body,
   ParseIntPipe,
-  Header
+  Header,
+  Req
 } from "@nestjs/common";
 import { DecksService } from "@src/modules/decks/decks.service";
 import {
@@ -29,6 +30,7 @@ import { Deck } from "@src/entities/deck.entity";
 import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
 import { DeckUpdateDto } from "./dtos/deck-update.dto";
+import { Request } from "express";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -101,7 +103,7 @@ export class DecksController {
     description: "Deck의 리스트를 가져옵니다.",
     type: DeckListResult
   })
-  async find(@Query() args: DeckListArgs): Promise<any> {
+  async find(@Query() args: DeckListArgs, @Req() req: Request): Promise<any> {
     return await Deck.createList(DeckListResult, createDeckListConfig, args);
   }
 
@@ -146,7 +148,24 @@ export class DecksController {
     return await this.decksService.destroy(id);
   }
 
-  // inline form
+  @Post("perform")
+  @ApiResponse({
+    description: "해당하는 deck을 수행하고 그에 해당하는 perform을 돌려줍니다.",
+    type: Perform
+  })
+  async perform(
+    @Body() dto: DeckPerformDto,
+    @Req() req: Request
+  ): Promise<Perform> {
+    const _ipAddress =
+      req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const ipAddress = Array.isArray(_ipAddress)
+      ? _ipAddress.join(",")
+      : _ipAddress;
+    return await this.decksService.perform(dto, ipAddress);
+  }
+
+  // inline form test
   @Post(":id/hashtags")
   @ApiResponse({
     description: "dto에 해당하는 Deck을 생성하여 출력합니다.",
@@ -170,38 +189,4 @@ export class DecksController {
   ): Promise<any> {
     return await this.decksService.saveDeckMusics(id, dto);
   }
-
-  @Post("perform")
-  @ApiResponse({
-    description: "해당하는 deck을 수행하고 그에 해당하는 perform을 돌려줍니다.",
-    type: Perform
-  })
-  async perform(@Body() dto: DeckPerformDto): Promise<Perform> {
-    return await this.decksService.perform(dto);
-  }
 }
-
-// curl \
-// --verbose \
-// --request OPTIONS \
-// 'https://api.just1s.xyz' \
-// --header 'Origin: https://www.just1s.xyz' \
-// --header 'Access-Control-Request-Headers: Origin, Accept, Content-Type' \
-// --header 'Access-Control-Request-Method: GET'
-
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header(
-//       "Access-Control-Allow-Methods",
-//       "POST, GET, PUT, DELETE, OPTIONS"
-//     );
-//     res.header("Access-Control-Allow-Credentials", false);
-//     res.header(
-//       "Access-Control-Allow-Headers",
-//       "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
-//     );
-
-//           headers["Access-Control-Allow-Origin"] = "*";
-//       headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
-//       headers["Access-Control-Allow-Credentials"] = false;
-//       headers["Access-Control-Max-Age"] = '86400'; // 24 hours
-//       headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";

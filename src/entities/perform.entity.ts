@@ -11,6 +11,7 @@ import { User } from "./user.entity";
 import { Answer } from "./answer.entity";
 import { NbaseEntity } from "@src/common/types/nbase-entity";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsIP } from "class-validator";
 
 @Entity()
 export class Perform extends NbaseEntity {
@@ -24,7 +25,13 @@ export class Perform extends NbaseEntity {
     type: () => User
   })
   @ManyToOne((type) => User, (user) => user.performs)
-  user!: User;
+  user: User;
+
+  @ApiProperty()
+  @Column({
+    default: ""
+  })
+  ipAddress: string;
 
   @ApiProperty({
     type: () => [Answer]
