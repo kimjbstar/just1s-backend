@@ -67,9 +67,9 @@ export class AuthService {
     }
 
     return {
-      access_token: accessToken,
-      refresh_token: user.refreshToken,
-      refresh_token_expired_at: user.refreshTokenExpiredAt,
+      accessToken: accessToken,
+      refreshToken: user.refreshToken,
+      refreshTokenExpiredAt: user.refreshTokenExpiredAt,
       user: user
     };
   }

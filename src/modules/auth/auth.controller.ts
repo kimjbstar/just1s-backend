@@ -5,6 +5,7 @@ import {
   Post,
   UseGuards,
   Request,
+  Response,
   Get,
   Body,
   Query
@@ -15,6 +16,7 @@ import { ApiTags, ApiResponse } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
 import { User } from "@src/entities/user.entity";
 import { SNSLoginDto } from "./dto/sns-login.dto";
+
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
@@ -28,9 +30,13 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @Post("login")
-  async login(@Request() req) {
+  async login(@Request() req, @Response() res) {
     const foundUser: User = req.user;
-    return this.authService.login(foundUser, true);
+
+    const loginResult = await this.authService.login(foundUser, true);
+    res.cookie("accessToken", loginResult.accessToken);
+    res.cookie("refreshToken", loginResult.refreshToken);
+    res.send(loginResult);
   }
 
   @ApiResponse({
@@ -38,9 +44,12 @@ export class AuthController {
   })
   @UseGuards(JwtAuthGuard)
   @Post("refresh")
-  async refresh(@Body("token") token) {
+  async refresh(@Body("token") token, @Response() res) {
     const user = await this.authService.findUserFromToken(token);
-    return this.authService.login(user);
+    const loginResult = await this.authService.login(user, true);
+    res.cookie("accessToken", loginResult.accessToken);
+    res.cookie("refreshToken", loginResult.refreshToken);
+    res.send(loginResult);
   }
 
   @ApiResponse({
@@ -57,9 +66,13 @@ export class AuthController {
     description: "sns 로그인",
     type: User
   })
-  async snsLogin(@Body() dto: SNSLoginDto): Promise<any> {
+  async snsLogin(@Body() dto: SNSLoginDto, @Response() res): Promise<any> {
     const user: User = await this.usersService.findOrCreateBySNSProfile(dto);
-    return this.authService.login(user);
+    // return this.authService.login(user);
+    const loginResult = await this.authService.login(user, true);
+    res.cookie("accessToken", loginResult.accessToken);
+    res.cookie("refreshToken", loginResult.refreshToken);
+    res.send(loginResult);
   }
 
   @ApiResponse({
