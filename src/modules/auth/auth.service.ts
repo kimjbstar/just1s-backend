@@ -7,6 +7,7 @@ import {
   CustomException
 } from "@src/common/http-exception";
 import * as moment from "moment";
+import * as crypto from "crypto";
 import { MoreThan } from "typeorm";
 
 @Injectable()
@@ -51,7 +52,10 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     if (issueNewRefreshToken === true) {
-      const refreshToken = "ref-" + user.id + "-" + Date.now().toString();
+      const refreshToken = crypto
+        .createHash("md5")
+        .update(user.id + "-" + Date.now())
+        .digest("hex");
       const refreshTokenExpiredAt = moment()
         .add(1, "d")
         .format("YYYY-MM-DD HH:mm:ss.SSSSSS");
