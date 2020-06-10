@@ -29,7 +29,18 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("login")
   async login(@Request() req) {
-    return this.authService.login(req.user);
+    const foundUser: User = req.user;
+    return this.authService.login(foundUser, true);
+  }
+
+  @ApiResponse({
+    description: "전달된 refesh 토큰을 통해 새 access token을 얻습니다."
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post("refresh")
+  async refresh(@Body("token") token) {
+    const user = await this.authService.findUserFromToken(token);
+    return this.authService.login(user);
   }
 
   @ApiResponse({
@@ -49,5 +60,15 @@ export class AuthController {
   async snsLogin(@Body() dto: SNSLoginDto): Promise<any> {
     const user: User = await this.usersService.findOrCreateBySNSProfile(dto);
     return this.authService.login(user);
+  }
+
+  @ApiResponse({
+    description: "logout. 토큰 만료 처리"
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post("logout")
+  async logout(@Request() req) {
+    const foundUser: User = req.user;
+    return this.authService.logout(foundUser);
   }
 }

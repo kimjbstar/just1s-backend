@@ -9,11 +9,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as helmet from "helmet";
 import * as fs from "fs";
-import * as path from "path";
-import { ExpressAdapter } from "@nestjs/platform-express";
-import * as express from "express";
-import * as http from "http";
-import * as https from "https";
+
 // import * as cors from "cors";
 
 // import { F9HttpExceptionFilter } from "@src/f9-base/f9-http-exception.filter";

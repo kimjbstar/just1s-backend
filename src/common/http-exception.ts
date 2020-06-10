@@ -54,34 +54,87 @@ export class TokenAuthenticateFailException extends HttpException {
     super("토큰 인증에 실패했습니다.", HttpStatus.UNAUTHORIZED);
   }
 }
-// next(new NBaseError(401, "token 인증 실패", res.locals.tokenFailMessage));
-// HttpExceptionFilter 필요;
 
 export class AuthUserNotFoundException extends HttpException {
   constructor() {
-    super("id에 해당하는 유저 정보가 없습니다.", HttpStatus.FORBIDDEN);
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        message: "ID에 해당하는 유저 정보가 없습니다.."
+      },
+      HttpStatus.FORBIDDEN
+    );
   }
 }
 
 export class AuthUserPasswordNotValidException extends HttpException {
   constructor() {
-    super("비밀번호가 틀립니다.", HttpStatus.FORBIDDEN);
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        message: "비밀번호가 틀립니다."
+      },
+      HttpStatus.FORBIDDEN
+    );
   }
 }
 export class AuthLoginFailException extends HttpException {
   constructor() {
-    super("로그인 정보가 잘못되었습니다.", HttpStatus.FORBIDDEN);
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        message: "로그인 정보가 잘못되었습니다."
+      },
+      HttpStatus.FORBIDDEN
+    );
   }
 }
 
 export class WrongRequestBody extends HttpException {
   constructor() {
-    super("요청 정보가 잘못되었습니다.", HttpStatus.FORBIDDEN);
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        message: "요청 정보가 잘못되었습니다."
+      },
+      HttpStatus.FORBIDDEN
+    );
   }
 }
 
 export class CustomException extends HttpException {
   constructor(str: string) {
-    super(str, HttpStatus.FORBIDDEN);
+    super(
+      {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: str
+      },
+      HttpStatus.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+export class TokenExpiredException extends HttpException {
+  constructor(expiredAt: number) {
+    super(
+      {
+        status: HttpStatus.UNAUTHORIZED,
+        message: "토큰이 만료되었습니다.",
+        expiredAt: expiredAt
+      },
+      HttpStatus.UNAUTHORIZED
+    );
+  }
+}
+
+export class NotLogginedException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.UNAUTHORIZED,
+        message: "로그인되어 있지 않습니다."
+      },
+      HttpStatus.UNAUTHORIZED
+    );
   }
 }

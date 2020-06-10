@@ -29,11 +29,12 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
    * Called before post update.
    */
   beforeUpdate(event: UpdateEvent<User>) {
-    // console.log(event);
     const { entity }: { entity: User } = event;
 
-    if (entity && entity.pw !== undefined) {
-      entity.pw = User.getHashedPw(entity.pw);
-    }
+    event.updatedColumns.forEach((column) => {
+      if (column.propertyName == "pw") {
+        entity.pw = User.getHashedPw(entity.pw);
+      }
+    });
   }
 }

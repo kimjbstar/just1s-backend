@@ -31,7 +31,7 @@ export abstract class NbaseEntity extends BaseEntity {
   createdAt: string;
 
   @UpdateDateColumn()
-  updatedAt: number;
+  updatedAt: string;
 
   static async createList<T extends NbaseEntity, U extends NbaseListResult>(
     this: OType<T>,

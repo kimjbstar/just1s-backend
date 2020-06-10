@@ -1,7 +1,13 @@
-import { Injectable, ExecutionContext } from "@nestjs/common";
+import {
+  Injectable,
+  ExecutionContext,
+  HttpException,
+  HttpStatus
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "@src/modules/users/users.service";
+import { TokenExpiredException } from "@src/common/http-exception";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
@@ -27,7 +33,11 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
         const result = await this.jwtService.verifyAsync(token);
         currentUser = await this.usersService.findByPk(result["id"]);
       } catch (e) {
-        console.log(e);
+        console.log(111, e.name);
+        if (e.name == "TokenExpiredError") {
+          throw new TokenExpiredException(e.expiredAt);
+        }
+        throw new Error();
       }
     }
     req.currentUser = currentUser;

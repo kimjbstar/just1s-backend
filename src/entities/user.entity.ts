@@ -124,4 +124,15 @@ export class User extends NbaseEntity {
     //   .update(pw + salt)
     //   .digest("hex");
   }
+
+  @Column()
+  refreshToken: string;
+
+  @Column({
+    type: "datetime",
+    precision: 6,
+    nullable: true,
+    default: null
+  })
+  refreshTokenExpiredAt: string;
 }
