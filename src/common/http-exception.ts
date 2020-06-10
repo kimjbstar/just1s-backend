@@ -127,6 +127,18 @@ export class TokenExpiredException extends HttpException {
   }
 }
 
+export class RefreshTokenExpiredException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.UNAUTHORIZED,
+        message: "refresh token이 잘못되거나 만료되었습니다."
+      },
+      HttpStatus.UNAUTHORIZED
+    );
+  }
+}
+
 export class NotLogginedException extends HttpException {
   constructor() {
     super(

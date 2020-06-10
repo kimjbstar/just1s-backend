@@ -8,7 +8,9 @@ import {
   Response,
   Get,
   Body,
-  Query
+  Query,
+  UseFilters,
+  HttpStatus
 } from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { UsersService } from "@src/modules/users/users.service";
@@ -16,9 +18,11 @@ import { ApiTags, ApiResponse } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
 import { User } from "@src/entities/user.entity";
 import { SNSLoginDto } from "./dto/sns-login.dto";
+import { RefreshTokenExpiredExceptionFilter } from "@src/common/exception-filters";
 
 @ApiTags("auth")
 @Controller("auth")
+@UseFilters(new RefreshTokenExpiredExceptionFilter())
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -31,7 +35,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("login")
   async login(@Request() req, @Response() res) {
-    const foundUser: User = req.user;
+    const foundUser: User = req.currentUser;
 
     const loginResult = await this.authService.login(foundUser, true);
     res.cookie("accessToken", loginResult.accessToken);
@@ -68,7 +72,6 @@ export class AuthController {
   })
   async snsLogin(@Body() dto: SNSLoginDto, @Response() res): Promise<any> {
     const user: User = await this.usersService.findOrCreateBySNSProfile(dto);
-    // return this.authService.login(user);
     const loginResult = await this.authService.login(user, true);
     res.cookie("accessToken", loginResult.accessToken);
     res.cookie("refreshToken", loginResult.refreshToken);
@@ -80,8 +83,11 @@ export class AuthController {
   })
   @UseGuards(JwtAuthGuard)
   @Post("logout")
-  async logout(@Request() req) {
-    const foundUser: User = req.user;
-    return this.authService.logout(foundUser);
+  async logout(@Request() req, @Response() res) {
+    const foundUser: User = req.currentUser;
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    await this.authService.logout(foundUser);
+    res.status(HttpStatus.OK).send({});
   }
 }

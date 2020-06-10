@@ -4,7 +4,8 @@ import { User } from "@src/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import {
   NotLogginedException,
-  CustomException
+  CustomException,
+  RefreshTokenExpiredException
 } from "@src/common/http-exception";
 import * as moment from "moment";
 import * as crypto from "crypto";
@@ -42,7 +43,7 @@ export class AuthService {
     });
     console.log(users);
     if (users.length == 0) {
-      throw new CustomException("refresh token이 잘못되거나 만료되었습니다.");
+      throw new RefreshTokenExpiredException();
     }
     return users[0];
   }
@@ -75,12 +76,12 @@ export class AuthService {
   }
 
   async logout(user: User) {
-    if (!user) {
-      throw new NotLogginedException();
+    if (user) {
+      user.refreshToken = "";
+      user.refreshTokenExpiredAt = "";
+      await user.save();
     }
-    user.refreshToken = "";
-    user.refreshTokenExpiredAt = "";
-    await user.save();
+
     return {};
   }
 }

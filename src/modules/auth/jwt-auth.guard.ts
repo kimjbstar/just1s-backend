@@ -33,7 +33,6 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
         const result = await this.jwtService.verifyAsync(token);
         currentUser = await this.usersService.findByPk(result["id"]);
       } catch (e) {
-        console.log(111, e.name);
         if (e.name == "TokenExpiredError") {
           throw new TokenExpiredException(e.expiredAt);
         }

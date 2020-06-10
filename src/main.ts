@@ -15,6 +15,7 @@ import * as fs from "fs";
 // import { F9HttpExceptionFilter } from "@src/f9-base/f9-http-exception.filter";
 // import { initCurrentApp } from "@src/middlewares/init-current-app.middleware";
 // import { PublicAuthGuard } from "@src/middlewares/public-auth.guard";
+// application.useGlobalFilters(new F9HttpExceptionFilter());
 
 async function bootstrap() {
   const httpsOptions = {
@@ -25,6 +26,7 @@ async function bootstrap() {
   // const app = await NestFactory.create(RootModule, new ExpressAdapter(server));
   const app: INestApplication = await NestFactory.create(RootModule);
 
+  // app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const options = new DocumentBuilder()
