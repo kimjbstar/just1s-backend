@@ -108,3 +108,6 @@ dist
 .local/
 
 **/*_test.db
+
+docker-compose.local.yml
+src/legacy_migration/
