@@ -41,8 +41,6 @@ export class FilesController {
   //   })
   // )
   async uploadedFile(@UploadedFile() file, @Query() q: FileUploadQuery) {
-    const AWS_ACCESS_KEY = "AKIA6AVHWL3FX7GZTK2G";
-    const AWS_SECRET_ACCESS_KEY = "rwQzxXj8Di7ZEmxWHWNjm04edY9MOSkXpJHSvBHr";
     const fileName = getHashFileName(file);
 
     if (q.type === "fake") {
@@ -54,8 +52,8 @@ export class FilesController {
 
     // 열화 처리
     const s3 = new S3({
-      accessKeyId: AWS_ACCESS_KEY,
-      secretAccessKey: AWS_SECRET_ACCESS_KEY,
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       region: "ap-northeast-2"
     });
 
