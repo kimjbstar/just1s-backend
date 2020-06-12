@@ -19,9 +19,10 @@ import * as fs from "fs";
 
 async function bootstrap() {
   const httpsOptions = {
-    key: fs.readFileSync("./cert/privkey.pem"),
-    cert: fs.readFileSync("./cert/cert.pem")
+    key: process.env.JUST1S_PRIVATE_KEY,
+    cert: process.env.JUST1S_CERT
   };
+
   // const server = express();
   // const app = await NestFactory.create(RootModule, new ExpressAdapter(server));
   const app: INestApplication = await NestFactory.create(RootModule);
