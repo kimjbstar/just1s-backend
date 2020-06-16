@@ -58,9 +58,11 @@ export abstract class NbaseEntity extends BaseEntity {
     const relations: NBaseResolveRelationResult[] = resolveRelations(
       entityClass
     );
+
     // TODO : recursive
     // console.log("relations", relations);
     // queryBuilder.select("*");
+
     relations.forEach((relation) => {
       queryBuilder.leftJoinAndSelect(relation.property, relation.alias);
     });
