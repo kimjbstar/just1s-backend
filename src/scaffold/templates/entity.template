@@ -1,0 +1,66 @@
+import {
+  Entity,
+  Column,
+  OneToMany,
+  ManyToOne
+} from "typeorm";
+import { NbaseEntity } from "@src/common/types/nbase-entity";
+import { ApiProperty } from "@nestjs/swagger";
+
+{{#ifCond isSub '!=' true}}
+import { {{#each ../enums}}{{this.name}},{{/each}} } from "@src/modules/{{pluralize ../name}}/{{pluralize ../name}}.enum";
+{{/ifCond}}
+{{#each hasManyModels}}
+import { {{camelize this.name}} } from "@src/entities/{{underscore this.name}}.entity";
+{{/each}}
+{{#each belongsToModels}}
+import { {{camelize this}} } from "@src/entities/{{this}}.entity";
+{{/each}}
+
+@Entity()
+export class {{camelize name}} extends NbaseEntity {
+{{#each fields}}
+    @Column({
+        type: {{seqType}},
+        default: "",
+        {{#each options}}
+        {{@key}}:{{this}},
+        {{/each}}
+    })
+    {{name}}: {{tsType}};
+
+{{/each}}
+
+{{#each belongsToModels}}
+  @ApiProperty({
+    type: () => {{camelize this}}
+  })
+  @ManyToOne((type) => {{camelize this}}, ({{this}}) => {{this}}.{{camelize ../this}})
+  {{this}}: {{camelize this}};
+{{/each}}
+
+{{#each hasManyModels}}
+  @ApiProperty({
+    type: () => [{{capitalize this}}]
+  })
+  @OneToMany((type) => {{capitalize this}}, ({{this}}) => {{this}}.{{../this}}, {
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE"
+  })
+  {{pluralize this}}: {{camelize this}}[];
+{{/each}}
+
+{{#each subModels}}
+  @ApiProperty({
+    type: () => [{{capitalize this}}]
+  })
+  @OneToMany((type) => {{capitalize this}}, ({{this}}) => {{this}}.{{../this}}, {
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE"
+  })
+  {{pluralize this}}: {{camelize this}}[];
+{{/each}}
+
+}

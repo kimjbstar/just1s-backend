@@ -1,0 +1,12 @@
+import { NbaseListResult } from "@src/common/types/nbase-list-result";
+import { Type } from "class-transformer";
+import { {{capitalize name}} } from "@src/entities/{{name}}.entity";
+import { ApiProperty } from "@nestjs/swagger";
+
+export class {{capitalize name}}ListResult extends NbaseListResult {
+  @ApiProperty({
+    type: {{capitalize name}}
+  })
+  @Type(() => {{capitalize name}})
+  {{pluralize name}}: {{capitalize name}}[];
+}

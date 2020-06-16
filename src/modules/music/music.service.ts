@@ -1,12 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { UtilService } from "@src/services/util.service";
 import {
-  MissingParameterIDException,
-  DataNotFoundException,
-  MissingBodyToUpdateException,
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
-  MissingBodyToCreateException,
   WrongIdException
 } from "@src/common/http-exception";
 import { UpdateResult, DeleteResult } from "typeorm";

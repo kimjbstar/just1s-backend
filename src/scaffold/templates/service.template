@@ -1,90 +1,72 @@
 import { Injectable } from "@nestjs/common";
-import { {{capitalize name}}Scopes, {{capitalize name}} } from "@src/models/{{name}}.model";
-import { UtilService } from "@src/services/util.service";
 import {
-  MissingParameterIDException,
-  DataNotFoundException,
-  MissingBodyToUpdateException,
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
-  MissingBodyToCreateException
+  WrongIdException
 } from "@src/common/http-exception";
-{{#each hasManyModels}}
-import { {{camelize this.name}} } from "@src/models/{{underscore this.name}}.model";
+import { UpdateResult, DeleteResult } from "typeorm";
+import { {{capitalize name}}CreateDto } from "./dtos/{{name}}-create.dto";
+import { {{capitalize name}}UpdateDto } from "./dtos/{{name}}-update.dto";
+{{#each belongsToModels}}
+import { {{camelize this.name}} } from "@src/entities/{{capitalize this.name}}.entity";
+{{/each}}
+{{#each subModels}}
+import { {{camelize this.name}} } from "@src/entities/{{../name}}{{capitalize this.name}}.entity";
 {{/each}}
 
 @Injectable()
 export class {{plucapitalize name}}Service {
-  constructor(private readonly utilService: UtilService) {}
-
-  async find(query): Promise<{{capitalize name}}[]> {
-    const { scopes, offset, limit } = this.utilService.getFindScopesFromQuery(
-      query,
-      Object.keys({{capitalize name}}Scopes())
-    );
-    const {{pluralize name}}: {{capitalize name}}[] = await {{capitalize name}}.scope(scopes).findAll({
-      offset: offset,
-      limit: limit
-    });
-    return {{pluralize name}}.map({{name}} => {{name}}.get({ plain: true }));
-  }
+  constructor() {}
 
   async findByPk(id): Promise<{{capitalize name}}> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
-    }
-    const row: {{capitalize name}} = await {{capitalize name}}.findByPk(id);
-    if (row == null) {
-      throw new DataNotFoundException();
-    }
-    return row;
+    const {{name}}: {{capitalize name}} = await {{capitalize name}}.findOne(id, {
+      relations: [{{#each hasManyModels}} {{pluralize this}}, {{/each}}]
+    });
+
+    return Promise.resolve({{name}});
   }
 
-  async create(dto): Promise<{{capitalize name}}> {
-    if (dto === undefined) {
-      throw new MissingBodyToCreateException();
+  async create(dto: {{capitalize name}}CreateDto): Promise<{{capitalize name}}> {
+{{#each belongsToModels}}
+    if (dto.{{this}}Id !== undefined) {
+      dto["{{this}}"] = await {{capitalize this}}.findOneOrFail(dto.{{this}}Id);
+      delete dto.{{this}}Id;
     }
-    const row = await {{capitalize name}}.create(dto, {
-      include: [{{#each hasManyModels}} {{camelize this.name}}  {{/each}} ]
-    });
-    if (row == null) {
-      throw new DataNotFoundException();
+{{/each}}
+{{#each subModels}}
+    const {{pluralize this}} = dto.{{pluralize this}} ? dto.{{pluralize this}} : [];
+    if (dto.{{pluralize this}}) {
+      delete dto.{{pluralize this}};
     }
+{{/each}}
+    const {{name}}: {{capitalize name}} = new {{capitalize name}}(dto);
+    await {{name}}.save();
+    await {{name}}.reload();
 
-    return row.get({ plain: true });
+    return this.findByPk({{name}}.id);
   }
 
-  async update(id, dto): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+  async update(id, dto): Promise<{{capitalize name}}> {
+    const result: UpdateResult = await {{capitalize name}}.update(id, dto);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-    if (dto === undefined) {
-      throw new MissingBodyToUpdateException();
-    }
-    const [affectedRowCount] = await {{capitalize name}}.update(dto, {
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedUpdateResultException();
     }
-    return affectedRowCount;
+
+    return this.findByPk(id);
   }
 
   async destroy(id): Promise<any> {
-    if (id === undefined) {
-      throw new MissingParameterIDException();
+    const result: DeleteResult = await {{capitalize name}}.delete(id);
+    if (result.raw.affectedRows === 0) {
+      throw new WrongIdException();
     }
-
-    const affectedRowCount = await {{capitalize name}}.destroy({
-      where: {
-        id: id
-      }
-    });
-    if (affectedRowCount != 1) {
+    if (result.raw.affectedRows > 1) {
       throw new UnexpectedDeleteResultException();
     }
-    return affectedRowCount;
+    return Promise.resolve();
   }
+
 }

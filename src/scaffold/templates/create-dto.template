@@ -1,0 +1,31 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty } from "class-validator";
+
+export class {{capitalize name}}CreateDto {
+{{#each fields}}
+    @ApiProperty({
+        description: "{{korName}}을(를) 입력해주세요!",
+        {{#ifCond originType '==' 'ENUM'}}
+        enum: Object.values({{../tsType}})
+        {{else}}
+        {{/ifCond}}
+    })
+    {{name}}: {{tsType}};
+{{/each}}
+
+{{#each belongsToModels}}
+  @IsNotEmpty()
+  @ApiProperty({
+    description: "{{this}}Id을(를) 입력해주세요!"
+  })
+  {{this}}Id: number;
+{{/each}}
+
+{{#each subModels}}
+  @ApiProperty({
+    description: "{{this}}을(를) 입력해주세요!"
+  })
+  {{this}}?: {{../this}}{{this}}SaveDto[];
+{{/each}}
+
+}

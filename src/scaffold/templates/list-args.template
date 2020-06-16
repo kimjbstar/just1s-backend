@@ -1,0 +1,34 @@
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { NBaseListArgs } from "@src/common/types/nbase-list-args";
+import { Type } from "class-transformer";
+
+export class DeckListArgs extends NBaseListArgs {
+{{#each fields}}
+    @ApiPropertyOptional({
+        description: "{{korName}}을(를) 입력해주세요!",
+        {{#ifCond originType '==' 'ENUM'}}
+        enum: Object.values({{../tsType}})
+        {{else}}
+        {{/ifCond}}
+    })
+    {{name}}: {{tsType}};
+
+{{/each}}
+
+{{#each belongsToModels}}
+  @ApiPropertyOptional({
+    description: "{{this}}Id(를) 입력해주세요!"
+  })
+  @Type(() => Number)
+  {{this}}Id: number;
+
+{{/each}}
+
+{{#each subModels}}
+  @ApiPropertyOptional({
+    description: "with_{{this}}을(를) 입력해주세요!"
+  })
+  with_{{this}}: boolean;
+
+{{/each}}
+}

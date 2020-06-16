@@ -1,13 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  BaseEntity,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
-  ManyToOne
-} from "typeorm";
+import { Entity, Column, OneToMany, ManyToOne } from "typeorm";
 import { DeckHashtag } from "./deckHashtag.entity";
 import { DeckMusic } from "./deckMusic.entity";
 import { Perform } from "./perform.entity";

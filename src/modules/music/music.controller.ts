@@ -10,7 +10,7 @@ import {
   ParseIntPipe
 } from "@nestjs/common";
 import { MusicsService } from "@src/modules/music/music.service";
-import { ApiProperty, ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
+import { ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
 import { MusicListArgs } from "./args/music-list.args";
 import { MusicCreateDto } from "./dtos/music-create.dto";
 import { MusicListResult } from "./args/music-list.result";

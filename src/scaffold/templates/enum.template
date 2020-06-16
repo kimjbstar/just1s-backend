@@ -1,5 +1,5 @@
 {{#each enums}}
-export enum {{name}} {
+export enum {{name}}{{capitalize this}} {
   {{#each values}}
   {{this}} = "{{this}}",
   {{/each}}
@@ -7,8 +7,11 @@ export enum {{name}} {
 {{/each}}
 
 export enum {{capitalize name}}ListOrderBys {
-  ID__DESC = "ID__DESC"
+  ID__DESC = "ID__DESC",
+  ID__ASC = "ID__ASC",
 }
 export const Map{{capitalize name}}ListOrderBys = {
-  [{{capitalize name}}ListOrderBys.ID__DESC]: "최신순"
+  [{{capitalize name}}ListOrderBys.ID__DESC]: "최신순",
+  [{{capitalize name}}ListOrderBys.ID__ASC]: "오래된순"
 };
+

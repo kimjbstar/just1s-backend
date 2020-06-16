@@ -1,5 +1,4 @@
-import { IsNotEmpty } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import { NBaseListArgs } from "@src/common/types/nbase-list-args";
 import { Type } from "class-transformer";
 
@@ -26,12 +25,12 @@ export class DeckListArgs extends NBaseListArgs {
   has_hashtag: boolean;
 
   @ApiPropertyOptional({
-    description: "music_title을(를) 입력해주세요!"
-  })
-  music_title: string;
-
-  @ApiPropertyOptional({
     description: "has_music을(를) 입력해주세요!"
   })
   has_music: boolean;
+
+  @ApiPropertyOptional({
+    description: "music_title을(를) 입력해주세요!"
+  })
+  music_title: string;
 }

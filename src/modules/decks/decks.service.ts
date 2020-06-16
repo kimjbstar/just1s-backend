@@ -1,30 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { UtilService } from "@src/services/util.service";
 import {
-  MissingParameterIDException,
-  DataNotFoundException,
-  MissingBodyToUpdateException,
   UnexpectedDeleteResultException,
   UnexpectedUpdateResultException,
-  MissingBodyToCreateException,
   WrongIdException,
   WrongRequestBody,
   CustomException
 } from "@src/common/http-exception";
 import { MusicsService } from "../music/music.service";
 import { Deck } from "@src/entities/deck.entity";
-import {
-  Connection,
-  UpdateResult,
-  DeleteResult,
-  MoreThanOrEqual
-} from "typeorm";
-import { Music } from "@src/entities/music.entity";
-import { Expose, Type, plainToClass, classToPlain } from "class-transformer";
+import { UpdateResult, DeleteResult } from "typeorm";
+import { plainToClass, classToPlain } from "class-transformer";
 import { User } from "@src/entities/user.entity";
 import { DeckMusic } from "@src/entities/deckMusic.entity";
 import { UsersService } from "../users/users.service";
-import { IsNotEmpty, validate, ValidationError } from "class-validator";
+import { validate, ValidationError } from "class-validator";
 import { Answer } from "@src/entities/answer.entity";
 import { Perform } from "@src/entities/perform.entity";
 import { DeckPerformDto } from "./dtos/deck-perform.dto";

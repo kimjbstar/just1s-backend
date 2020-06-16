@@ -9,88 +9,89 @@ import {
   Body,
   ParseIntPipe,
 } from "@nestjs/common";
+import { ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
+import { Equal } from "typeorm";
+import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
 import { {{plucapitalize name}}Service } from "@src/modules/{{pluralize name}}/{{pluralize name}}.service";
-import { ApiProperty, ApiQuery } from "@nestjs/swagger";
-import { {{#each enums}}{{name}},{{/each}} {{capitalize name}}ListOrderBys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
+import { {{plucapitalize name}}ListArgs } from "@src/modules/{{pluralize name}}/args/{{name}}-list.args";
+import { {{plucapitalize name}}CreateDto } from "@src/modules/{{pluralize name}}/dtos/{{name}}-create.dto";
+import { {{plucapitalize name}}ListResult } from "@src/modules/{{pluralize name}}/args/{{name}}-list.result";
+import { {{plucapitalize name}}ListOrderBys } from "@src/modules/{{pluralize name}}/{{pluralize name}}.enum";
+import { {{plucapitalize name}} } from "@src/entities/{{name}}.entity";
 
-export class {{capitalize name}}ListQuery {
+const create{{capitalize name}}ListConfig: NBaseCreateListConfig = {
+  argsResolver: {
 {{#each fields}}
-    @ApiProperty({
-        description: "{{korName}}을(를) 입력해주세요!",
-        {{#ifCond originType '==' 'ENUM'}}
-        enum: Object.values({{../tsType}})
-        {{else}}
-        {{/ifCond}}
-    })
-    {{name}}: {{tsType}};
+    {{name}}: (args) => {
+      return {
+        {{name}}: Equal(args.{{name}})
+      };
+    },
 {{/each}}
-}
+  },
+  orderByResolver: {
+    [{{capitalize name}}ListOrderBys.ID__DESC]: {
+      cursor: {{name}}.id",
+      orderBy: {
+        {{name}}.id": "DESC"
+      }
+    }
+  }
+};
 
-export class {{capitalize name}}CreateDto {
-{{#each fields}}
-    @ApiProperty({
-        description: "{{korName}}을(를) 입력해주세요!",
-        {{#ifCond originType '==' 'ENUM'}}
-        enum: Object.values({{../tsType}})
-        {{else}}
-        {{/ifCond}}
-    })
-    {{name}}: {{tsType}};
-{{/each}}
-}
-
+@ApiTags("{{pluralize name}}")
 @Controller("{{pluralize name}}")
 export class {{plucapitalize name}}Controller {
   constructor(private readonly {{pluralize name}}Service: {{plucapitalize name}}Service) {}
 
   @Get()
-  async find(@Query() query: {{capitalize name}}ListQuery): Promise<any> {
-    const {{pluralize name}}: object[] = await this.{{pluralize name}}Service.find(query);
-    const result = {
-      {{pluralize name}}: {{pluralize name}},
-    };
-    return result;
+  @ApiResponse({
+    description: "{{capitalize name}}의 리스트를 가져옵니다.",
+    type: {{capitalize name}}ListResult
+  })
+  async find(@Query() args: {{capitalize name}}ListArgs): Promise<any> {
+    return await {{capitalize name}}.createList({{capitalize name}}ListResult, create{{capitalize name}}ListConfig, args);
   }
 
   @Get(":id")
+  @ApiResponse({
+    description: "id에 해당하는 {{capitalize name}}을 출력합니다.",
+    type: {{capitalize name}}
+  })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const {{name}}: Object = await this.{{pluralize name}}Service.findByPk(id);
-    const result = {
-      {{name}}: {{name}},
-    };
-    return result;
+    return await this.{{{{pluralize name}}Service.findByPk(id);
   }
 
   @Post()
+  @ApiResponse({
+    description: "dto에 해당하는 {{capitalize name}}을 생성하여 출력합니다.",
+    type: {{capitalize name}}
+  })
   async create(@Body() dto: {{capitalize name}}CreateDto): Promise<any> {
-    const {{name}}: Object = await this.{{pluralize name}}Service.create(dto);
-    const result = {
-      {{name}}: {{name}},
-    };
-    return result;
+    return await this.{{{{pluralize name}}Service.create(dto);
   }
 
   @Put(":id")
-  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요" })
+  @ApiResponse({
+    description: "id에 해당하는 {{capitalize name}}을 dto를 통해 업데이트하여 출력합니다.",
+    type: {{capitalize name}}
+  })
+  @ApiQuery({ name: "id", description: "업데이트하실 id를 입력해주세요." })
   async update(
     @Param("id", ParseIntPipe) id: Number,
     @Body() dto: {{capitalize name}}CreateDto
   ): Promise<any> {
-    const {{name}}: Object = await this.{{pluralize name}}Service.update(id, dto);
-    const result = {
-      {{name}}: {{name}},
-    };
-    return result;
+    return this.{{{{pluralize name}}Service.update(id, dto);
   }
 
   @Delete(":id")
+  @ApiResponse({
+    description: "id에 해당하는 {{capitalize name}}을 삭제합니다."
+  })
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    const {{name}}: Object = await this.{{pluralize name}}Service.destroy(id);
-    const result = {
-      {{name}}: {{name}},
-    };
-    return result;
+    return await this.{{{{pluralize name}}Service.destroy(id);
   }
+
 }
