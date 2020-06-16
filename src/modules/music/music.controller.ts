@@ -16,7 +16,7 @@ import { MusicCreateDto } from "./dtos/music-create.dto";
 import { MusicListResult } from "./args/music-list.result";
 import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
 import { Equal, Like } from "typeorm";
-import { DeckListOrderBys } from "../decks/deck.enum";
+import { MusicListOrderBys } from "@src/modules/music/music.enum";
 import { Music } from "@src/entities/music.entity";
 
 const createMusicListConfig: NBaseCreateListConfig = {
@@ -48,10 +48,10 @@ const createMusicListConfig: NBaseCreateListConfig = {
     }
   },
   orderByResolver: {
-    [DeckListOrderBys.ID__DESC]: {
-      cursor: "deck.id",
+    [MusicListOrderBys.ID__DESC]: {
+      cursor: "music.id",
       orderBy: {
-        "deck.id": "DESC"
+        "music.id": "DESC"
       }
     }
   }

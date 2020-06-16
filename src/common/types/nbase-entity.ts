@@ -46,10 +46,17 @@ export abstract class NbaseEntity extends BaseEntity {
       orderByResolver
     } = config;
 
+    const pluralMap = {
+      music: "musics"
+    };
+
     // alias
     const entityClass = this;
     const entityAlias = entityClass.name.toLowerCase();
-    const listAlias = pluralize(entityAlias);
+
+    const listAlias = pluralMap[entityAlias]
+      ? pluralMap[entityAlias]
+      : pluralize(entityAlias);
 
     // query builder
     let queryBuilder = (entityClass as any).createQueryBuilder(entityAlias);

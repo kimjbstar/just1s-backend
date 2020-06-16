@@ -37,9 +37,9 @@ const createPerformListConfig: NBaseCreateListConfig = {
   },
   orderByResolver: {
     [DeckListOrderBys.ID__DESC]: {
-      cursor: "deck.id",
+      cursor: "perform.id",
       orderBy: {
-        "deck.id": "DESC"
+        "perform.id": "DESC"
       }
     }
   }
