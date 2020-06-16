@@ -13,11 +13,11 @@ import { ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
 import { Equal } from "typeorm";
 import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
 import { {{plucapitalize name}}Service } from "@src/modules/{{pluralize name}}/{{pluralize name}}.service";
-import { {{plucapitalize name}}ListArgs } from "@src/modules/{{pluralize name}}/args/{{name}}-list.args";
-import { {{plucapitalize name}}CreateDto } from "@src/modules/{{pluralize name}}/dtos/{{name}}-create.dto";
-import { {{plucapitalize name}}ListResult } from "@src/modules/{{pluralize name}}/args/{{name}}-list.result";
-import { {{plucapitalize name}}ListOrderBys } from "@src/modules/{{pluralize name}}/{{pluralize name}}.enum";
-import { {{plucapitalize name}} } from "@src/entities/{{name}}.entity";
+import { {{capitalize name}}ListArgs } from "@src/modules/{{pluralize name}}/args/{{name}}-list.args";
+import { {{capitalize name}}CreateDto } from "@src/modules/{{pluralize name}}/dtos/{{name}}-create.dto";
+import { {{capitalize name}}ListResult } from "@src/modules/{{pluralize name}}/args/{{name}}-list.result";
+import { {{capitalize name}}ListOrderBys } from "@src/modules/{{pluralize name}}/{{name}}.enum";
+import { {{capitalize name}} } from "@src/entities/{{name}}.entity";
 
 const create{{capitalize name}}ListConfig: NBaseCreateListConfig = {
   argsResolver: {
@@ -31,15 +31,15 @@ const create{{capitalize name}}ListConfig: NBaseCreateListConfig = {
   },
   orderByResolver: {
     [{{capitalize name}}ListOrderBys.ID__DESC]: {
-      cursor: {{name}}.id",
+      cursor: "{{name}}.id",
       orderBy: {
-        {{name}}.id": "DESC"
+        "{{name}}.id": "DESC"
       }
     },
     [{{capitalize name}}ListOrderBys.ID__ASC]: {
-      cursor: {{name}}.id",
+      cursor: "{{name}}.id",
       orderBy: {
-        {{name}}.id": "ASC"
+        "{{name}}.id": "ASC"
       }
     }
   }

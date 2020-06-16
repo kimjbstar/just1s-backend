@@ -10,7 +10,13 @@ import { {{capitalize this.name}}CreateDto } from "./dtos/{{this.name}}-create.d
 import { {{capitalize this.name}}UpdateDto } from "./dtos/{{this.name}}-update.dto";
 
 {{#each belongsToEntityNames}}
-import { {{camelize this}} } from "@src/entities/{{capitalize this}}.entity";
+import { {{camelize this}} } from "@src/entities/{{this}}.entity";
+{{/each}}
+
+{{#each hasManyEntities}}
+import { {{camelize this.name}} } from "@src/entities/{{camelizeFirstLow this.name}}.entity";
+import { {{camelize this.name}}CreateDto } from "./dtos/{{../this.name}}-create.dto";
+import { {{camelize this.name}}UpdateDto } from "./dtos/{{../this.name}}-update.dto";
 {{/each}}
 
 @Injectable()
@@ -19,7 +25,10 @@ export class {{plucapitalize this.name}}Service {
 
   async findByPk(id): Promise<{{capitalize this.name}}> {
     const {{this.name}}: {{capitalize this.name}} = await {{capitalize this.name}}.findOne(id, {
-      relations: [{{#each hasManyEntities}} {{pluralize this.name}}, {{/each}}]
+      relations: [
+        {{#each belongsToEntityNames}} "{{this}}", {{/each}},
+        {{#each hasManyEntities}} "{{pluralize this.name}}", {{/each}}
+        ]
     });
 
     return Promise.resolve({{this.name}});
@@ -67,6 +76,7 @@ export class {{plucapitalize this.name}}Service {
       throw new UnexpectedUpdateResultException();
     }
 
+    const {{this.name}}: {{capitalize this.name}} = await new {{capitalize this.name}}(classToPlain(dto)).save();
     {{#each hasManyEntities}}
     await this.save{{plucapitalize this.originalName}}({{../this.name}}.id, {{pluralize this.originalName}})
     {{/each}}
@@ -83,5 +93,52 @@ export class {{plucapitalize this.name}}Service {
     }
     return Promise.resolve();
   }
+
+  {{#each hasManyEntities}}
+  async save{{plucapitalize this.originalName}}(id, dtos: {{camelize this.name}}CreateDto[] | {{camelize this.name}}UpdateDto[]): Promise<{{capitalize ../this.name}}> {
+    const oldOne: {{capitalize ../this.name}} = await this.findByPk(id);
+
+    if (dtos === undefined || dtos.length == 0) {
+      return Promise.resolve(oldOne);
+    }
+
+    const newItems: {{camelize this.name}}[] = dtos
+      .filter((dto) => dto.id === undefined)
+      .map((newDto) => new {{camelize this.name}}(newDto));
+
+    const dtoIDMap = dtos.reduce((result, dto) => {
+      if (dto.id) {
+        result[dto.id] = dto;
+      }
+      return result;
+    }, {});
+    console.log(dtoIDMap);
+    const oldItems: {{camelize this.name}}[] = oldOne.{{pluralize this.originalName}}.reduce(
+      (result, oldItem) => {
+        // 명시 안됨 -> 변화 없음
+        if (dtoIDMap[oldItem.id] === undefined) {
+          result.push(new {{camelize this.name}}({ id: oldItem.id }));
+          return result;
+        }
+        // 삭제 요청 체크된 항목 삭제 -> reduce 계산에 제외
+        if (
+          dtoIDMap[oldItem.id].toDelete === true ||
+          dtoIDMap[oldItem.id].toDelete === "true"
+        ) {
+          return result;
+        }
+        // dto 기반 업데이트
+        result.push(new {{camelize this.name}}(dtoIDMap[oldItem.id]));
+        return result;
+      },
+      []
+    );
+    oldOne.{{pluralize this.originalName}} = [...oldItems, ...newItems];
+
+    const {{../this.name}}: {{capitalize ../this.name}} = await oldOne.save();
+    return Promise.resolve({{../this.name}});
+  }
+  
+  {{/each}}
 
 }

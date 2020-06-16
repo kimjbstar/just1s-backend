@@ -1,5 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
+{{#ifCond isSub '!=' true}}
+import { {{#each ../enums}}{{this.name}},{{/each}} } from "@src/modules/{{pluralize ../name}}/{{../name}}.enum";
+{{/ifCond}}
+
 
 export class {{capitalize name}}CreateDto {
 {{#each fields}}
@@ -7,7 +11,7 @@ export class {{capitalize name}}CreateDto {
     @ApiProperty({
         description: "{{korName}}을(를) 입력해주세요!",
         {{#ifCond originType '==' 'ENUM'}}
-        enum: Object.values({{../typescriptType}})
+        enum: {{../typescriptType}}
         {{else}}
         {{/ifCond}}
     })
@@ -21,12 +25,12 @@ export class {{capitalize name}}CreateDto {
     })
     {{this}}Id: number;
 {{/each}}
-{{#each subEntities}}
+{{#each hasManyEntities}}
 
-    @ApiProperty({
-        description: "{{this}}을(를) 입력해주세요!"
-    })
-    {{this}}?: {{../this}}{{this}}CreateDto[];
+  @ApiProperty({
+    description: "{{pluralize this.originalName}}을(를) 입력해주세요!"
+  })
+  {{pluralize this.originalName}}?: {{camelize this.name}}CreateDto[];
 {{/each}}
 
 }

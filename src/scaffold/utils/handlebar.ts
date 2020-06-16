@@ -1,6 +1,8 @@
 import * as inflection from "inflection";
 export const HandlebarHelpers = {
-  pluralize: (str) => inflection.pluralize(str),
+  pluralize: (str) => {
+    return inflection.pluralize(str);
+  },
   capitalize: (str) => inflection.capitalize(str),
   plucapitalize: (str) => inflection.pluralize(inflection.capitalize(str)),
   singularize: (str) => inflection.singularize(str),

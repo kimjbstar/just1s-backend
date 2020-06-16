@@ -7,7 +7,7 @@ import {
 import { NbaseEntity } from "@src/common/types/nbase-entity";
 import { ApiProperty } from "@nestjs/swagger";
 {{#ifCond isSub '!=' true}}
-import { {{#each ../enums}}{{this.name}},{{/each}} } from "@src/modules/{{pluralize ../name}}/{{pluralize ../name}}.enum";
+import { {{#each ../enums}}{{this.name}},{{/each}} } from "@src/modules/{{pluralize ../name}}/{{../name}}.enum";
 {{/ifCond}}
 {{#each hasManyEntities}}
 import { {{camelize this.name}} } from "@src/entities/{{camelizeFirstLow this.name}}.entity";
@@ -33,7 +33,7 @@ export class {{camelize name}} extends NbaseEntity {
   @ApiProperty({
     type: () => {{camelize this}}
   })
-  @ManyToOne((type) => {{camelize this}}, ({{this}}) => {{this}}.{{pluralize ../name}})
+  @ManyToOne((type) => {{camelize this}}, ({{this}}) => {{this}}.{{pluralize ../this.originalName}})
   {{this}}: {{camelize this}};
 {{/each}}
 
@@ -41,7 +41,7 @@ export class {{camelize name}} extends NbaseEntity {
   @ApiProperty({
     type: () => [{{camelize this.name}}]
   })
-  @OneToMany((type) => {{camelize this.name}}, ({{this.originalName}}) => {{this.originalName}}.{{../name}}, {
+  @OneToMany((type) => {{camelize this.name}}, ({{this.originalName}}) => {{this.originalName}}.{{../this.name}}, {
     cascade: true,
     onDelete: "CASCADE",
     onUpdate: "CASCADE"
