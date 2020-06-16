@@ -106,8 +106,6 @@ export const parseInput = (input: IScaffoldInput): IMetadata => {
     : [];
 
   const enums = getEnums(input);
-  console.log(enums);
-
   const fields = input.fields.map((field) => {
     const [ORMColumnType, typescriptType, options] = parseToTypeORM(
       field,

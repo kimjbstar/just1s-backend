@@ -42,8 +42,6 @@ export const scaffold = async (input: IScaffoldInput) => {
 
   const codes = {};
   for (const templateType of TEMPLATE_TYPES) {
-    console.log("complie " + templateType.key + "...");
-    // console.log(metadata);
     try {
       codes[templateType.key] = Handlebars.compile(templates[templateType.key])(
         metadata
@@ -55,15 +53,7 @@ export const scaffold = async (input: IScaffoldInput) => {
 
     const dirs = templateType.getDirectory(metadata.name);
     const fileName = templateType.getFileName(metadata.name);
-    const fullPath = path.join(process.cwd(), dirs, fileName);
-    console.log(fullPath);
-    console.log(codes[templateType.key]);
-
-    // await fs.mkdirSync(
-    //   path.join(process.cwd(), templateType.getDirectory(metadata.name)),
-    //   { recursive: true }
-    // );
-    // await fs.writeFileSync(fullPath, codes[templateType.key]);
+    await writeToFile(dirs, fileName, codes[templateType.key]);
   }
 
   if (subMetadatas.length > 0) {
@@ -72,23 +62,22 @@ export const scaffold = async (input: IScaffoldInput) => {
         if (!templateType.sub) {
           continue;
         }
-        console.log("sub complie " + templateType.key + "...");
         codes[templateType.key] = Handlebars.compile(
           templates[templateType.key]
         )(subMetadata);
 
-        const dirs = templateType.getDirectory(subMetadata.name);
+        const dirs = templateType.getDirectory(metadata.name);
         const fileName = templateType.getFileName(subMetadata.name);
-        const fullPath = path.join(process.cwd(), dirs, fileName);
-        console.log(fullPath);
-        console.log(codes[templateType.key]);
-
-        // await fs.mkdirSync(
-        //   path.join(process.cwd(), templateType.getDirectory(metadata.name)),
-        //   { recursive: true }
-        // );
-        // await fs.writeFileSync(fullPath, codes[templateType.key]);
+        await writeToFile(dirs, fileName, codes[templateType.key]);
       }
     });
   }
+};
+
+const writeToFile = async (dirPath: string, fileName: string, code: string) => {
+  const fullPath = path.join(process.cwd(), dirPath, fileName);
+  console.log(fullPath);
+  // console.log(code.substr(100, 300) + "...................");
+  await fs.mkdirSync(path.join(process.cwd(), dirPath), { recursive: true });
+  await fs.writeFileSync(fullPath, code);
 };
