@@ -11,11 +11,11 @@
     { "name": "beginAt", "type": "DATE" },
     { "name": "endAt", "type": "DATE(4)" }
   ],
-  "subModels": [
+  "subEntities": [
     {
       "name": "image",
       "fields": [{ "name": "imgUrl", "type": "VARCHAR(128)" }]
     }
   ],
-  "belongsToModels": ["store"]
+  "belongsToEntityNames": ["store"]
 }

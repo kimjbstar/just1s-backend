@@ -8,6 +8,7 @@ export const HandlebarHelpers = {
   camelize: (str) => inflection.camelize(str),
   camelizeFirstLow: (str) => inflection.camelize(str, true),
   toLowerCase: (str) => str.toLowerCase(),
+  toUpperCase: (str) => str.toUpperCase(),
   ifCond: (v1, operator, v2, options) => {
     switch (operator) {
       case "==":
@@ -33,5 +34,6 @@ export const HandlebarHelpers = {
       default:
         return options.inverse(this);
     }
-  }
+  },
+  encode: (str) => new Handlebars.SafeString(str)
 };

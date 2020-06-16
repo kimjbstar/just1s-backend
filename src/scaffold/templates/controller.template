@@ -35,6 +35,12 @@ const create{{capitalize name}}ListConfig: NBaseCreateListConfig = {
       orderBy: {
         {{name}}.id": "DESC"
       }
+    },
+    [{{capitalize name}}ListOrderBys.ID__ASC]: {
+      cursor: {{name}}.id",
+      orderBy: {
+        {{name}}.id": "ASC"
+      }
     }
   }
 };
@@ -42,7 +48,7 @@ const create{{capitalize name}}ListConfig: NBaseCreateListConfig = {
 @ApiTags("{{pluralize name}}")
 @Controller("{{pluralize name}}")
 export class {{plucapitalize name}}Controller {
-  constructor(private readonly {{pluralize name}}Service: {{plucapitalize name}}Service) {}
+  constructor(private readonly {{plucapitalize name}}Service: {{plucapitalize name}}Service) {}
 
   @Get()
   @ApiResponse({
@@ -60,7 +66,7 @@ export class {{plucapitalize name}}Controller {
   })
   @ApiQuery({ name: "id", description: "조회하실 id를 입력해주세요" })
   async get(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    return await this.{{{{pluralize name}}Service.findByPk(id);
+    return await this.{{plucapitalize name}}Service.findByPk(id);
   }
 
   @Post()
@@ -69,7 +75,7 @@ export class {{plucapitalize name}}Controller {
     type: {{capitalize name}}
   })
   async create(@Body() dto: {{capitalize name}}CreateDto): Promise<any> {
-    return await this.{{{{pluralize name}}Service.create(dto);
+    return await this.{{plucapitalize name}}Service.create(dto);
   }
 
   @Put(":id")
@@ -82,7 +88,7 @@ export class {{plucapitalize name}}Controller {
     @Param("id", ParseIntPipe) id: Number,
     @Body() dto: {{capitalize name}}CreateDto
   ): Promise<any> {
-    return this.{{{{pluralize name}}Service.update(id, dto);
+    return this.{{plucapitalize name}}Service.update(id, dto);
   }
 
   @Delete(":id")
@@ -91,7 +97,7 @@ export class {{plucapitalize name}}Controller {
   })
   @ApiQuery({ name: "id", description: "삭제하실 id를 입력해주세요" })
   async delete(@Param("id", ParseIntPipe) id: Number): Promise<any> {
-    return await this.{{{{pluralize name}}Service.destroy(id);
+    return await this.{{plucapitalize name}}Service.destroy(id);
   }
 
 }

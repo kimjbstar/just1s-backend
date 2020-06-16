@@ -115,16 +115,19 @@ const createDeckListConfig: NBaseCreateListConfig = {
       orderBy: {
         "deck.id": "DESC"
       }
+    },
+    [DeckListOrderBys.ID__ASC]: {
+      cursor: "deck.id",
+      orderBy: {
+        "deck.id": "ASC"
+      }
     }
   }
 };
 @ApiTags("decks")
 @Controller("decks")
 export class DecksController {
-  constructor(
-    private readonly decksService: DecksService,
-    private usersService: UsersService
-  ) {}
+  constructor(private readonly decksService: DecksService) {}
 
   @Get()
   @ApiResponse({

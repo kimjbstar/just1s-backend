@@ -5,7 +5,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class MusicListResult extends NbaseListResult {
   @ApiProperty({
-    type: Music
+    type: [Music]
   })
   @Type(() => Music)
   musics: Music[];

@@ -1,5 +1,5 @@
 import { IsOptional, IsEnum } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 import { UserSNSType, UserStatus, UserListOrderBys } from "../users.enum";
 import { NBaseListArgs } from "@src/common/types/nbase-list-args";
 
@@ -8,7 +8,7 @@ export class UserListArgs extends NBaseListArgs {
   @IsEnum(UserSNSType)
   @ApiPropertyOptional({
     description: "UserSNSType(를) 입력해주세요 !",
-    enum: Object.values(UserSNSType),
+    enum: UserSNSType,
     default: UserSNSType.EMAIL
   })
   snsType: UserSNSType;
@@ -17,7 +17,7 @@ export class UserListArgs extends NBaseListArgs {
   @IsEnum(UserStatus)
   @ApiPropertyOptional({
     description: "status을(를) 입력해주세요 !",
-    enum: Object.values(UserStatus),
+    enum: UserStatus,
     default: UserStatus.NORMAL
   })
   status: UserStatus;
@@ -33,13 +33,8 @@ export class UserListArgs extends NBaseListArgs {
   name: string;
 
   @ApiPropertyOptional({
-    description: "order을(를) 입력해주세요 !",
+    description: "orderBy을(를) 입력해주세요 !",
     enum: Object.keys(UserListOrderBys)
   })
-  order: string;
-
-  @ApiPropertyOptional({
-    description: "after을(를) 입력해주세요 !"
-  })
-  after: number;
+  orderBy: string;
 }

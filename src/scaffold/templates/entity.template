@@ -6,61 +6,47 @@ import {
 } from "typeorm";
 import { NbaseEntity } from "@src/common/types/nbase-entity";
 import { ApiProperty } from "@nestjs/swagger";
-
 {{#ifCond isSub '!=' true}}
 import { {{#each ../enums}}{{this.name}},{{/each}} } from "@src/modules/{{pluralize ../name}}/{{pluralize ../name}}.enum";
 {{/ifCond}}
-{{#each hasManyModels}}
-import { {{camelize this.name}} } from "@src/entities/{{underscore this.name}}.entity";
+{{#each hasManyEntities}}
+import { {{camelize this.name}} } from "@src/entities/{{camelizeFirstLow this.name}}.entity";
 {{/each}}
-{{#each belongsToModels}}
+{{#each belongsToEntityNames}}
 import { {{camelize this}} } from "@src/entities/{{this}}.entity";
 {{/each}}
 
 @Entity()
 export class {{camelize name}} extends NbaseEntity {
 {{#each fields}}
-    @Column({
-        type: {{seqType}},
-        default: "",
-        {{#each options}}
-        {{@key}}:{{this}},
-        {{/each}}
-    })
-    {{name}}: {{tsType}};
+  @Column({
+    type: "{{ORMColumnType}}",
+    {{#each options}}
+    {{@key}}: {{{this}}},
+    {{/each}}
+  })
+  {{name}}: {{typescriptType}};
 
 {{/each}}
 
-{{#each belongsToModels}}
+{{#each belongsToEntityNames}}
   @ApiProperty({
     type: () => {{camelize this}}
   })
-  @ManyToOne((type) => {{camelize this}}, ({{this}}) => {{this}}.{{camelize ../this}})
+  @ManyToOne((type) => {{camelize this}}, ({{this}}) => {{this}}.{{pluralize ../name}})
   {{this}}: {{camelize this}};
 {{/each}}
 
-{{#each hasManyModels}}
+{{#each hasManyEntities}}
   @ApiProperty({
-    type: () => [{{capitalize this}}]
+    type: () => [{{camelize this.name}}]
   })
-  @OneToMany((type) => {{capitalize this}}, ({{this}}) => {{this}}.{{../this}}, {
+  @OneToMany((type) => {{camelize this.name}}, ({{this.originalName}}) => {{this.originalName}}.{{../name}}, {
     cascade: true,
     onDelete: "CASCADE",
     onUpdate: "CASCADE"
   })
-  {{pluralize this}}: {{camelize this}}[];
-{{/each}}
-
-{{#each subModels}}
-  @ApiProperty({
-    type: () => [{{capitalize this}}]
-  })
-  @OneToMany((type) => {{capitalize this}}, ({{this}}) => {{this}}.{{../this}}, {
-    cascade: true,
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE"
-  })
-  {{pluralize this}}: {{camelize this}}[];
+  {{pluralize this.originalName}}: {{camelize this.name}}[];
 {{/each}}
 
 }

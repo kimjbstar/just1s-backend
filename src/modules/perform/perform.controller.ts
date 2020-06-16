@@ -15,8 +15,8 @@ import { PerformListArgs } from "./args/perform-list.args";
 import { PerformListResult } from "./args/perform-list.result";
 import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
 import { Equal, Like } from "typeorm";
-import { DeckListOrderBys } from "../decks/deck.enum";
 import { Perform } from "@src/entities/perform.entity";
+import { PerformListOrderBys } from "./perform.enum";
 
 const createPerformListConfig: NBaseCreateListConfig = {
   argsResolver: {
@@ -36,10 +36,16 @@ const createPerformListConfig: NBaseCreateListConfig = {
     }
   },
   orderByResolver: {
-    [DeckListOrderBys.ID__DESC]: {
+    [PerformListOrderBys.ID__DESC]: {
       cursor: "perform.id",
       orderBy: {
         "perform.id": "DESC"
+      }
+    },
+    [PerformListOrderBys.ID__ASC]: {
+      cursor: "perform.id",
+      orderBy: {
+        "perform.id": "ASC"
       }
     }
   }

@@ -5,5 +5,5 @@
     { "name": "hitsCount", "type": "INTEGER" },
     { "name": "averageScore", "type": "INTEGER" }
   ],
-  "belongsToModels": ["user"]
+  "belongsToEntityNames": ["user"]
 }

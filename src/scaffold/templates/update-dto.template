@@ -3,29 +3,47 @@ import { IsNotEmpty } from "class-validator";
 
 export class {{capitalize name}}UpdateDto {
 {{#each fields}}
-    @ApiProperty({
-        description: "{{korName}}을(를) 입력해주세요!",
-        {{#ifCond originType '==' 'ENUM'}}
-        enum: Object.values({{../tsType}})
-        {{else}}
-        {{/ifCond}}
-    })
-    {{name}}: {{tsType}};
-{{/each}}
 
-{{#each belongsToModels}}
-  @IsNotEmpty()
+  @ApiProperty({
+    description: "{{korName}}을(를) 입력해주세요!",
+    {{#ifCond originType '==' 'ENUM'}}
+    enum: Object.values({{../typescriptType}})
+    {{else}}
+    {{/ifCond}}
+  })
+  {{name}}: {{typescriptType}};
+{{/each}}
+{{#each belongsToEntityNames}}
+
   @ApiProperty({
     description: "{{this}}Id을(를) 입력해주세요!"
   })
   {{this}}Id: number;
 {{/each}}
+{{#each hasManyEntities}}
 
-{{#each subModels}}
   @ApiProperty({
-    description: "{{this}}을(를) 입력해주세요!"
+    description: "{{pluralize this.originalName}}을(를) 입력해주세요!"
   })
-  {{this}}?: {{../this}}{{this}}SaveDto[];
+  {{pluralize this.originalName}}?: {{camelize this.name}}UpdateDto[];
 {{/each}}
 
 }
+
+{{#each hasManyEntities}}
+
+export class {{camelize this.name}}UpdateDto {
+  {{#each this.fields}}
+
+  @ApiProperty({
+    description: "{{this.korName}}을(를) 입력해주세요!",
+    {{#ifCond originType '==' 'ENUM'}}
+    enum: Object.values({{typescriptType}})
+    {{else}}
+    {{/ifCond}}
+  })
+  {{this.name}}: {{this.typescriptType}};
+{{/each}}
+}
+
+{{/each}}

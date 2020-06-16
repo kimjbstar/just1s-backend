@@ -1,7 +1,7 @@
 {{#each enums}}
-export enum {{name}}{{capitalize this}} {
+export enum {{camelize this.name}} {
   {{#each values}}
-  {{this}} = "{{this}}",
+  {{toUpperCase this}} = "{{toUpperCase this}}",
   {{/each}}
 }
 {{/each}}

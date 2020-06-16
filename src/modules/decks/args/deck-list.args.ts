@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { NBaseListArgs } from "@src/common/types/nbase-list-args";
 import { Type } from "class-transformer";
+import { DeckListOrderBys } from "../deck.enum";
 
 export class DeckListArgs extends NBaseListArgs {
   @ApiPropertyOptional({
@@ -33,4 +34,10 @@ export class DeckListArgs extends NBaseListArgs {
     description: "music_title을(를) 입력해주세요!"
   })
   music_title: string;
+
+  @ApiPropertyOptional({
+    description: "orderBy을(를) 입력해주세요 !",
+    enum: Object.keys(DeckListOrderBys)
+  })
+  orderBy: string;
 }

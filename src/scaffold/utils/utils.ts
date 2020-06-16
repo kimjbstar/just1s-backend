@@ -1,5 +1,5 @@
 import { KoreanFieldNameMap } from "./kor";
-import { tsTypes, IScaffoldInput, IMetadata } from "./constants";
+import { IScaffoldInput, IMetadata } from "./constants";
 import * as inflection from "inflection";
 import * as fs from "fs";
 
@@ -23,41 +23,72 @@ export const getEnums = (table) => {
         name: name,
         values: field.values,
         code: code,
-        tsType: `ENUM({ values: Object.values(${field.values})})`
+        typescriptType: `ENUM({ values: Object.values(${field.values})})`
+        // className: inflection.camelize([table.name, field.name].join("_"))
       };
     });
   return result;
 };
 
-export const parseSeqType = (field, enums) => {
-  let tsType = field.type;
-  if (field.type !== "ENUM") {
-    if (field.binary) {
-      tsType += ".BINARY";
+export const parseToTypeORM = (field, enums) => {
+  const options = {};
+  ["unique", "default", "binary", "zerofill", "unsigned"].forEach((arg) => {
+    if (field[arg]) {
+      options[arg] = field[arg];
     }
-    if (field.zerofill) {
-      tsType += ".ZEROFILL";
-    }
-    if (field.unsigned) {
-      tsType += ".UNSIGNED";
-    }
-  } else {
-    const tsEnum = enums[field.name];
-    tsType = "ENUM" + `({ values: Object.values(${tsEnum.name})})`;
+  });
+  if (field["allowNull"]) {
+    options["nullable"] = field["allowNull"];
   }
-  tsType = tsType.replace("VARCHAR", "STRING");
 
-  return "DataType." + tsType;
-};
+  if (field.type == "ENUM") {
+    const enumName = enums[field.name].name;
+    options["enum"] = enumName;
+    options["default"] = enumName + "." + field.values[0].toUpperCase();
+    return ["enum", enums[field.name].name, options];
+  }
 
-export const parseTsType = (field, enums) => {
-  if (field.type === "ENUM") {
-    return enums[field.name].name;
+  const paramMatched = field.type.match(new RegExp(/[A-Z]*\((.*)\)/));
+  const params =
+    paramMatched !== null
+      ? paramMatched[1].split(",").map((v) => Number(v))
+      : [];
+  const fieldNameString = field.type.replace(/\(.*\)/, "");
+
+  if (fieldNameString == "INTEGER") {
+    options["default"] = 0;
+    return ["int", "number", options];
   }
-  if (tsTypes[field.type.replace(/\(.*\)/, "")] === undefined) {
-    return "unknown";
+  if (fieldNameString == "BOOLEAN") {
+    return ["boolean", "boolean", options];
   }
-  return tsTypes[field.type.replace(/\(.*\)/, "")];
+  if (fieldNameString == "VARCHAR") {
+    options["default"] = '""';
+    if (params[0]) {
+      options["length"] = params[0];
+    }
+    return ["varchar", "string", options];
+  }
+  if (fieldNameString == "DATE") {
+    return ["date", "Date", options];
+  }
+  if (fieldNameString == "DECIMAL") {
+    if (params[0]) {
+      options["precision"] = params[0];
+    }
+    if (params[1]) {
+      options["scale"] = params[1];
+    }
+    return ["decimal", "number", options];
+  }
+  if (fieldNameString == "DATETIME") {
+    if (params[0]) {
+      options["precision"] = params[0];
+    }
+    return ["decimal", "string", options];
+  }
+
+  return ["unknown", "unknown", options];
 };
 
 export const loadTemplate = async (path) => {
@@ -70,43 +101,26 @@ export const getKoreanWordIfExists = (str) => {
 };
 
 export const parseInput = (input: IScaffoldInput): IMetadata => {
-  const belongsToModels = input.belongsToModels?.length
-    ? input.belongsToModels
+  const belongsToEntityNames = input.belongsToEntityNames?.length
+    ? input.belongsToEntityNames
     : [];
 
   const enums = getEnums(input);
+  console.log(enums);
 
   const fields = input.fields.map((field) => {
-    const options = {
-      allowNull: false
-    };
-
-    if (field.type == "ENUM") {
-      if (
-        field.defaultValue === undefined ||
-        field.values.indexOf(field.defaultValue) < 0
-      ) {
-        const enumName = enums[field.name].name;
-        field.defaultValue = enumName + "." + field.values[0];
-      }
-    }
-    ["allowNull", "unique", "defaultValue"].forEach((arg) => {
-      if (field[arg]) {
-        options[arg] = field[arg];
-      }
-    });
-    console.log(field);
-
-    const seqType = parseSeqType(field, enums);
-    const tsType = parseTsType(field, enums);
+    const [ORMColumnType, typescriptType, options] = parseToTypeORM(
+      field,
+      enums
+    );
 
     return {
       name: field.name,
       korName: getKoreanWordIfExists(field.name),
       options: options,
       originType: field.type,
-      seqType: seqType,
-      tsType: tsType
+      ORMColumnType: ORMColumnType,
+      typescriptType: typescriptType
     };
   });
 
@@ -114,7 +128,7 @@ export const parseInput = (input: IScaffoldInput): IMetadata => {
     name: input.name,
     enums: enums,
     fields: fields,
-    belongsToModels: belongsToModels
+    belongsToEntityNames: belongsToEntityNames
   };
 
   return result;

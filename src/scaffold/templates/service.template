@@ -5,49 +5,61 @@ import {
   WrongIdException
 } from "@src/common/http-exception";
 import { UpdateResult, DeleteResult } from "typeorm";
-import { {{capitalize name}}CreateDto } from "./dtos/{{name}}-create.dto";
-import { {{capitalize name}}UpdateDto } from "./dtos/{{name}}-update.dto";
-{{#each belongsToModels}}
-import { {{camelize this.name}} } from "@src/entities/{{capitalize this.name}}.entity";
-{{/each}}
-{{#each subModels}}
-import { {{camelize this.name}} } from "@src/entities/{{../name}}{{capitalize this.name}}.entity";
+import { {{capitalize this.name}} } from "@src/entities/{{this.name}}.entity";
+import { {{capitalize this.name}}CreateDto } from "./dtos/{{this.name}}-create.dto";
+import { {{capitalize this.name}}UpdateDto } from "./dtos/{{this.name}}-update.dto";
+
+{{#each belongsToEntityNames}}
+import { {{camelize this}} } from "@src/entities/{{capitalize this}}.entity";
 {{/each}}
 
 @Injectable()
-export class {{plucapitalize name}}Service {
+export class {{plucapitalize this.name}}Service {
   constructor() {}
 
-  async findByPk(id): Promise<{{capitalize name}}> {
-    const {{name}}: {{capitalize name}} = await {{capitalize name}}.findOne(id, {
-      relations: [{{#each hasManyModels}} {{pluralize this}}, {{/each}}]
+  async findByPk(id): Promise<{{capitalize this.name}}> {
+    const {{this.name}}: {{capitalize this.name}} = await {{capitalize this.name}}.findOne(id, {
+      relations: [{{#each hasManyEntities}} {{pluralize this.name}}, {{/each}}]
     });
 
-    return Promise.resolve({{name}});
+    return Promise.resolve({{this.name}});
   }
 
-  async create(dto: {{capitalize name}}CreateDto): Promise<{{capitalize name}}> {
-{{#each belongsToModels}}
+  async create(dto: {{capitalize this.name}}CreateDto): Promise<{{capitalize this.name}}> {
+{{#each belongsToEntityNames}}
     if (dto.{{this}}Id !== undefined) {
       dto["{{this}}"] = await {{capitalize this}}.findOneOrFail(dto.{{this}}Id);
       delete dto.{{this}}Id;
     }
 {{/each}}
-{{#each subModels}}
-    const {{pluralize this}} = dto.{{pluralize this}} ? dto.{{pluralize this}} : [];
-    if (dto.{{pluralize this}}) {
-      delete dto.{{pluralize this}};
+{{#each hasManyEntities}}
+    const {{pluralize this.originalName}} = dto.{{pluralize this.originalName}} ? dto.{{pluralize this.originalName}} : [];
+    if (dto.{{pluralize this.originalName}}) {
+      delete dto.{{pluralize this.originalName}};
     }
 {{/each}}
-    const {{name}}: {{capitalize name}} = new {{capitalize name}}(dto);
-    await {{name}}.save();
-    await {{name}}.reload();
+    const {{this.name}}: {{capitalize this.name}} = await new {{capitalize this.name}}(dto).save();
+    {{#each hasManyEntities}}
+    await this.save{{plucapitalize this.originalName}}({{../this.name}}.id, {{pluralize this.originalName}})
+    {{/each}}
 
-    return this.findByPk({{name}}.id);
+    return this.findByPk({{this.name}}.id);
   }
 
-  async update(id, dto): Promise<{{capitalize name}}> {
-    const result: UpdateResult = await {{capitalize name}}.update(id, dto);
+  async update(id, dto: {{capitalize this.name}}UpdateDto): Promise<{{capitalize this.name}}> {
+{{#each belongsToEntityNames}}
+    if (dto.{{this}}Id !== undefined) {
+      dto["{{this}}"] = await {{capitalize this}}.findOneOrFail(dto.{{this}}Id);
+      delete dto.{{this}}Id;
+    }
+{{/each}}
+{{#each hasManyEntities}}
+    const {{pluralize this.originalName}} = dto.{{pluralize this.originalName}} ? dto.{{pluralize this.originalName}} : [];
+    if (dto.{{pluralize this.originalName}}) {
+      delete dto.{{pluralize this.originalName}};
+    }
+{{/each}}
+    const result: UpdateResult = await {{capitalize this.name}}.update(id, dto);
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
     }
@@ -55,11 +67,14 @@ export class {{plucapitalize name}}Service {
       throw new UnexpectedUpdateResultException();
     }
 
+    {{#each hasManyEntities}}
+    await this.save{{plucapitalize this.originalName}}({{../this.name}}.id, {{pluralize this.originalName}})
+    {{/each}}
     return this.findByPk(id);
   }
 
   async destroy(id): Promise<any> {
-    const result: DeleteResult = await {{capitalize name}}.delete(id);
+    const result: DeleteResult = await {{capitalize this.name}}.delete(id);
     if (result.raw.affectedRows === 0) {
       throw new WrongIdException();
     }

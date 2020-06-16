@@ -5,7 +5,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class DeckListResult extends NbaseListResult {
   @ApiProperty({
-    type: Deck
+    type: () => [Deck]
   })
   @Type(() => Deck)
   decks: Deck[];
