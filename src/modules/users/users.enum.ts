@@ -1,8 +1,10 @@
 export enum UserListOrderBys {
-  ID__DESC = "ID__DESC"
+  ID__DESC = "ID__DESC",
+  ID__ASC = "ID__ASC"
 }
 export const MapUserListOrderBys = {
-  [UserListOrderBys.ID__DESC]: "최신순"
+  [UserListOrderBys.ID__DESC]: "최신순",
+  [UserListOrderBys.ID__ASC]: "오래된순"
 };
 
 export enum UserSNSType {

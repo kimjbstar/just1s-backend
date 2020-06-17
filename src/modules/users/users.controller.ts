@@ -17,12 +17,11 @@ import {
   ParseIntPipe
 } from "@nestjs/common";
 import { UsersService } from "@src/modules/users/users.service";
-import { classToPlain } from "class-transformer";
 import { UserListArgs } from "./args/user-list.args";
 import { UserCreateDto } from "./dtos/user-create.dto";
 import { User } from "@src/entities/user.entity";
 import { NBaseCreateListConfig } from "@src/common/types/nbase-entity";
-import { Equal, Like, BeforeUpdate } from "typeorm";
+import { Equal, Like } from "typeorm";
 import { UserListResult } from "./args/user-list.result";
 
 const createUserListConfig: NBaseCreateListConfig = {
@@ -53,6 +52,12 @@ const createUserListConfig: NBaseCreateListConfig = {
       cursor: "user.id",
       orderBy: {
         "user.id": "DESC"
+      }
+    },
+    [UserListOrderBys.ID__ASC]: {
+      cursor: "user.id",
+      orderBy: {
+        "user.id": "ASC"
       }
     }
   }
