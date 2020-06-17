@@ -30,14 +30,14 @@ export class {{capitalize name}}CreateDto {
   @ApiProperty({
     description: "{{pluralize this.originalName}}을(를) 입력해주세요!"
   })
-  {{pluralize this.originalName}}?: {{camelize this.name}}CreateDto[];
+  {{pluralize this.originalName}}?: {{camelize this.name}}SaveDto[];
 {{/each}}
 
 }
 
 {{#each hasManyEntities}}
 
-export class {{camelize this.name}}CreateDto {
+export class {{camelize this.name}}SaveDto {
   {{#each this.fields}}
 
   @ApiProperty({

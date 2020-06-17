@@ -1,7 +1,6 @@
 import { IScaffoldInput, TEMPLATE_TYPES, IMetadata } from "./constants";
 import { HandlebarHelpers } from "./handlebar";
 import * as path from "path";
-import * as fs from "fs";
 import * as Handlebars from "handlebars";
 import { loadTemplate, parseInput } from "./utils";
 
@@ -52,9 +51,6 @@ export const scaffold = async (input: IScaffoldInput) => {
 
     const dirs = templateType.getDirectory(metadata.name);
     const fileName = templateType.getFileName(metadata.name);
-    if (templateType.key == "service") {
-      console.log("시발새기 ");
-    }
     await writeToFile(dirs, fileName, codes[templateType.key]);
   }
 
@@ -79,11 +75,10 @@ export const scaffold = async (input: IScaffoldInput) => {
 const writeToFile = async (dirPath: string, fileName: string, code: string) => {
   const fullPath = path.join(process.cwd(), dirPath, fileName);
   console.log(fullPath);
-  // console.log(code);
-  await fs.mkdirSync(path.join(process.cwd(), dirPath), { recursive: true });
-  if (fullPath.includes(".service.ts")) {
-    console.log(fullPath, code);
-  }
-
-  await fs.writeFileSync(fullPath, code);
+  console.log(code);
+  // await fs.mkdirSync(path.join(process.cwd(), dirPath), { recursive: true });
+  // if (fullPath.includes(".service.ts")) {
+  //   console.log(fullPath, code);
+  // }
+  // await fs.writeFileSync(fullPath, code);
 };

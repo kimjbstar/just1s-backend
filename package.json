@@ -5,14 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
-    "start:dev": "nodemon",
-    "start:debug": "nodemon --config nodemon-debug.json",
+    "start:dev": "ts-node-dev -r tsconfig-paths/register src/main.ts",
     "start:prod": "node -r tsconfig-paths/register -r ts-node/register dist/src/main",
+    "build": "tsc -p ./tsconfig.json",
+    "build:watch": "tsc -p ./tsconfig.json --watch",
     "practice": "ts-node -r tsconfig-paths/register src/practice.ts",
-    "tsc": "tsc -p ./tsconfig.json",
-    "tsc:watch": "tsc -p ./tsconfig.json --watch",
-    "nodemon": "nodemon",
-    "ts-node": "ts-node -T -r tsconfig-paths/register src/index.ts",
     "local:build": "docker-compose -f docker-compose.local.yml build --no-cache && docker-compose -f docker-compose.local.yml up",
     "docker:build": "docker build -t kimjbstar/just1s-backend .",
     "docker:push": "docker push kimjbstar/just1s-backend",
@@ -22,7 +19,9 @@
     "dumpdata": "ts-node -T -r tsconfig-paths/register src/dumpdata.ts",
     "scaffold": "ts-node -T -r tsconfig-paths/register src/scaffold/index.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "sequelize:makemigration": "ts-node -T -r tsconfig-paths/register src/scripts/makemigration.ts"
+    "sequelize:makemigration": "ts-node -T -r tsconfig-paths/register src/scripts/makemigration.ts",
+    "start:dev:nodemon": "nodemon",
+    "start:debug:nodemon": "nodemon --config nodemon-debug.json"
   },
   "repository": {
     "type": "git",
@@ -101,6 +100,7 @@
     "sequelize-cli": "^5.5.1",
     "sequelize-typescript-migration": "0.0.1-beta.3",
     "sqlite3": "^4.1.1",
-    "ts-jest": "^25.3.1"
+    "ts-jest": "^25.3.1",
+    "ts-node-dev": "^1.0.0-pre.49"
   }
 }

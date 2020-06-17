@@ -1,5 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
+{{#each hasManyEntities}}
+import { {{camelize this.name}}SaveDto } from "@src/modules/{{pluralize ../this.name}}/dtos/{{../this.name}}-create.dto.ts
+{{/each}}
+
 
 export class {{capitalize name}}UpdateDto {
 {{#each fields}}
@@ -25,25 +29,7 @@ export class {{capitalize name}}UpdateDto {
   @ApiProperty({
     description: "{{pluralize this.originalName}}을(를) 입력해주세요!"
   })
-  {{pluralize this.originalName}}?: {{camelize this.name}}UpdateDto[];
+  {{pluralize this.originalName}}?: {{camelize this.name}}SaveDto[];
 {{/each}}
 
 }
-
-{{#each hasManyEntities}}
-
-export class {{camelize this.name}}UpdateDto {
-  {{#each this.fields}}
-
-  @ApiProperty({
-    description: "{{this.korName}}을(를) 입력해주세요!",
-    {{#ifCond originType '==' 'ENUM'}}
-    enum: Object.values({{typescriptType}})
-    {{else}}
-    {{/ifCond}}
-  })
-  {{this.name}}: {{this.typescriptType}};
-{{/each}}
-}
-
-{{/each}}
