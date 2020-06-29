@@ -88,7 +88,7 @@ export class AuthService {
   getCookieOption() {
     const result = {};
     if (process.env.NODE_ENV !== "local") {
-      result["domain"] = ".just1s.xyz";
+      result["domain"] = "just1s.xyz";
     }
     return result;
   }
