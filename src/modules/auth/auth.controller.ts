@@ -38,8 +38,16 @@ export class AuthController {
     const foundUser: User = req.currentUser;
 
     const loginResult = await this.authService.login(foundUser, true);
-    res.cookie("accessToken", loginResult.accessToken);
-    res.cookie("refreshToken", loginResult.refreshToken);
+    res.cookie(
+      "accessToken",
+      loginResult.accessToken,
+      this.authService.getCookieOption()
+    );
+    res.cookie(
+      "refreshToken",
+      loginResult.refreshToken,
+      this.authService.getCookieOption()
+    );
     res.send(loginResult);
   }
 
@@ -51,8 +59,16 @@ export class AuthController {
   async refresh(@Body("token") token, @Response() res) {
     const user = await this.authService.findUserFromToken(token);
     const loginResult = await this.authService.login(user, true);
-    res.cookie("accessToken", loginResult.accessToken);
-    res.cookie("refreshToken", loginResult.refreshToken);
+    res.cookie(
+      "accessToken",
+      loginResult.accessToken,
+      this.authService.getCookieOption()
+    );
+    res.cookie(
+      "refreshToken",
+      loginResult.refreshToken,
+      this.authService.getCookieOption()
+    );
     res.send(loginResult);
   }
 
@@ -73,8 +89,16 @@ export class AuthController {
   async snsLogin(@Body() dto: SNSLoginDto, @Response() res): Promise<any> {
     const user: User = await this.usersService.findOrCreateBySNSProfile(dto);
     const loginResult = await this.authService.login(user, true);
-    res.cookie("accessToken", loginResult.accessToken);
-    res.cookie("refreshToken", loginResult.refreshToken);
+    res.cookie(
+      "accessToken",
+      loginResult.accessToken,
+      this.authService.getCookieOption()
+    );
+    res.cookie(
+      "refreshToken",
+      loginResult.refreshToken,
+      this.authService.getCookieOption()
+    );
     res.send(loginResult);
   }
 
