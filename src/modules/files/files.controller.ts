@@ -10,7 +10,8 @@ import {
   Query
 } from "@nestjs/common";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { S3 } from "aws-sdk";
+// import S3 from "aws-sdk/clients/s3";
+const { S3 } = require("@aws-sdk/client-s3");
 import { ApiTags, ApiBody, ApiProperty, ApiConsumes } from "@nestjs/swagger";
 
 class FileUploadDto {
@@ -42,6 +43,7 @@ export class FilesController {
   // )
   async uploadedFile(@UploadedFile() file, @Query() q: FileUploadQuery) {
     const fileName = getHashFileName(file);
+    console.log(file, q);
 
     if (q.type === "fake") {
       return {
@@ -56,26 +58,32 @@ export class FilesController {
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       region: "ap-northeast-2"
     });
+    console.log(s3);
 
-    const param: S3.PutObjectRequest = {
-      Bucket: "nbase-image",
-      Key: "image/" + fileName,
-      ACL: "public-read",
-      Body: file.buffer
-      // ContentType: "image/png"
-    };
+    // const param: s3.PutObjectRequest = {
+    //   Bucket: "nbase-image",
+    //   Key: "image/" + fileName,
+    //   ACL: "public-read",
+    //   Body: file.buffer
+    //   // ContentType: "image/png"
+    // };
 
     try {
-      const stored = await s3.upload(param).promise();
+      const stored = await s3.putObject({
+        Bucket: "nbase-image",
+        Key: "image/" + fileName,
+        ACL: "public-read",
+        Body: file.buffer
+      });
       console.log(stored);
-      // {
-      //   ETag: '"2c8c9e3c131cedaf9b108de5d5a12ee0"',
-      //   Location:
-      //  'https://nbase-image.s3.ap-northeast-2.amazonaws.com/image/unnamed-3274.png',
-      //   key: 'image/unnamed-3274.png',
-      //   Key: 'image/unnamed-3274.png',
-      //   Bucket: 'nbase-image'
-      // }
+      // // {
+      // //   ETag: '"2c8c9e3c131cedaf9b108de5d5a12ee0"',
+      // //   Location:
+      // //  'https://nbase-image.s3.ap-northeast-2.amazonaws.com/image/unnamed-3274.png',
+      // //   key: 'image/unnamed-3274.png',
+      // //   Key: 'image/unnamed-3274.png',
+      // //   Bucket: 'nbase-image'
+      // // }
       return {
         url: stored.Location
       };
