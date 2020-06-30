@@ -5,7 +5,8 @@ const config = {
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
-  entities: ["dist/src/entities/**/*.js", "src/entities/**/*.ts"],
+  // entities: ["dist/src/entities/**/*.js", "src/entities/**/*.ts"],
+  entities: ["dist/src/entities/**/*.js"],
   migrations: ["dist/src/migration/*.js"],
   subscribers: ["dist/src/subscribers/*.js"],
   cli: {
@@ -15,5 +16,6 @@ const config = {
   synchronize: false,
   logging: true
 };
+console.log(config);
 
 module.exports = config;

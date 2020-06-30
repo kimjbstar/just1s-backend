@@ -112,3 +112,5 @@ dist
 docker-compose.local.yml
 src/legacy_migration/
 cert
+
+scripts.backup
