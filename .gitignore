@@ -114,3 +114,6 @@ src/legacy_migration/
 cert
 
 scripts.backup
+
+#serverless
+.build
