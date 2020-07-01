@@ -19,11 +19,11 @@ provider:
 
 functions:
   main:
-    handler: dist/src/serverless.handler
+    handler: src/serverless.handler
     events:
       - http:
           method: any
           path: /{any+}
 plugins:
-  - serverless-plugin-typescript
+  - serverless-webpack
   - serverless-offline
