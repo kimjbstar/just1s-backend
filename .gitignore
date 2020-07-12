@@ -117,3 +117,5 @@ scripts.backup
 
 #serverless
 .build
+
+.DS_Store

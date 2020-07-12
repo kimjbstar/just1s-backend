@@ -3,13 +3,13 @@ const path = require("path");
 const nodeExternals = require("webpack-node-externals");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const fs = require("fs");
-const glob = require("glob");
+const slsw = require("serverless-webpack");
 
 module.exports = {
   target: "node",
   name: "server",
-  entry: ["./src/main.ts", "./src/serverless.ts"],
+  entry: ["./src/serverless.ts"],
+  // entry: { serverless: "./serverless.yml" },
   devtool: "inline-source-map",
   mode: "none",
   externals: [
@@ -47,7 +47,9 @@ module.exports = {
     })
   ],
   output: {
-    filename: "server.js",
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "dist"),
+    filename: "serverless.js",
+    library: "serverless",
+    libraryTarget: "commonjs2" // supports "module.exports"
   }
 };

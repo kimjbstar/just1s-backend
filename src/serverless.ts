@@ -1,25 +1,26 @@
 import { Server } from "http";
-import { Context } from "aws-lambda";
-import { createServer, proxy, Response } from "aws-serverless-express";
+import { APIGatewayProxyHandler } from "aws-lambda";
 import * as express from "express";
 import { createApp } from "./create-app";
+import * as awsServerlessExpress from "aws-serverless-express";
 
 let cachedServer: Server;
 
 async function bootstrap(): Promise<Server> {
-  const expressApp = express(); //
-
+  const expressApp = express();
   const app = await createApp(expressApp);
   await app.init();
-
-  return createServer(expressApp);
+  return awsServerlessExpress.createServer(expressApp);
 }
 
-export async function handler(event: any, context: Context): Promise<Response> {
+export const handler: APIGatewayProxyHandler = async (event, context) => {
   if (!cachedServer) {
     const server = await bootstrap();
     cachedServer = server;
+    return awsServerlessExpress.proxy(server, event, context, "PROMISE")
+      .promise;
+  } else {
+    return awsServerlessExpress.proxy(cachedServer, event, context, "PROMISE")
+      .promise;
   }
-
-  return proxy(cachedServer, event, context, "PROMISE").promise;
-}
+};

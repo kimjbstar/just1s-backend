@@ -55,15 +55,16 @@ const subscribers = subscriberContexts
       ),
     []
   );
-console.log(subscribers);
+
+const env = Object.assign({}, process.env);
 
 const typeORMConfig: TypeOrmModuleOptions = {
   type: "mysql",
-  host: process.env.TYPEORM_HOST,
-  port: Number(process.env.TYPEORM_PORT),
-  username: process.env.TYPEORM_USERNAME,
-  password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE,
+  host: env.TYPEORM_HOST,
+  port: Number(env.TYPEORM_PORT),
+  username: env.TYPEORM_USERNAME,
+  password: env.TYPEORM_PASSWORD,
+  database: env.TYPEORM_DATABASE,
   entities: entities,
   migrations: migrations,
   subscribers: subscribers,
@@ -74,6 +75,7 @@ const typeORMConfig: TypeOrmModuleOptions = {
   synchronize: false,
   logging: true
 };
+
 console.log(typeORMConfig);
 
 @Module({

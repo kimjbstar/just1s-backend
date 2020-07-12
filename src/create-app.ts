@@ -1,7 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { AppModule } from "./app.module";
 import { Express } from "express";
 import { RootModule } from "./root.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -14,9 +13,8 @@ export async function createApp(
   //   key: process.env.JUST1S_PRIVATE_KEY,
   //   cert: process.env.JUST1S_CERT
   // };
-  // const server = express();
-  // const app = await NestFactory.create(RootModule, new ExpressAdapter(server));
-  const app: INestApplication = await NestFactory.create(RootModule);
+  const adapter = new ExpressAdapter(expressApp);
+  const app: INestApplication = await NestFactory.create(RootModule, adapter);
 
   // app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));

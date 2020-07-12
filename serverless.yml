@@ -4,26 +4,39 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${opt:stage, 'development'}
+  region: ap-northeast-2
   environment:
-    TYPEORM_HOST: ${env:TYPEORM_HOST}
-    TYPEORM_PORT: ${env:TYPEORM_PORT}
-    TYPEORM_USERNAME: ${env:TYPEORM_USERNAME}
-    TYPEORM_PASSWORD: ${env:TYPEORM_PASSWORD}
-    TYPEORM_DATABASE: ${env:TYPEORM_DATABASE}
-    EXPRESS_PORT: ${env:EXPRESS_PORT}
-    JWT_SECRET: ${env:JWT_SECRET}
-    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+    TYPEORM_HOST: development-wdb02.c2xxewfoy7vb.ap-northeast-2.rds.amazonaws.com
+    TYPEORM_PORT: 3306
+    TYPEORM_USERNAME: kimjbstar
+    TYPEORM_PASSWORD: n!12091457
+    TYPEORM_DATABASE: just1s
+    EXPRESS_PORT: 3000
+    JWT_SECRET: 1q2w3e4r
     JUST1S_PRIVATE_KEY: ${env:JUST1S_PRIVATE_KEY}
     JUST1S_CERT: ${env:JUST1S_CERT}
+    FOO: bar
+
+custom:
+  webpack:
+    includeModules:
+      forceInclude:
+        - mysql
+        - swagger-ui-express
 
 functions:
   main:
-    handler: src/serverless.handler
+    handler: serverless.handler
     events:
       - http:
+          cors: true
+          path: "/"
           method: any
-          path: /{any+}
+      - http:
+          cors: true
+          path: "{proxy+}"
+          method: any
+
 plugins:
   - serverless-webpack
   - serverless-offline
