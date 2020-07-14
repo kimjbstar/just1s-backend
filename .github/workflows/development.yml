@@ -24,13 +24,30 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@master
+
       - name: setup node
         uses: actions/setup-node@v1
         with:
           node-version: 12
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+
       - name: npm install
         run: npm install
-      - name: serverless deploy
-        uses: serverless/github-action@master
-        with:
-          args: deploy --stage development
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Serverless AWS authentication
+        run: sls config credentials --provider aws --key ${{ secrets.AWS_KEY }} --secret ${{ secrets.AWS_SECRET }}
+
+      - name: Deploy Lambda functions
+        run: sls deploy --stage development
+      # - name: serverless deploy
+      #   uses: serverless/github-action@master
+      #   with:
+      #     args: deploy --stage development
