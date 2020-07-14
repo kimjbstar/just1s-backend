@@ -125,7 +125,9 @@ export class User extends NbaseEntity {
     //   .digest("hex");
   }
 
-  @Column()
+  @Column({
+    default: ""
+  })
   refreshToken: string;
 
   @Column({
