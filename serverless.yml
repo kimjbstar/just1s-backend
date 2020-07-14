@@ -21,7 +21,7 @@ custom:
     functions:
       - main
     dependenciesPath: ./package.json
-    layersDeploymentBucket: just1s-backend-development-layers
+    layersDeploymentBucket: just1s-backend-development-layers-ap1
 
 functions:
   main:

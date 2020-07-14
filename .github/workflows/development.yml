@@ -43,13 +43,10 @@ jobs:
       - name: Install Serverless Framework
         run: npm install -g serverless
 
-      - name: remove enterprise plugin
-        run: sls plugin uninstall --name @serverless/enterprise-plugin
-
-      - name: Serverless AWS authentication
-        run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        env:
-          SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+      # - name: Serverless AWS authentication
+      #   run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #   env:
+      #     SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
 
       - name: Deploy Lambda functions
         run: sls deploy --stage development
