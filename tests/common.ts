@@ -14,7 +14,7 @@ export const importAndGetConn = async () => {
     database: process.env.TYPEORM_DATABASE + "_test.db",
     entities: [entityPath]
     // logging: true
-  });
+  }); //
 
   const conn = await beforeConnection.connect();
   await conn.synchronize(true);
