@@ -14,7 +14,7 @@ async function bootstrap(): Promise<Server> {
 }
 
 export const handler: APIGatewayProxyHandler = async (event, context) => {
-  if (!cachedServer) {
+  if (!cachedServer) { 
     const server = await bootstrap();
     cachedServer = server;
     return awsServerlessExpress.proxy(server, event, context, "PROMISE")

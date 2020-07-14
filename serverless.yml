@@ -15,14 +15,13 @@ provider:
     JWT_SECRET: 1q2w3e4r
     JUST1S_PRIVATE_KEY: ${env:JUST1S_PRIVATE_KEY}
     JUST1S_CERT: ${env:JUST1S_CERT}
-    FOO: bar
 
 custom:
-  webpack:
-    includeModules:
-      forceInclude:
-        - mysql
-        - swagger-ui-express
+  serverless-layers:
+    functions:
+      - main
+    dependenciesPath: ./package.json
+    layersDeploymentBucket: just1s-backend-development-layers
 
 functions:
   main:
@@ -36,7 +35,8 @@ functions:
           cors: true
           path: "{proxy+}"
           method: any
-
+          
 plugins:
+  - serverless-layers
   - serverless-webpack
   - serverless-offline

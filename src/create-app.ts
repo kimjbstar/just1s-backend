@@ -21,7 +21,7 @@ export async function createApp(
 
   const options = new DocumentBuilder()
     .setTitle("just1s")
-    .setDescription("단1초(just1s) API 문서 페이지입니다.")
+    .setDescription("단1초(just1s) API 문서 페이지입니다..")
     .setVersion("0.0.1")
     .addBearerAuth()
     .build();
