@@ -29,7 +29,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v1
         with:
-          node-version: "10"
+          node-version: "12"
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -42,6 +42,9 @@ jobs:
 
       - name: Install Serverless Framework
         run: npm install -g serverless
+
+      - name: remove enterprise plugin
+        run: sls plugin uninstall --name @serverless/enterprise-plugin
 
       - name: Serverless AWS authentication
         run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
