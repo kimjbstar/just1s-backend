@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to Development
 on:
   push:
     branches:
@@ -8,12 +8,14 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: npm install
-      - uses: actions/setup-node@v1
+      - name: checkout
+        uses: actions/checkout@master
+      - name: setup node
+        uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npm install
+      - name: npm install
+        run: npm install
       - name: serverless deploy
         uses: serverless/github-action@master
         with:
