@@ -75,6 +75,7 @@
     "glob": "^7.1.6",
     "handlebars": "^4.7.6",
     "prettier": "^2.0.4",
+    "serverless": "^1.74.1",
     "serverless-layers": "^2.2.4",
     "serverless-offline": "^6.4.0",
     "serverless-plugin-optimize": "^4.1.4-rc.1",
