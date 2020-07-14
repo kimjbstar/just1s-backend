@@ -4,6 +4,8 @@ const nodeExternals = require("webpack-node-externals");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const slsw = require("serverless-webpack");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 
 module.exports = {
   target: "node",
@@ -33,6 +35,7 @@ module.exports = {
     }
   },
   plugins: [
+    new BundleAnalyzerPlugin(),
     // new CleanWebpackPlugin({
     //   cleanAfterEveryBuildPatterns: ["dist"]
     // }),
