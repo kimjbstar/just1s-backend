@@ -20,6 +20,7 @@ jobs:
       JWT_SECRET: ${secrets:JWT_SECRET}
       JUST1S_PRIVATE_KEY: ${secrets:JUST1S_PRIVATE_KEY}
       JUST1S_CERT: ${secrets:JUST1S_CERT}
+      SLS_DEBUG: *
 
     steps:
       - name: checkout
