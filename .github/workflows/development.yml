@@ -8,9 +8,9 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     env:
-      SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+      # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       TYPEORM_HOST: ${{ secrets.TYPEORM_HOST }}
       TYPEORM_PORT: ${{ secrets.TYPEORM_PORT }}
       TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
@@ -21,6 +21,7 @@ jobs:
       JUST1S_PRIVATE_KEY: ${{ secrets.JUST1S_PRIVATE_KEY }}
       JUST1S_CERT: ${{ secrets.JUST1S_CERT }}
       SLS_DEBUG: "*"
+      NODE_ENV: "development"
 
     steps:
       - name: checkout
@@ -42,11 +43,6 @@ jobs:
 
       - name: Install Serverless Framework
         run: npm install -g serverless
-
-      # - name: Serverless AWS authentication
-      #   run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   env:
-      #     SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
 
       - name: Deploy Lambda functions
         run: sls deploy --stage development
