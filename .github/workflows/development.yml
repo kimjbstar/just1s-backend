@@ -8,7 +8,6 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     env:
-      # SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       TYPEORM_HOST: ${{ secrets.TYPEORM_HOST }}
@@ -35,7 +34,8 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2
         with:
-          path: node_modules
+          path: |
+            **/node_modules
           key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: npm install
@@ -46,7 +46,3 @@ jobs:
 
       - name: Deploy Lambda functions
         run: sls deploy --stage development
-      # - name: serverless deploy
-      #   uses: serverless/github-action@master
-      #   with:
-      #     args: deploy --stage development
