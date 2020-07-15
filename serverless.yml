@@ -31,6 +31,7 @@ custom:
     securityPolicy: tls_1_2
     apiType: rest
     autoDomain: false
+    hostedZoneId: Z02288121UT1NKWXB7B5M
 
 functions:
   main:
