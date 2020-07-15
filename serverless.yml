@@ -1,4 +1,6 @@
 service: just1s-backend
+app: just1s-backend
+tenant: kimjbstar
 
 provider:
   name: aws
