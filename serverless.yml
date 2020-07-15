@@ -22,6 +22,15 @@ custom:
       - main
     dependenciesPath: ./package.json
     layersDeploymentBucket: just1s-backend-node-module
+  customDomain:
+    domainName: dev.just1s.xyz
+    stage: development
+    certificateName: "*.just1s.xyz"
+    createRoute53Record: true
+    endpointType: "regional"
+    securityPolicy: tls_1_2
+    apiType: rest
+    autoDomain: false
 
 functions:
   main:
@@ -40,3 +49,4 @@ plugins:
   - serverless-layers
   - serverless-webpack
   - serverless-offline
+  - serverless-domain-manager
