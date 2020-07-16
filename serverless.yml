@@ -17,17 +17,20 @@ provider:
     JUST1S_CERT: ${env:JUST1S_CERT}
 
 custom:
+  serviceDomain:
+    development: dev-api.just1s.xyz
+    production: api.just1s.xyz
   serverless-layers:
     functions:
       - main
     dependenciesPath: ./package.json
     layersDeploymentBucket: just1s-backend-node-module
   customDomain:
-    domainName: dev.just1s.xyz
-    stage: development
+    domainName: ${self:custom.serviceDomain.${self:provider.stage}}
+    stage: ${opt:stage, 'development'}
     certificateName: "*.just1s.xyz"
-    createRoute53Record: true
     endpointType: "regional"
+    createRoute53Record: true
     securityPolicy: tls_1_2
     apiType: rest
     autoDomain: false
