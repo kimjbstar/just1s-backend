@@ -9,10 +9,6 @@ import * as helmet from "helmet";
 export async function createApp(
   expressApp: Express
 ): Promise<INestApplication> {
-  // const httpsOptions = {
-  //   key: process.env.JUST1S_PRIVATE_KEY,
-  //   cert: process.env.JUST1S_CERT
-  // };
   const adapter = new ExpressAdapter(expressApp);
   const app: INestApplication = await NestFactory.create(RootModule, adapter);
 

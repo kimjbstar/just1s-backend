@@ -61,11 +61,11 @@ const env = Object.assign({}, process.env);
 
 const typeORMConfig: TypeOrmModuleOptions = {
   type: "mysql",
-  host: env.TYPEORM_HOST,
-  port: Number(env.TYPEORM_PORT),
-  username: env.TYPEORM_USERNAME,
-  password: env.TYPEORM_PASSWORD,
-  database: env.TYPEORM_DATABASE,
+  host: env.DATABASE_HOST,
+  port: 3306,
+  username: env.DATABASE_USERNAME,
+  password: env.DATABASE_PASSWORD,
+  database: env.DATABASE_DATABASE,
   entities: entities,
   migrations: migrations,
   subscribers: subscribers,

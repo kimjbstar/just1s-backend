@@ -38,12 +38,11 @@ module.exports = {
     // }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: process.env.NODE_ENV,
-      TYPEORM_HOST: process.env.TYPEORM_HOST,
-      TYPEORM_PORT: process.env.TYPEORM_PORT,
-      TYPEORM_USERNAME: process.env.TYPEORM_USERNAME,
-      TYPEORM_PASSWORD: process.env.TYPEORM_PASSWORD,
-      TYPEORM_DATABASE: process.env.TYPEORM_DATABASE,
-      EXPRESS_PORT: process.env.EXPRESS_PORT
+      DATABASE_HOST: process.env.DATABASE_HOST,
+      DATABASE_USERNAME: process.env.DATABASE_USERNAME,
+      DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
+      DATABASE_DATABASE: process.env.DATABASE_DATABASE,
+      JWT_SECRET: process.env.JWT_SECRET
     })
   ],
   output: {

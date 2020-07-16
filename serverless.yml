@@ -6,20 +6,31 @@ provider:
   stage: ${opt:stage, 'development'}
   region: ap-northeast-1
   environment:
-    TYPEORM_HOST: ${env:TYPEORM_HOST}
-    TYPEORM_PORT: ${env:TYPEORM_PORT}
-    TYPEORM_USERNAME: ${env:TYPEORM_USERNAME}
-    TYPEORM_PASSWORD: ${env:TYPEORM_PASSWORD}
-    TYPEORM_DATABASE: ${env:TYPEORM_DATABASE}
-    EXPRESS_PORT: ${env:EXPRESS_PORT}
-    JWT_SECRET: ${env:JWT_SECRET}
-    JUST1S_PRIVATE_KEY: ${env:JUST1S_PRIVATE_KEY}
-    JUST1S_CERT: ${env:JUST1S_CERT}
+    DATABASE_HOST: ${self:custom.serviceDatabaseHost.${self:provider.stage}}
+    DATABASE_USERNAME: ${self:custom.serviceDatabaseUsername.${self:provider.stage}}
+    DATABASE_PASSWORD: ${self:custom.serviceDatabasePassword.${self:provider.stage}}
+    DATABASE_DATABASE: ${self:custom.serviceDatabase.${self:provider.stage}}
+    JWT_SECRET: ${self:custom.serviceJwtSecret.${self:provider.stage}}
 
 custom:
   serviceDomain:
     development: dev-api.just1s.xyz
     production: api.just1s.xyz
+  serviceDatabaseHost:
+    development: ${ssm:/development/db/host}
+    production: ${ssm:/production/db/host}
+  serviceDatabase:
+    development: ${ssm:/development/db/database}
+    production: ${ssm:/production/db/database}
+  serviceDatabaseUsername:
+    development: ${ssm:/development/db/username}
+    production: ${ssm:/production/db/username}
+  serviceDatabasePassword:
+    development: ${ssm:/development/db/password}
+    production: ${ssm:/production/db/password}
+  serviceJwtSecret:
+    development: ${ssm:/jwt_secret}
+    production: ${ssm:/jwt_secret}
   serverless-layers:
     functions:
       - main
