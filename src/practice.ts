@@ -75,7 +75,7 @@ const bootstrap = async () => {
     port: 3306,
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_DATABASE,
+    database: process.env.DATABASE_NAME,
     entities: [entityPath],
     logging: true
   });

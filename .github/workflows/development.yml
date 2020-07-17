@@ -10,11 +10,6 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-      DATABASE_DATABASE: ${{ secrets.DATABASE_DATABASE }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       SLS_DEBUG: "*"
       NODE_ENV: "development"
 

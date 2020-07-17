@@ -65,7 +65,7 @@ const typeORMConfig: TypeOrmModuleOptions = {
   port: 3306,
   username: env.DATABASE_USERNAME,
   password: env.DATABASE_PASSWORD,
-  database: env.DATABASE_DATABASE,
+  database: env.DATABASE_NAME,
   entities: entities,
   migrations: migrations,
   subscribers: subscribers,

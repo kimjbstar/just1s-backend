@@ -9,26 +9,33 @@ provider:
     DATABASE_HOST: ${self:custom.serviceDatabaseHost.${self:provider.stage}}
     DATABASE_USERNAME: ${self:custom.serviceDatabaseUsername.${self:provider.stage}}
     DATABASE_PASSWORD: ${self:custom.serviceDatabasePassword.${self:provider.stage}}
-    DATABASE_DATABASE: ${self:custom.serviceDatabase.${self:provider.stage}}
+    DATABASE_NAME: ${self:custom.serviceDatabaseName.${self:provider.stage}}
     JWT_SECRET: ${self:custom.serviceJwtSecret.${self:provider.stage}}
+    FOO: bar
 
 custom:
   serviceDomain:
+    local: localhost:3000
     development: dev-api.just1s.xyz
     production: api.just1s.xyz
   serviceDatabaseHost:
+    local: ${env:TYPEORM_HOST}
     development: ${ssm:/development/db/host}
     production: ${ssm:/production/db/host}
-  serviceDatabase:
+  serviceDatabaseName:
+    local: ${env:TYPEORM_DATABASE}
     development: ${ssm:/development/db/database}
     production: ${ssm:/production/db/database}
   serviceDatabaseUsername:
+    local: ${env:TYPEORM_USERNAME}
     development: ${ssm:/development/db/username}
     production: ${ssm:/production/db/username}
   serviceDatabasePassword:
+    local: ${env:TYPEORM_PASSWORD}
     development: ${ssm:/development/db/password}
     production: ${ssm:/production/db/password}
   serviceJwtSecret:
+    local: ${env:JWT_SECRET}
     development: ${ssm:/jwt_secret}
     production: ${ssm:/jwt_secret}
   serverless-layers:
@@ -41,7 +48,7 @@ custom:
     stage: ${opt:stage, 'development'}
     certificateName: "*.just1s.xyz"
     endpointType: "regional"
-    createRoute53Record: true
+    createRoute53Record: false
     securityPolicy: tls_1_2
     apiType: rest
     autoDomain: false

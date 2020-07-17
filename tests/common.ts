@@ -11,7 +11,7 @@ export const importAndGetConn = async () => {
   const connectionManager = getConnectionManager();
   const beforeConnection = connectionManager.create({
     type: "sqlite",
-    database: process.env.DATABASE_DATABASE + "_test.db",
+    database: process.env.DATABASE_NAME + "_test.db",
     entities: [entityPath]
     // logging: true
   }); //
