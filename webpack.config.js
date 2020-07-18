@@ -3,6 +3,7 @@ const path = require("path");
 const nodeExternals = require("webpack-node-externals");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const slsw = require("serverless-webpack");
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   target: "node",
@@ -30,7 +31,7 @@ module.exports = {
       "@src": path.resolve(__dirname, "src/")
     }
   },
-  plugins: [],
+  plugins: [new CompressionPlugin()],
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "serverless.js",
