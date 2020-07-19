@@ -5,7 +5,9 @@ import { UsersService } from "../users/users.service";
 import {
   NotLogginedException,
   CustomException,
-  RefreshTokenExpiredException
+  RefreshTokenExpiredException,
+  UserNotExistException,
+  PasswordWrongException
 } from "@src/common/http-exception";
 import * as moment from "moment";
 import * as crypto from "crypto";
@@ -25,11 +27,10 @@ export class AuthService {
     });
 
     if (user === undefined || user === null) {
-      return null;
+      throw new UserNotExistException();
     }
-    // TODO : snsType, role 등 추가 체크
     if (user.pw !== User.getHashedPw(password)) {
-      return null;
+      throw new PasswordWrongException();
     }
     return user;
   }

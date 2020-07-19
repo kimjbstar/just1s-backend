@@ -10,7 +10,8 @@ import {
   Body,
   Query,
   UseFilters,
-  HttpStatus
+  HttpStatus,
+  Param
 } from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { UsersService } from "@src/modules/users/users.service";
@@ -84,5 +85,13 @@ export class AuthController {
     res.clearCookie("refreshToken");
     await this.authService.logout(foundUser);
     res.status(HttpStatus.OK).send({});
+  }
+
+  @Get("get_hashed/:origin")
+  get_hashed(@Param("origin") origin: string, @Response() res) {
+    console.log("hashed", User.getHashedPw(origin));
+    res.send({
+      message: "result is on console"
+    });
   }
 }
