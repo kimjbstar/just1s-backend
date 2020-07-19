@@ -35,7 +35,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("login")
   async login(@Request() req, @Response() res) {
-    const foundUser: User = req.currentUser;
+    // [passport-local] : validate 결과는 req.user에 담긴다
+    const foundUser: User = req.user;
 
     const loginResult = await this.authService.login(foundUser, true);
     res.send(loginResult);

@@ -23,7 +23,7 @@ export class AuthService {
         email: email
       }
     });
-    console.log(user);
+
     if (user === undefined || user === null) {
       return null;
     }
@@ -62,7 +62,6 @@ export class AuthService {
         .format("YYYY-MM-DD HH:mm:ss.SSSSSS");
       user.refreshToken = refreshToken;
       user.refreshTokenExpiredAt = refreshTokenExpiredAt;
-      console.log(user);
       await user.save();
       user.reload();
     }
