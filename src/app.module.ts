@@ -59,6 +59,7 @@ const subscribers = subscriberContexts
 
 const env = Object.assign({}, process.env);
 
+// config를 정의하여 사용하지 않을 시 ormconfig.js를 사용 -> local 외에선 run migration 불가능
 const typeORMConfig: TypeOrmModuleOptions = {
   type: "mysql",
   host: env.DATABASE_HOST,
