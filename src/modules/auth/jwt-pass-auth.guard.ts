@@ -10,7 +10,7 @@ import { UsersService } from "@src/modules/users/users.service";
 import { TokenExpiredException } from "@src/common/http-exception";
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard("jwt") {
+export class JwtPassAuthGuard extends AuthGuard("jwt") {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService
@@ -18,11 +18,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     super();
   }
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // strict guard 접근 자체가 불가능해야할때
-    // const res = await super.canActivate(context);
-    // if (res === false) {
-    //   return false;
-    // }
+    // strict guard 접근 자체가 불가능해야할때는 AuthGuard('jwt') 바로사용
 
     const req = context.switchToHttp().getRequest();
 

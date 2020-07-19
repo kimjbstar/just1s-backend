@@ -1,4 +1,4 @@
-import { JwtAuthGuard } from "@src/modules/auth/jwt-auth.guard";
+import { JwtPassAuthGuard } from "@src/modules/auth/jwt-pass-auth.guard";
 import { AuthService } from "@src/modules/auth/auth.service";
 import {
   Controller,
@@ -45,7 +45,7 @@ export class AuthController {
   @ApiResponse({
     description: "전달된 refesh 토큰을 통해 새 access token을 얻습니다."
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   @Post("refresh")
   async refresh(@Body("token") token, @Response() res) {
     const user = await this.authService.findUserFromToken(token);
@@ -56,7 +56,7 @@ export class AuthController {
   @ApiResponse({
     description: "전달된 토큰을 통해 현재 유저 정보를 확인합니다."
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   @Get("whoami")
   withToken(@Request() req) {
     return req.currentUser ? req.currentUser : {};
@@ -76,7 +76,7 @@ export class AuthController {
   @ApiResponse({
     description: "logout. 토큰 만료 처리"
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   @Post("logout")
   async logout(@Request() req, @Response() res) {
     const foundUser: User = req.currentUser;
