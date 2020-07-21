@@ -84,4 +84,14 @@ export class AuthService {
 
     return {};
   }
+
+  //join
+  //forceLogin
+  //requestSMSAuth
+  //responseSMSAuth
+  //resetPassword
+  //withdraw
+  //setWithdrawAt
+  //getUtoken
+  //updatePhoneNumber(userid, phoenauthkey)
 }

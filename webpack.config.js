@@ -4,11 +4,25 @@ const nodeExternals = require("webpack-node-externals");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const slsw = require("serverless-webpack");
 const CompressionPlugin = require("compression-webpack-plugin");
+const StartServerPlugin = require("start-server-webpack-plugin");
+
+const isServerlessBuild = slsw.lib.serverless !== undefined;
+const webpackEntry = isServerlessBuild
+  ? "./src/serverless.ts"
+  : ["./src/main.ts", "webpack/hot/poll?100"];
+
+const webpackPlugins = isServerlessBuild
+  ? [new CompressionPlugin()]
+  : [
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.WatchIgnorePlugin([/\.js$/, /\.d\.ts$/]),
+      new StartServerPlugin({ name: "serverless.js" })
+    ];
 
 module.exports = {
   target: "node",
   name: "server",
-  entry: ["./src/serverless.ts"],
+  entry: webpackEntry,
   devtool: "inline-source-map",
   mode: "none",
   externals: [
@@ -31,7 +45,7 @@ module.exports = {
       "@src": path.resolve(__dirname, "src/")
     }
   },
-  plugins: [new CompressionPlugin()],
+  plugins: webpackPlugins,
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "serverless.js",
