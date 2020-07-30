@@ -76,7 +76,7 @@ const typeORMConfig: TypeOrmModuleOptions = {
   },
   synchronize: false,
   logging: true,
-  keepConnectionAlive: true // hot reload 시 connection 새로 잡는 이슈 때문에 추가
+  keepConnectionAlive: true // hot reload 시 connection 새로 잡는 이슈 때문에 추가.
 };
 
 console.log(typeORMConfig);
