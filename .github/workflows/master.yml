@@ -27,7 +27,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+            key: ${{ runner.OS }}-master-build-${{ hashFiles('**/package-lock.json') }}
 
       - name: npm install
         run: npm install
