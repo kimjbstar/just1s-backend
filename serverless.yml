@@ -41,7 +41,7 @@ custom:
     functions:
       - main
     dependenciesPath: ./package.json
-    layersDeploymentBucket: just1s-backend-node-module
+    layersDeploymentBucket: just1s-backend-${self:provider.stage}-node-module
   customDomain:
     domainName: ${self:custom.serviceDomain.${self:provider.stage}}
     stage: ${opt:stage, 'development'}
