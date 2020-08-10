@@ -1,33 +1,39 @@
-name: Deploy to Master
+name: Deploy to master
 on:
   push:
     branches:
       - master
 jobs:
-  build_docker:
-    name: Build Docker Image
+  deploy:
+    name: deploy
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: kimjbstar/just1s-backend
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          dockerfile: Dockerfile
-  update-service:
-    name: Update AWS ESC Service
-    needs: build_docker
-    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SLS_DEBUG: "*"
+      NODE_ENV: "production"
 
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: checkout
+        uses: actions/checkout@master
+
+      - name: setup node
+        uses: actions/setup-node@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-      - name: force update ecs
-        run: |
-          aws ecs update-service --cluster=ecs-cluster-01 --service=service-back-1 --force-new-deployment
+          node-version: "12"
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+
+      - name: npm install
+        run: npm install
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Deploy Lambda functions
+        run: sls deploy --stage production

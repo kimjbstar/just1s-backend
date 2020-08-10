@@ -52,8 +52,6 @@ custom:
     apiType: rest
     autoDomain: false
     hostedZoneId: Z02288121UT1NKWXB7B5M
-  serverless-offline:
-    useChildProcesses: true #watch issue
 
 functions:
   main:
@@ -71,5 +69,4 @@ functions:
 plugins:
   - serverless-layers
   - serverless-webpack
-  - serverless-offline
   - serverless-domain-manager
