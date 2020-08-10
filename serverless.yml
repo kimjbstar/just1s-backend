@@ -47,7 +47,7 @@ custom:
     stage: ${opt:stage, 'development'}
     certificateName: "*.just1s.xyz"
     endpointType: "regional"
-    createRoute53Record: false
+    createRoute53Record: true
     securityPolicy: tls_1_2
     apiType: rest
     autoDomain: false
