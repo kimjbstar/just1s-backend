@@ -21,7 +21,7 @@ export class AppController {
       author: ["kimjbstar@gmail.com", "stnh2622@gmail.com"],
       url: "https://api.just1s.xyz",
       desc: "단1초 API 서버입니다.!!",
-      test: "modefied12"
+      test: "modefied123"
     };
   }
 }
