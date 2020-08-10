@@ -1,15 +1,18 @@
 const webpack = require("webpack");
 const path = require("path");
 const nodeExternals = require("webpack-node-externals");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 const slsw = require("serverless-webpack");
 const CompressionPlugin = require("compression-webpack-plugin");
 const StartServerPlugin = require("start-server-webpack-plugin");
 
 const isServerlessBuild = slsw.lib.serverless !== undefined;
+
 const webpackEntry = isServerlessBuild
   ? "./src/serverless.ts"
   : ["./src/main.ts", "webpack/hot/poll?100"];
+if (isServerlessBuild) {
+  console.log("[webpack] : stage from serverless", slsw.lib.options.stage);
+}
 
 const webpackPlugins = isServerlessBuild
   ? [new CompressionPlugin()]
@@ -27,7 +30,7 @@ module.exports = {
   mode: "none",
   externals: [
     nodeExternals({
-      whitelist: ["webpack/hot/poll?100"]
+      allowlist: ["webpack/hot/poll?100"]
     })
   ],
   module: {
