@@ -22,13 +22,6 @@ jobs:
         with:
           node-version: "12"
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-            key: ${{ runner.OS }}-master-build-${{ hashFiles('**/package-lock.json') }}
-
       - name: npm install
         run: npm install
 
