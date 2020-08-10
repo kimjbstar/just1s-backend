@@ -68,5 +68,6 @@ functions:
 
 plugins:
   - serverless-layers
+  - serverless-offline
   - serverless-webpack
   - serverless-domain-manager
