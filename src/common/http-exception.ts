@@ -150,3 +150,27 @@ export class NotLogginedException extends HttpException {
     );
   }
 }
+
+export class UserNotExistException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.UNAUTHORIZED,
+        message: "해당하는 유저가 없습니다."
+      },
+      HttpStatus.UNAUTHORIZED
+    );
+  }
+}
+
+export class PasswordWrongException extends HttpException {
+  constructor() {
+    super(
+      {
+        status: HttpStatus.UNAUTHORIZED,
+        message: "패스워드가 잘못되었습니다."
+      },
+      HttpStatus.UNAUTHORIZED
+    );
+  }
+}

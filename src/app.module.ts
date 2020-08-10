@@ -7,6 +7,7 @@ import { MusicsService } from "./modules/music/music.service";
 import { PassportModule } from "@nestjs/passport";
 import { Connection } from "typeorm";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+//
 
 const entityContexts = (require as any).context(
   "./entities",
@@ -58,13 +59,14 @@ const subscribers = subscriberContexts
 
 const env = Object.assign({}, process.env);
 
+// config를 정의하여 사용하지 않을 시 ormconfig.js를 사용 -> local 외에선 run migration 불가능
 const typeORMConfig: TypeOrmModuleOptions = {
   type: "mysql",
-  host: env.TYPEORM_HOST,
-  port: Number(env.TYPEORM_PORT),
-  username: env.TYPEORM_USERNAME,
-  password: env.TYPEORM_PASSWORD,
-  database: env.TYPEORM_DATABASE,
+  host: env.DATABASE_HOST || env.TYPEORM_HOST,
+  port: 3306,
+  username: env.DATABASE_USERNAME || env.TYPEORM_USERNAME,
+  password: env.DATABASE_PASSWORD || env.TYPEORM_PASSWORD,
+  database: env.DATABASE_NAME || env.TYPEORM_DATABASE,
   entities: entities,
   migrations: migrations,
   subscribers: subscribers,
@@ -73,7 +75,8 @@ const typeORMConfig: TypeOrmModuleOptions = {
     migrationsDir: "src/migration"
   },
   synchronize: false,
-  logging: true
+  logging: true,
+  keepConnectionAlive: true // hot reload 시 connection 새로 잡는 이슈 때문에 추가.
 };
 
 console.log(typeORMConfig);

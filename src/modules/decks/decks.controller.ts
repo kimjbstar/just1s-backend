@@ -32,8 +32,9 @@ import { DeckHashtagSaveDto } from "./dtos/deck-hashtag-save.dto";
 import { DeckMusicSaveDto } from "./dtos/deck-music-save.dto";
 import { DeckUpdateDto } from "./dtos/deck-update.dto";
 import { Request } from "express";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtPassAuthGuard } from "../auth/jwt-pass-auth.guard";
 import { UsersService } from "../users/users.service";
+import { AuthGuard } from "@nestjs/passport";
 
 const createDeckListConfig: NBaseCreateListConfig = {
   // customize: (builder) => {
@@ -134,7 +135,7 @@ export class DecksController {
     description: "Deck의 리스트를 가져옵니다.",
     type: DeckListResult
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   async find(@Query() args: DeckListArgs, @Req() req: Request): Promise<any> {
     if (req["currentUser"]) {
       args["with_performed_user_id"] = req["currentUser"].id;

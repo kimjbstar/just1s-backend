@@ -9,10 +9,6 @@ import * as helmet from "helmet";
 export async function createApp(
   expressApp: Express
 ): Promise<INestApplication> {
-  // const httpsOptions = {
-  //   key: process.env.JUST1S_PRIVATE_KEY,
-  //   cert: process.env.JUST1S_CERT
-  // };
   const adapter = new ExpressAdapter(expressApp);
   const app: INestApplication = await NestFactory.create(RootModule, adapter);
 
@@ -21,7 +17,7 @@ export async function createApp(
 
   const options = new DocumentBuilder()
     .setTitle("just1s")
-    .setDescription("단1초(just1s) API 문서 페이지입니다.")
+    .setDescription("단1초(just1s) API 문서 페이지입니다..")
     .setVersion("0.0.1")
     .addBearerAuth()
     .build();

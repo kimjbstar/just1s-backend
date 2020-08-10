@@ -1,3 +1,5 @@
+// USED IN ONLY LOCAL !!
+// makemigration은 local에서만 한다!!!
 const config = {
   type: "mysql",
   host: process.env.TYPEORM_HOST,
@@ -5,9 +7,9 @@ const config = {
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
-  entities: ["dist/src/entities/**/*.js"],
-  migrations: ["dist/src/migration/*.js"],
-  subscribers: ["dist/src/subscribers/*.js"],
+  entities: ["src/entities/**/*.ts"],
+  migrations: ["src/migration/**/*.ts"],
+  subscribers: ["src/subscribers/**/*.ts"],
   cli: {
     entitiesDir: "src/entities",
     migrationsDir: "src/migration"
@@ -15,8 +17,5 @@ const config = {
   synchronize: false,
   logging: true
 };
-if (process.env.NODE_ENV === "local") {
-  config.entities = ["dist/src/entities/**/*.js", "src/entities/**/*.ts"];
-}
 
 module.exports = config;

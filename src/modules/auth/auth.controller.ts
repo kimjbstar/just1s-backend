@@ -1,4 +1,4 @@
-import { JwtAuthGuard } from "@src/modules/auth/jwt-auth.guard";
+import { JwtPassAuthGuard } from "@src/modules/auth/jwt-pass-auth.guard";
 import { AuthService } from "@src/modules/auth/auth.service";
 import {
   Controller,
@@ -10,7 +10,8 @@ import {
   Body,
   Query,
   UseFilters,
-  HttpStatus
+  HttpStatus,
+  Param
 } from "@nestjs/common";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { UsersService } from "@src/modules/users/users.service";
@@ -35,7 +36,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("login")
   async login(@Request() req, @Response() res) {
-    const foundUser: User = req.currentUser;
+    // [passport-local] : validate 결과는 req.user에 담긴다
+    const foundUser: User = req.user;
 
     const loginResult = await this.authService.login(foundUser, true);
     res.send(loginResult);
@@ -44,7 +46,7 @@ export class AuthController {
   @ApiResponse({
     description: "전달된 refesh 토큰을 통해 새 access token을 얻습니다."
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   @Post("refresh")
   async refresh(@Body("token") token, @Response() res) {
     const user = await this.authService.findUserFromToken(token);
@@ -55,7 +57,7 @@ export class AuthController {
   @ApiResponse({
     description: "전달된 토큰을 통해 현재 유저 정보를 확인합니다."
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   @Get("whoami")
   withToken(@Request() req) {
     return req.currentUser ? req.currentUser : {};
@@ -75,7 +77,7 @@ export class AuthController {
   @ApiResponse({
     description: "logout. 토큰 만료 처리"
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtPassAuthGuard)
   @Post("logout")
   async logout(@Request() req, @Response() res) {
     const foundUser: User = req.currentUser;
@@ -83,5 +85,13 @@ export class AuthController {
     res.clearCookie("refreshToken");
     await this.authService.logout(foundUser);
     res.status(HttpStatus.OK).send({});
+  }
+
+  @Get("get_hashed/:origin")
+  get_hashed(@Param("origin") origin: string, @Response() res) {
+    console.log("hashed", User.getHashedPw(origin));
+    res.send({
+      message: "result is on console"
+    });
   }
 }

@@ -20,7 +20,8 @@ export class AppController {
       app: "just1s",
       author: ["kimjbstar@gmail.com", "stnh2622@gmail.com"],
       url: "https://api.just1s.xyz",
-      desc: "단1초 API 서버입니다."
+      desc: "단1초 API 서버입니다.!!",
+      test: "modefied12"
     };
   }
 }

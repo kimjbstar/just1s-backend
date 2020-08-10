@@ -11,10 +11,10 @@ export const importAndGetConn = async () => {
   const connectionManager = getConnectionManager();
   const beforeConnection = connectionManager.create({
     type: "sqlite",
-    database: process.env.TYPEORM_DATABASE + "_test.db",
+    database: process.env.DATABASE_NAME + "_test.db",
     entities: [entityPath]
     // logging: true
-  });
+  }); //
 
   const conn = await beforeConnection.connect();
   await conn.synchronize(true);

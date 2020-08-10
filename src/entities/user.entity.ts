@@ -21,7 +21,7 @@ import { NbaseEntity } from "@src/common/types/nbase-entity";
 import { Perform } from "./perform.entity";
 import { Deck } from "./deck.entity";
 import { ApiProperty } from "@nestjs/swagger";
-// import * as crypto from 'crypto';
+import * as crypto from "crypto";
 
 @Entity()
 export class User extends NbaseEntity {
@@ -117,15 +117,16 @@ export class User extends NbaseEntity {
   performs?: Perform[];
 
   static getHashedPw(pw: string): string {
-    return pw + "_AAA";
-    // const salt = "f9dev-secret-salt-closedshops";
-    // return crypto
-    //   .createHash("sha512")
-    //   .update(pw + salt)
-    //   .digest("hex");
+    const salt = "nbase-secret-salt-just1s";
+    return crypto
+      .createHash("sha512")
+      .update(pw + salt)
+      .digest("hex");
   }
 
-  @Column()
+  @Column({
+    default: ""
+  })
   refreshToken: string;
 
   @Column({

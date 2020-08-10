@@ -5,7 +5,9 @@ import { UsersService } from "../users/users.service";
 import {
   NotLogginedException,
   CustomException,
-  RefreshTokenExpiredException
+  RefreshTokenExpiredException,
+  UserNotExistException,
+  PasswordWrongException
 } from "@src/common/http-exception";
 import * as moment from "moment";
 import * as crypto from "crypto";
@@ -23,13 +25,12 @@ export class AuthService {
         email: email
       }
     });
-    console.log(user);
+
     if (user === undefined || user === null) {
-      return null;
+      throw new UserNotExistException();
     }
-    // TODO : snsType, role 등 추가 체크
     if (user.pw !== User.getHashedPw(password)) {
-      return null;
+      throw new PasswordWrongException();
     }
     return user;
   }
@@ -62,7 +63,6 @@ export class AuthService {
         .format("YYYY-MM-DD HH:mm:ss.SSSSSS");
       user.refreshToken = refreshToken;
       user.refreshTokenExpiredAt = refreshTokenExpiredAt;
-      console.log(user);
       await user.save();
       user.reload();
     }
@@ -84,4 +84,14 @@ export class AuthService {
 
     return {};
   }
+
+  //join
+  //forceLogin
+  //requestSMSAuth
+  //responseSMSAuth
+  //resetPassword
+  //withdraw
+  //setWithdrawAt
+  //getUtoken
+  //updatePhoneNumber(userid, phoenauthkey)
 }

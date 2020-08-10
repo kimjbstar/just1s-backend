@@ -117,8 +117,9 @@ export class MusicController {
   })
   async checkCorrect(
     @Param("id", ParseIntPipe) id: Number,
-    @Body("answer") answer: string
+    @Body("answer") answer
   ): Promise<any> {
+    console.log("answer", answer);
     return await this.musicService.checkCorrect(id, answer);
   }
 
