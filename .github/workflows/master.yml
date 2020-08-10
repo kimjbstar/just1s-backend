@@ -24,6 +24,8 @@ jobs:
 
       - name: npm install
         run: npm install
+        env:
+          NODE_ENV: "development"
 
       - name: Install Serverless Framework
         run: npm install -g serverless
